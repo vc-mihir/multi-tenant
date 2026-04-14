@@ -56,7 +56,7 @@
                             </div>
                         @endif
 
-                        @if (session('error'))
+                        @if (session('error') || $errors->any())
                             <div
                                 class="p-4 rounded-2xl bg-red-50 border border-red-100 flex items-start space-x-3 animate-in fade-in slide-in-from-top-4 duration-300">
                                 <svg class="w-5 h-5 text-red-600 shrink-0 mt-0.5" fill="none" stroke="currentColor"
@@ -65,7 +65,7 @@
                                         d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                                 <div class="flex-1 text-sm font-bold text-red-900 leading-tight">
-                                    {{ session('error') }}
+                                    {{ session('error') ?? 'credentials does not match try again' }}
                                 </div>
                             </div>
                         @endif

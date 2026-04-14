@@ -8,7 +8,9 @@ Route::get('/', function () {
 
 Route::middleware('guest')->group(function () {
     Route::get('/admin/login', [AdminAuthController::class, 'create'])->name('admin.login');
-    Route::post('/admin/login', [AdminAuthController::class, 'store'])->name('admin.login.post');
+    Route::post('/admin/login', [AdminAuthController::class, 'store'])
+        ->middleware('throttle:admin_login')
+        ->name('admin.login.post');
 });
 
 Route::middleware(['auth', 'role:SuperAdmin'])->group(function () {
