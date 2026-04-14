@@ -42,6 +42,20 @@
                     <form class="mt-8 space-y-5" method="POST" action="{{ route('admin.login.post') }}">
                         @csrf
 
+                        @if (session('success'))
+                            <div
+                                class="p-4 rounded-2xl bg-teal-50 border border-teal-100 flex items-start space-x-3 animate-in fade-in slide-in-from-top-4 duration-300">
+                                <svg class="w-5 h-5 text-teal-600 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <div class="flex-1 text-sm font-bold text-teal-900 leading-tight">
+                                    {{ session('success') }}
+                                </div>
+                            </div>
+                        @endif
+
                         @if (session('error'))
                             <div
                                 class="p-4 rounded-2xl bg-red-50 border border-red-100 flex items-start space-x-3 animate-in fade-in slide-in-from-top-4 duration-300">
@@ -67,21 +81,10 @@
                         <div>
                             <div class="mb-2 flex items-center justify-between gap-4">
                                 <label for="password" class="block text-sm font-medium text-slate-700">Password</label>
-                                <a href="#"
-                                    class="text-sm font-medium text-teal-600 transition hover:text-teal-700">Forgot
-                                    password?</a>
                             </div>
                             <input id="password" type="password" name="password" required
                                 placeholder="Enter your password"
                                 class="w-full rounded-2xl border border-teal-100 bg-teal-50/40 px-4 py-3.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-teal-500 focus:bg-white focus:ring-4 focus:ring-teal-100">
-                        </div>
-
-                        <div class="flex items-center justify-between gap-4 text-sm">
-                            <label class="inline-flex items-center gap-3 text-slate-600">
-                                <input type="checkbox" name="remember"
-                                    class="h-4 w-4 rounded border-teal-300 text-teal-600 focus:ring-teal-500">
-                                <span>Keep me signed in</span>
-                            </label>
                         </div>
 
                         <button type="submit"

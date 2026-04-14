@@ -8,9 +8,18 @@ use Illuminate\Support\Facades\Auth;
 use Exception;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 class AdminAuthController extends Controller
 {
+    /**
+     * Display the admin dashboard.
+     */
+    public function index(): View
+    {
+        return view('admin.dashboard');
+    }
+
     /**
      * Display the super admin login page.
      *
@@ -30,15 +39,29 @@ class AdminAuthController extends Controller
     public function store(AdminLoginRequest $request): RedirectResponse
     {
         try {
-            if (Auth::attempt($request->validated(), $request->boolean('remember')) && Auth::user()->hasRole('SuperAdmin')) {
+            
+            if (Auth::attempt($request->validated()) && Auth::user()->hasRole('SuperAdmin')) {
                 $request->session()->regenerate();
                 return redirect()->intended(route('admin.dashboard'));
-            } else {
-                Auth::logout();
-                return back()->with('error', 'credentials does not match try again');
             }
+
+            Auth::logout();
+            return back()->with('error', 'credentials does not match try again');
         } catch (Exception $e) {
             return back()->with('error', 'credentials does not match try again');
         }
+    }
+
+    /**
+     * Destroy an authenticated session.
+     */
+    public function destroy(Request $request): RedirectResponse
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('admin.login')->with('success', 'Logout successfully');
     }
 }
