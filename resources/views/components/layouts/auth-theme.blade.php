@@ -14,6 +14,26 @@
 
     <!-- Scripts & Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <!-- jQuery & Validation Plugin -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+
+    <style>
+        .error {
+            color: #ef4444;
+            font-size: 10px;
+            font-weight: 700;
+            margin-left: 0.25rem;
+            margin-top: 0.25rem;
+            display: block;
+        }
+
+        input.error {
+            border-color: #ef4444 !important;
+            background-color: #fef2f2 !important;
+        }
+    </style>
 </head>
 
 <body class="min-h-screen bg-[#FDFDFC] font-['Instrument_Sans',sans-serif] text-slate-900">

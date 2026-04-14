@@ -101,7 +101,7 @@
                 <div class="space-y-1.5">
                     <label for="website"
                         class="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">Company Website</label>
-                    <input id="website" type="url" name="website" value="{{ old('website') }}"
+                    <input id="website" type="url" name="website" value="{{ old('website') }}" required
                         class="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#DD7F61]/10 focus:border-[#DD7F61] transition-all duration-300"
                         placeholder="https://acme.com">
                 </div>
@@ -110,6 +110,7 @@
                     <label for="license_number"
                         class="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">License Number</label>
                     <input id="license_number" type="text" name="license_number" value="{{ old('license_number') }}"
+                        required
                         class="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#DD7F61]/10 focus:border-[#DD7F61] transition-all duration-300"
                         placeholder="REG-123456">
                 </div>
@@ -128,14 +129,14 @@
                     <div class="space-y-1.5">
                         <label for="address"
                             class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Address</label>
-                        <input id="address" type="text" name="address" value="{{ old('address') }}"
+                        <input id="address" type="text" name="address" value="{{ old('address') }}" required
                             class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#DD7F61]/10 focus:border-[#DD7F61] transition-all duration-300"
                             placeholder="Street...">
                     </div>
                     <div class="space-y-1.5">
                         <label for="city"
                             class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">City</label>
-                        <input id="city" type="text" name="city" value="{{ old('city') }}"
+                        <input id="city" type="text" name="city" value="{{ old('city') }}" required
                             class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#DD7F61]/10 focus:border-[#DD7F61] transition-all duration-300"
                             placeholder="e.g. SF">
                     </div>
@@ -145,14 +146,14 @@
                     <div class="space-y-1.5">
                         <label for="state"
                             class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">State</label>
-                        <input id="state" type="text" name="state" value="{{ old('state') }}"
+                        <input id="state" type="text" name="state" value="{{ old('state') }}" required
                             class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#DD7F61]/10 focus:border-[#DD7F61] transition-all duration-300"
                             placeholder="e.g. CA">
                     </div>
                     <div class="space-y-1.5">
                         <label for="country"
                             class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Country</label>
-                        <input id="country" type="text" name="country" value="{{ old('country') }}"
+                        <input id="country" type="text" name="country" value="{{ old('country') }}" required
                             class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#DD7F61]/10 focus:border-[#DD7F61] transition-all duration-300"
                             placeholder="e.g. USA">
                     </div>
@@ -190,81 +191,156 @@
     </form>
 
     <script>
-        const form = document.getElementById('registration-form');
-        const phases = ['phase-1', 'phase-2', 'phase-3'];
-        const dots = ['step-1-dot', 'step-2-dot', 'step-3-dot'];
-        const labels = ['', 'step-2-label', 'step-3-label'];
-        const progressLine = document.getElementById('progress-line');
-        const nextBtn = document.getElementById('next-btn');
-        const prevBtn = document.getElementById('prev-btn');
-        const backToLogin = document.getElementById('back-to-login');
-        const btnText = document.getElementById('btn-text');
-        const nextIcon = document.getElementById('next-icon');
+        $(document).ready(function() {
+            const form = $('#registration-form');
+            const phases = ['phase-1', 'phase-2', 'phase-3'];
+            const dots = ['step-1-dot', 'step-2-dot', 'step-3-dot'];
+            const labels = ['', 'step-2-label', 'step-3-label'];
+            const progressLine = $('#progress-line');
+            const nextBtn = $('#next-btn');
+            const prevBtn = $('#prev-btn');
+            const backToLogin = $('#back-to-login');
+            const btnText = $('#btn-text');
+            const nextIcon = $('#next-icon');
 
-        let currentPhase = 0;
+            let currentPhase = 0;
 
-        function updateUI() {
-            // Toggle Phases
-            phases.forEach((id, index) => {
-                document.getElementById(id).classList.toggle('hidden', index !== currentPhase);
-            });
+            // 1. Define Custom Rules
+            $.validator.addMethod("strongPassword", function(value, element) {
+                return this.optional(element) ||
+                    (value.length >= 8 && value.length <= 16 &&
+                        /[A-Z]/.test(value) &&
+                        /[a-z]/.test(value) &&
+                        /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value));
+            }, "Use 8-16 chars with Upper, Lower & Symbol.");
 
-            // Update Progress Dots
-            dots.forEach((id, index) => {
-                const dot = document.getElementById(id);
-                if (index <= currentPhase) {
-                    dot.classList.remove('bg-slate-100', 'text-slate-400');
-                    dot.classList.add('bg-[#DD7F61]', 'text-white', 'shadow-lg', 'shadow-[#DD7F61]/20');
-                } else {
-                    dot.classList.remove('bg-[#DD7F61]', 'text-white', 'shadow-lg', 'shadow-[#DD7F61]/20');
-                    dot.classList.add('bg-slate-100', 'text-slate-400');
+            $.validator.addMethod("lowercaseEmail", function(value, element) {
+                return this.optional(element) || !/[A-Z]/.test(value);
+            }, "Email must not contain any uppercase letters.");
+
+            // 2. Initialize the Validator
+            const validator = form.validate({
+                onfocusout: function(element) {
+                    $(element).valid(); // Trigger validation on blur
+                },
+                errorElement: "span",
+                rules: {
+                    company_name: {
+                        required: true,
+                        maxlength: 100
+                    },
+                    company_email: {
+                        required: true,
+                        email: true,
+                        maxlength: 100,
+                        lowercaseEmail: true
+                    },
+                    password: {
+                        required: true,
+                        strongPassword: true
+                    },
+                    password_confirmation: {
+                        required: true,
+                        equalTo: "#password"
+                    },
+                    website: {
+                        required: true,
+                        url: true,
+                        maxlength: 255
+                    },
+                    license_number: {
+                        required: true,
+                        maxlength: 50
+                    },
+                    address: {
+                        required: true,
+                        maxlength: 500
+                    },
+                    city: {
+                        required: true,
+                        maxlength: 100
+                    },
+                    state: {
+                        required: true,
+                        maxlength: 100
+                    },
+                    country: {
+                        required: true,
+                        maxlength: 100
+                    }
+                },
+                messages: {
+                    company_email: {
+                        email: "Please enter a valid business email."
+                    },
+                    password_confirmation: {
+                        equalTo: "Passwords do not match."
+                    }
                 }
             });
 
-            // Update Labels
-            labels.forEach((id, index) => {
-                if (!id) return;
-                const label = document.getElementById(id);
-                if (index <= currentPhase) {
-                    label.classList.remove('text-slate-400');
-                    label.classList.add('text-[#DD7F61]');
-                } else {
-                    label.classList.remove('text-[#DD7F61]');
-                    label.classList.add('text-slate-400');
+            function updateUI() {
+                // Toggle Phase Visibility
+                phases.forEach((id, index) => {
+                    $(`#${id}`).toggleClass('hidden', index !== currentPhase);
+                });
+
+                // Update Stepper UI
+                dots.forEach((id, index) => {
+                    const dot = $(`#${id}`);
+                    if (index <= currentPhase) {
+                        dot.removeClass('bg-slate-100 text-slate-400').addClass(
+                            'bg-[#DD7F61] text-white shadow-lg shadow-[#DD7F61]/20');
+                    } else {
+                        dot.removeClass('bg-[#DD7F61] text-white shadow-lg shadow-[#DD7F61]/20').addClass(
+                            'bg-slate-100 text-slate-400');
+                    }
+                });
+
+                labels.forEach((id, index) => {
+                    if (!id) return;
+                    const label = $(`#${id}`);
+                    index <= currentPhase ? label.removeClass('text-slate-400').addClass('text-[#DD7F61]') :
+                        label.removeClass('text-[#DD7F61]').addClass('text-slate-400');
+                });
+
+                // Update Progress Line
+                progressLine.css('width', `${(currentPhase / (phases.length - 1)) * 100}%`);
+
+                // Button State Logic
+                prevBtn.toggleClass('hidden', currentPhase === 0);
+                backToLogin.toggleClass('hidden', currentPhase !== 0);
+                btnText.text(currentPhase === phases.length - 1 ? 'Register Now' : 'Next Step');
+                nextIcon.toggleClass('hidden', currentPhase === phases.length - 1);
+            }
+
+            nextBtn.on('click', function() {
+                // Validate only the fields in the CURRENT phase
+                const currentPhaseId = phases[currentPhase];
+                let isValid = true;
+
+                $(`#${currentPhaseId} input`).each(function() {
+                    if (!$(this).valid()) {
+                        isValid = false;
+                    }
+                });
+
+                if (isValid) {
+                    if (currentPhase < phases.length - 1) {
+                        currentPhase++;
+                        updateUI();
+                    } else {
+                        form.submit();
+                    }
                 }
             });
 
-            // Update Progress Line
-            const progress = (currentPhase / (phases.length - 1)) * 100;
-            progressLine.style.width = `${progress}%`;
-
-            // Update Buttons
-            prevBtn.classList.toggle('hidden', currentPhase === 0);
-            backToLogin.classList.toggle('hidden', currentPhase !== 0);
-
-            if (currentPhase === phases.length - 1) {
-                btnText.textContent = 'Register Now';
-                nextIcon.classList.add('hidden');
-            } else {
-                btnText.textContent = 'Next Step';
-                nextIcon.classList.remove('hidden');
-            }
-        }
-
-        nextBtn.addEventListener('click', () => {
-            if (currentPhase < phases.length - 1) {
-                currentPhase++;
-                updateUI();
-            } else {
-                form.submit();
-            }
-        });
-
-        prevBtn.addEventListener('click', () => {
-            if (currentPhase > 0) {
-                currentPhase--;
-                updateUI();
-            }
+            prevBtn.on('click', function() {
+                if (currentPhase > 0) {
+                    currentPhase--;
+                    updateUI();
+                }
+            });
         });
     </script>
 </x-layouts.auth-theme>
