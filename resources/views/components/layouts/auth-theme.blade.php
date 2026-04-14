@@ -28,12 +28,12 @@
         <div class="relative w-full max-w-[480px]">
             <div
                 class="backdrop-blur-xl bg-white/95 rounded-[2.5rem] border border-white/20 p-10 sm:p-12 shadow-[0_40px_100px_rgba(180,70,30,0.25)]">
-                
+
                 {{ $slot }}
 
                 <div class="mt-12 text-center">
                     <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.25em]">
-                        &copy; {{ date('Y') }} {{ config('app.name', 'Laravel') }} Management
+                        &copy; {{ date('Y') }} Tenant Management
                     </p>
                 </div>
             </div>
