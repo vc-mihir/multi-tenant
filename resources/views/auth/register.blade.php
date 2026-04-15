@@ -129,9 +129,8 @@
                     <div class="space-y-1.5">
                         <label for="address"
                             class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Address</label>
-                        <input id="address" type="text" name="address" value="{{ old('address') }}" required
-                            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#DD7F61]/10 focus:border-[#DD7F61] transition-all duration-300"
-                            placeholder="Street...">
+                        <textarea id="address" name="address" rows="3" required
+                            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#DD7F61]/10 focus:border-[#DD7F61] transition-all duration-300 resize-none">{{ old('address') }}</textarea>
                     </div>
                     <div class="space-y-1.5">
                         <label for="city"
@@ -319,7 +318,7 @@
                 const currentPhaseId = phases[currentPhase];
                 let isValid = true;
 
-                $(`#${currentPhaseId} input`).each(function() {
+                $(`#${currentPhaseId} :input`).each(function() {
                     if (!$(this).valid()) {
                         isValid = false;
                     }
