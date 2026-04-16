@@ -19,6 +19,10 @@ Route::middleware('guest')->group(function () {
     Route::get('admin/login', [AdminAuthController::class, 'create'])
         ->name('admin.login');
 
+    Route::post('admin/login', [AdminAuthController::class, 'store'])
+        ->middleware('throttle:admin_login')
+        ->name('admin.login.post');
+
     Route::get('register', [CompanyRegistrationController::class, 'create'])
         ->name('register');
 
