@@ -1,34 +1,35 @@
 <x-layouts.auth-theme>
-    <div class="mb-10 text-center">
-        <h2 class="text-3xl font-bold text-slate-900 leading-tight">Check your email</h2>
-        <p class="mt-4 text-sm text-slate-500 font-medium leading-relaxed italic">
-            Thanks for signing up! Before getting started, could you verify your email address by clicking on the link
-            we just emailed to you?
-        </p>
-    </div>
-
-    @if (session('status') == 'verification-link-sent')
-        <div
-            class="mb-8 p-4 rounded-2xl bg-emerald-50 border border-emerald-100 text-sm font-bold text-emerald-800 animate-in fade-in slide-in-from-top-4 duration-300">
-            A new verification link has been sent to the email address you provided during registration.
+    <div class="space-y-5">
+        <div class="text-center">
+            <h2 class="text-2xl font-semibold text-slate-900">Verify your company email</h2>
+            <p class="mt-3 text-sm text-slate-600">
+                We sent a verification link to {{ $company->company_email }}. Please click it to activate your company
+                account.
+            </p>
         </div>
-    @endif
 
-    <div class="space-y-4">
-        <form method="POST" action="{{ route('verification.send') }}">
+        @if (session('status') === 'verification-link-sent')
+            <div class="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+                Verification link sent successfully.
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('companies.verification.send', ['id' => $company->id]) }}">
             @csrf
             <button type="submit"
-                class="w-full py-5 bg-[#DD7F61] text-white font-black rounded-2xl shadow-xl shadow-[#DD7F61]/30 hover:bg-[#D16A4E] hover:shadow-[#DD7F61]/40 active:scale-[0.98] transition-all duration-300">
-                Resend Verification Email
+                class="w-full rounded-lg bg-slate-900 px-4 py-3 text-sm font-semibold text-white hover:bg-slate-800">
+                Resend verification email
             </button>
         </form>
 
-        <form method="POST" action="{{ route('logout') }}" class="text-center">
-            @csrf
-            <button type="submit"
-                class="text-sm font-bold text-slate-400 hover:text-slate-800 transition-colors uppercase tracking-widest">
-                Log Out
-            </button>
-        </form>
+        <div class="text-center">
+            <a href="{{ route('login') }}" class="text-sm text-slate-600 hover:text-slate-900">Back to login</a>
+        </div>
     </div>
 </x-layouts.auth-theme>
