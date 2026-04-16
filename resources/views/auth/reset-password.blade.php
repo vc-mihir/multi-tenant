@@ -1,39 +1,52 @@
-<x-guest-layout>
-    <form method="POST" action="{{ route('password.store') }}">
+<x-layouts.auth-theme>
+    <div class="mb-10 text-center">
+        <h2 class="text-3xl font-bold text-slate-900 leading-tight">New Password</h2>
+        <p class="mt-2 text-slate-500 font-medium">Please set your new password below.</p>
+    </div>
+
+    <form method="POST" action="{{ route('password.store') }}" class="space-y-6">
         @csrf
 
         <!-- Password Reset Token -->
         <input type="hidden" name="token" value="{{ $request->route('token') }}">
 
         <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email', $request->email)" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        <div class="space-y-2">
+            <label for="email" class="text-sm font-bold text-slate-700 ml-1">Email Address</label>
+            <input id="email" type="email" name="email" value="{{ old('email', $request->email) }}" required autofocus autocomplete="username"
+                class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#DD7F61]/10 focus:border-[#DD7F61] transition-all duration-300">
+            @if ($errors->has('email'))
+                <p class="mt-2 text-xs font-bold text-red-600 ml-1">{{ $errors->first('email') }}</p>
+            @endif
         </div>
 
         <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-            <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        <div class="space-y-2">
+            <label for="password" class="text-sm font-bold text-slate-700 ml-1">New Password</label>
+            <input id="password" type="password" name="password" required autocomplete="new-password"
+                class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#DD7F61]/10 focus:border-[#DD7F61] transition-all duration-300"
+                placeholder="••••••••••••">
+            @if ($errors->has('password'))
+                <p class="mt-2 text-xs font-bold text-red-600 ml-1">{{ $errors->first('password') }}</p>
+            @endif
         </div>
 
         <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                                type="password"
-                                name="password_confirmation" required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+        <div class="space-y-2">
+            <label for="password_confirmation" class="text-sm font-bold text-slate-700 ml-1">Confirm New Password</label>
+            <input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password"
+                class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#DD7F61]/10 focus:border-[#DD7F61] transition-all duration-300"
+                placeholder="••••••••••••">
+            @if ($errors->has('password_confirmation'))
+                <p class="mt-2 text-xs font-bold text-red-600 ml-1">{{ $errors->first('password_confirmation') }}</p>
+            @endif
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Reset Password') }}
-            </x-primary-button>
+        <div class="pt-4">
+            <button type="submit"
+                class="w-full py-5 bg-[#DD7F61] text-white font-black rounded-2xl shadow-xl shadow-[#DD7F61]/30 hover:bg-[#D16A4E] hover:shadow-[#DD7F61]/40 active:scale-[0.98] transition-all duration-300">
+                Reset Password
+            </button>
         </div>
     </form>
-</x-guest-layout>
+</x-layouts.auth-theme>

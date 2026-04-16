@@ -15,7 +15,6 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware(['auth', 'role:SuperAdmin'])->group(function () {
     Route::get('/admin/dashboard', [AdminAuthController::class, 'index'])->name('admin.dashboard');
-
     Route::post('/admin/logout', [AdminAuthController::class, 'destroy'])->name('admin.logout');
 });
 
