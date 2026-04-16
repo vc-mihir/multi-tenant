@@ -14,6 +14,8 @@ class Company extends Model implements MustVerifyEmailContract
 {
     use HasFactory, MustVerifyEmail, Notifiable, HasRoles;
 
+    protected string $guard_name = 'web';
+
     /**
      * The attributes that are mass assignable.
      *
