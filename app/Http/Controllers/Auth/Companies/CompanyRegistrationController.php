@@ -40,6 +40,12 @@ class CompanyRegistrationController extends Controller
             $company = Company::create([
                 'company_name' => $validated['company_name'],
                 'company_email' => $validated['company_email'],
+                'website' => $validated['website'],
+                'license_number' => $validated['license_number'],
+                'address' => $validated['address'],
+                'country' => $validated['country'],
+                'state' => $validated['state'],
+                'city' => $validated['city'],
                 'password' => $validated['password'],
                 'status' => 'inactive',
                 'email_verified_at' => null,
@@ -53,6 +59,7 @@ class CompanyRegistrationController extends Controller
                 ],
             ]);
 
+            $company->assignRole('Company');
             $company->sendEmailVerificationNotification();
 
             return redirect()->route('companies.verification.notice', [
