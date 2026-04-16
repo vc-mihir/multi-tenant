@@ -36,7 +36,27 @@ class CreateCompanyDatabase implements ShouldQueue
             Artisan::call('migrate', [
                 '--database' => 'tenant',
                 '--path' => 'database/migrations/tenant',
+                '--force' => true,
             ]);
+
+            DB::connection('tenant')->table('companies')->updateOrInsert(
+                ['master_company_id' => $this->company->id],
+                [
+                    'company_name' => $this->company->company_name,
+                    'company_email' => $this->company->company_email,
+                    'website' => $this->company->website,
+                    'license_number' => $this->company->license_number,
+                    'address' => $this->company->address,
+                    'country' => $this->company->country,
+                    'state' => $this->company->state,
+                    'city' => $this->company->city,
+                    'password' => $this->company->password,
+                    'status' => $this->company->status,
+                    'email_verified_at' => $this->company->email_verified_at,
+                    'created_at' => $this->company->created_at ?? now(),
+                    'updated_at' => now(),
+                ],
+            );
 
             Log::info('Company database created successfully.', [
                 'company_id' => $this->company->id,
