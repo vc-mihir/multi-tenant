@@ -1,31 +1,35 @@
-<x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If you didn\'t receive the email, we will gladly send you another.') }}
-    </div>
-
-    @if (session('status') == 'verification-link-sent')
-        <div class="mb-4 font-medium text-sm text-green-600">
-            {{ __('A new verification link has been sent to the email address you provided during registration.') }}
+<x-layouts.auth-theme>
+    <div class="space-y-5">
+        <div class="text-center">
+            <h2 class="text-2xl font-semibold text-slate-900">Verify your company email</h2>
+            <p class="mt-3 text-sm text-slate-600">
+                We sent a verification link to {{ $company->company_email }}. Please click it to activate your company
+                account.
+            </p>
         </div>
-    @endif
 
-    <div class="mt-4 flex items-center justify-between">
-        <form method="POST" action="{{ route('verification.send') }}">
-            @csrf
-
-            <div>
-                <x-primary-button>
-                    {{ __('Resend Verification Email') }}
-                </x-primary-button>
+        @if (session('status') === 'verification-link-sent')
+            <div class="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+                Verification link sent successfully.
             </div>
-        </form>
+        @endif
 
-        <form method="POST" action="{{ route('logout') }}">
+        @if (session('error'))
+            <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('companies.verification.send', ['id' => $company->id]) }}">
             @csrf
-
-            <button type="submit" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                {{ __('Log Out') }}
+            <button type="submit"
+                class="w-full rounded-lg bg-slate-900 px-4 py-3 text-sm font-semibold text-white hover:bg-slate-800">
+                Resend verification email
             </button>
         </form>
+
+        <div class="text-center">
+            <a href="{{ route('login') }}" class="text-sm text-slate-600 hover:text-slate-900">Back to login</a>
+        </div>
     </div>
-</x-guest-layout>
+</x-layouts.auth-theme>
