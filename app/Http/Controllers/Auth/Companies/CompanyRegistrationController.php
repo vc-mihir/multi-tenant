@@ -59,6 +59,7 @@ class CompanyRegistrationController extends Controller
                 ],
             ]);
 
+            $company->assignRole('Company');
             $company->sendEmailVerificationNotification();
 
             return redirect()->route('companies.verification.notice', [
