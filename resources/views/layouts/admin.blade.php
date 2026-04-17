@@ -29,6 +29,8 @@
             background: rgba(45, 212, 191, 0.4);
         }
     </style>
+
+    @stack('styles')
 </head>
 <body class="h-full font-['Instrument_Sans',sans-serif] text-slate-900 antialiased selection:bg-teal-100 selection:text-teal-900">
     <div class="flex h-full overflow-hidden">
@@ -64,5 +66,7 @@
             @include('admin.partials.footer')
         </div>
     </div>
+
+    @stack('scripts')
 </body>
 </html>
