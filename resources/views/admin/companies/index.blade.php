@@ -85,6 +85,7 @@
                         <th>Database Name</th>
                         <th class="whitespace-nowrap">Created At</th>
                         <th class="whitespace-nowrap">Updated At</th>
+                        <th class="text-right px-6">Actions</th>
                     </tr>
                 </thead>
             </table>
@@ -183,6 +184,22 @@
                     {
                         data: 'updated_at',
                         name: 'updated_at'
+                    },
+                    {
+                        data: 'id',
+                        name: 'actions',
+                        orderable: false,
+                        searchable: false,
+                        className: 'text-right px-6',
+                        render: function(data) {
+                            return `
+                                <div class="flex items-center justify-end gap-2">
+                                    <button class="p-2 text-slate-400 hover:text-rose-600 transition-colors delete-company" data-id="${data}">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                    </button>
+                                </div>
+                            `;
+                        }
                     }
                 ]
             });
@@ -190,6 +207,66 @@
             // Redraw table on filter change
             $(document).on('change', '#status-filter', function() {
                 table.draw();
+            });
+
+            // Handle Delete click
+            $(document).on('click', '.delete-company', function() {
+                const companyId = $(this).data('id');
+
+                Swal.fire({
+                    title: 'CRITICAL ACTION!',
+                    text: "You are about to PERMANENTLY DELETE this company and DROP their entire tenant database. This will destroy all users, records, and settings. THIS CANNOT BE UNDONE!",
+                    icon: 'error',
+                    showCancelButton: true,
+                    confirmButtonColor: '#be123c',
+                    cancelButtonColor: '#64748b',
+                    confirmButtonText: 'Yes, Destroy Everything!',
+                    cancelButtonText: 'Cancel',
+                    padding: '2rem',
+                    borderRadius: '1.5rem',
+                    backdrop: `rgba(158, 89, 89, 0.05)`,
+                    allowOutsideClick: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Purging Data...',
+                            text: 'Destroying tenant database and records',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
+                        $.ajax({
+                            url: `/admin/companies/${companyId}`,
+                            type: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            success: function(response) {
+                                if (response.success) {
+                                    Swal.fire({
+                                        title: 'Deleted!',
+                                        text: response.message,
+                                        icon: 'success',
+                                        confirmButtonColor: '#0d9488',
+                                        borderRadius: '1.5rem'
+                                    });
+                                    table.draw(false);
+                                } else {
+                                    Swal.fire('Error!', response.message, 'error');
+                                }
+                            },
+                            error: function(xhr) {
+                                let errorMsg = 'An unexpected error occurred.';
+                                if (xhr.responseJSON && xhr.responseJSON.message) {
+                                    errorMsg = xhr.responseJSON.message;
+                                }
+                                Swal.fire('Error!', errorMsg, 'error');
+                            }
+                        });
+                    }
+                });
             });
         });
     </script>

@@ -6,7 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Company;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Yajra\DataTables\Facades\DataTables;
+use Exception;
 
 class CompanyController extends Controller
 {
@@ -54,5 +57,36 @@ class CompanyController extends Controller
             ->rawColumns(['status', 'email_verified_at', 'created_at', 'updated_at'])
             ->addIndexColumn()
             ->toJson();
+    }
+
+    /**
+     * Remove the specified company from master and tenant databases.
+     *
+     * @param Company $company
+     * @return JsonResponse
+     */
+    public function destroy(Company $company): JsonResponse
+    {
+        if (!auth()->user()->hasRole('SuperAdmin')) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized access.'], 403);
+        }
+
+        $dbName = $company->database_name;
+
+        try {
+            DB::statement("DROP DATABASE IF EXISTS `{$dbName}`");
+        } catch (Exception $e) {
+            Log::error("Failed to drop database [{$dbName}] - " . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to purge tenant database.'], 500);
+        }
+
+        try {
+            $company->delete();
+        } catch (Exception $e) {
+            Log::error("Failed to delete master record for [{$company->id}] - " . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to delete master record.'], 500);
+        }
+
+        return response()->json(['success' => true, 'message' => 'Company and database successfully purged.']);
     }
 }
