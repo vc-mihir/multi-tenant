@@ -52,6 +52,21 @@
 
 @section('content')
     <div class="rounded-3xl border border-teal-100 bg-white p-6 shadow-sm ring-1 ring-slate-900/5">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-lg font-semibold text-slate-800">Company Records</h2>
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Status:</span>
+                    <select id="status-filter"
+                        class="px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none text-sm bg-slate-50/50 transition-all cursor-pointer min-w-[120px]">
+                        <option value="">All</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
         <div class="relative">
             <table id="companies-table" class="w-full text-left border-collapse">
                 <thead>
@@ -82,10 +97,15 @@
     <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
     <script>
         $(function() {
-            $('#companies-table').DataTable({
+            let table = $('#companies-table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: '{{ route('admin.companies.data') }}',
+                ajax: {
+                    url: '{{ route('admin.companies.data') }}',
+                    data: function(d) {
+                        d.status = $('#status-filter').val();
+                    }
+                },
                 order: [
                     [0, 'desc']
                 ],
@@ -165,6 +185,11 @@
                         name: 'updated_at'
                     }
                 ]
+            });
+
+            // Redraw table on filter change
+            $(document).on('change', '#status-filter', function() {
+                table.draw();
             });
         });
     </script>

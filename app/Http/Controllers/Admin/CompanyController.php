@@ -27,6 +27,11 @@ class CompanyController extends Controller
     {
         $query = Company::query();
 
+        // Apply status filter if provided
+        $query->when(request('status'), function ($q) {
+            return $q->where('status', request('status'));
+        });
+
         return DataTables::of($query)
             ->editColumn('status', function ($company) {
                 $class = match ($company->status) {
