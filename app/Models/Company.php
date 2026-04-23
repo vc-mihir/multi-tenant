@@ -8,10 +8,11 @@ use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
 class Company extends Model implements MustVerifyEmailContract
 {
-    use HasFactory, MustVerifyEmail, Notifiable;
+    use HasFactory, MustVerifyEmail, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -21,6 +22,12 @@ class Company extends Model implements MustVerifyEmailContract
     protected $fillable = [
         'company_name',
         'company_email',
+        'website',
+        'license_number',
+        'address',
+        'country',
+        'state',
+        'city',
         'password',
         'status',
         'email_verified_at',

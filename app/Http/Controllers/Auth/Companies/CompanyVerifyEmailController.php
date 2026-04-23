@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth\Companies;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\CreateCompanyDatabase;
 use App\Models\Company;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Log;
@@ -26,6 +27,8 @@ class CompanyVerifyEmailController extends Controller
                 $company->update([
                     'status' => 'active',
                 ]);
+
+                CreateCompanyDatabase::dispatch($company);
             }
 
             return redirect()->route('login')->with('status', 'Company email verified successfully. Your account is now active.');
