@@ -168,9 +168,11 @@
                         name: 'email_verified_at'
                     },
                     {
-                        data: 'database_name',
-                        name: 'database_name',
+                        data: 'database.db_name',
+                        name: 'database.db_name',
+                        defaultContent: '<span class="text-slate-300 italic text-[10px]">Pending Setup</span>',
                         render: function(data) {
+                            if (!data) return '<span class="text-slate-300 italic text-[10px]">Pending Setup</span>';
                             return `<code class="px-2 py-1 bg-slate-100 rounded text-xs font-mono text-slate-600">${data}</code>`;
                         }
                     },

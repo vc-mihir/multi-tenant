@@ -34,9 +34,6 @@ class CompanyRegistrationController extends Controller
         $validated = $request->validated();
 
         try {
-            $defaultConnection = config('database.default');
-            $databaseName = 'tenant_company_' . Str::slug($validated['company_name'], '_');
-
             $company = Company::create([
                 'company_name' => $validated['company_name'],
                 'company_email' => $validated['company_email'],
@@ -49,14 +46,6 @@ class CompanyRegistrationController extends Controller
                 'password' => $validated['password'],
                 'status' => 'inactive',
                 'email_verified_at' => null,
-                'database_name' => $databaseName,
-                'database_connection_details' => [
-                    'connection' => $defaultConnection,
-                    'driver' => config("database.connections.{$defaultConnection}.driver"),
-                    'host' => config("database.connections.{$defaultConnection}.host"),
-                    'port' => config("database.connections.{$defaultConnection}.port"),
-                    'database' => $databaseName,
-                ],
             ]);
 
             $company->assignRole('Company');

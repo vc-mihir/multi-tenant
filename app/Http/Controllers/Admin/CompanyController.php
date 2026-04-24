@@ -28,7 +28,7 @@ class CompanyController extends Controller
      */
     public function data(): JsonResponse
     {
-        $query = Company::query();
+        $query = Company::with('database');
 
         // Apply status filter if provided
         $query->when(request('status'), function ($q) {
@@ -71,10 +71,12 @@ class CompanyController extends Controller
             return response()->json(['success' => false, 'message' => 'Unauthorized access.'], 403);
         }
 
-        $dbName = $company->database_name;
+        $dbName = $company->database?->db_name;
 
         try {
-            DB::statement("DROP DATABASE IF EXISTS `{$dbName}`");
+            if ($dbName) {
+                DB::statement("DROP DATABASE IF EXISTS `{$dbName}`");
+            }
         } catch (Exception $e) {
             Log::error("Failed to drop database [{$dbName}] - " . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Failed to purge tenant database.'], 500);

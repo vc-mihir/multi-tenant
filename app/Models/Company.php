@@ -8,6 +8,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Spatie\Permission\Traits\HasRoles;
 
 class Company extends Model implements MustVerifyEmailContract
@@ -33,8 +34,6 @@ class Company extends Model implements MustVerifyEmailContract
         'password',
         'status',
         'email_verified_at',
-        'database_name',
-        'database_connection_details',
     ];
 
     /**
@@ -44,7 +43,6 @@ class Company extends Model implements MustVerifyEmailContract
      */
     protected $hidden = [
         'password',
-        'database_connection_details',
     ];
 
     /**
@@ -57,8 +55,17 @@ class Company extends Model implements MustVerifyEmailContract
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'database_connection_details' => 'encrypted:array',
         ];
+    }
+
+    /**
+     * Get the database connection details for the company.
+     *
+     * @return HasOne
+     */
+    public function database(): HasOne
+    {
+        return $this->hasOne(CompanyDatabase::class);
     }
 
     /**
