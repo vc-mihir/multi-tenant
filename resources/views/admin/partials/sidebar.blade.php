@@ -1,13 +1,11 @@
 <aside id="admin-sidebar" class="fixed inset-y-0 left-0 z-50 w-64 translate-x-0 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0">
     <div class="flex flex-col h-full bg-teal-900 text-white shadow-2xl border-r border-teal-800/50 backdrop-blur-xl">
-        <!-- Sidebar Brand -->
         <div class="flex items-center justify-center h-20 border-b border-teal-800/50 bg-teal-950/30">
             <span class="text-2xl font-bold tracking-wider text-teal-400">
                 ADMIN<span class="text-white">PORTAL</span>
             </span>
         </div>
 
-        <!-- Sidebar Navigation -->
         <nav class="flex-1 px-4 py-8 space-y-1 overflow-y-auto custom-scrollbar">
             <a href="{{ route('admin.dashboard') }}" 
                class="flex items-center px-4 py-3 text-sm font-medium transition-all duration-200 rounded-xl group {{ request()->routeIs('admin.dashboard') ? 'bg-teal-600 text-white shadow-lg shadow-teal-600/30' : 'text-teal-300 hover:bg-teal-800/50 hover:text-white' }}">
@@ -49,7 +47,6 @@
             </a>
         </nav>
 
-        <!-- Sidebar Footer -->
         <div class="p-4 border-t border-teal-800/50 bg-teal-950/20">
             <div class="flex items-center space-x-3">
                 <div class="flex-shrink-0">

@@ -7,14 +7,12 @@
 @push('styles')
     <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.min.css">
     <style>
-        /* Isolate horizontal scroll to the table area only */
         .dt-container .dt-layout-row:has(table) {
             overflow-x: auto;
             scrollbar-width: thin;
             scrollbar-color: rgba(45, 212, 191, 0.4) transparent;
         }
 
-        /* Custom scrollbar for Webkit */
         .dt-container .dt-layout-row:has(table)::-webkit-scrollbar {
             height: 6px;
         }
@@ -32,7 +30,6 @@
             background: rgba(45, 212, 191, 0.4);
         }
 
-        /* Ensure controls stay pinned and table has room to breathe */
         .dt-search input {
             border: 1px solid #e2e8f0;
             border-radius: 0.75rem;
@@ -204,12 +201,10 @@
                 ]
             });
 
-            // Redraw table on filter change
             $(document).on('change', '#status-filter', function() {
                 table.draw();
             });
 
-            // Handle Delete click
             $(document).on('click', '.delete-company', function() {
                 const companyId = $(this).data('id');
 

@@ -1,15 +1,11 @@
 <x-layouts.auth-theme>
-    <!-- Progress Indicator -->
     <div class="mb-10 px-2">
         <div class="flex items-center justify-between relative">
-            <!-- Background Line -->
             <div class="absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 -translate-y-1/2"></div>
-            <!-- Active Progress Line -->
             <div id="progress-line"
                 class="absolute top-1/2 left-0 w-0 h-0.5 bg-[#DD7F61] -translate-y-1/2 transition-all duration-500">
             </div>
 
-            <!-- Steps -->
             <div class="relative z-10 flex flex-col items-center">
                 <div id="step-1-dot"
                     class="w-8 h-8 rounded-full bg-[#DD7F61] text-white flex items-center justify-center text-xs font-black shadow-lg shadow-[#DD7F61]/20 transition-all duration-500">
@@ -36,7 +32,6 @@
     <form method="POST" action="{{ route('register') }}" id="registration-form">
         @csrf
 
-        <!-- Phase 1: Account Setup -->
         <div id="phase-1" class="space-y-5 transition-all duration-500">
             <div class="mb-6">
                 <h3 class="text-xl font-bold text-slate-900">Account Setup</h3>
@@ -90,7 +85,6 @@
             </div>
         </div>
 
-        <!-- Phase 2: Company Details -->
         <div id="phase-2" class="hidden space-y-5 transition-all duration-500">
             <div class="mb-6">
                 <h3 class="text-xl font-bold text-slate-900">Business Credentials</h3>
@@ -117,7 +111,6 @@
             </div>
         </div>
 
-        <!-- Phase 3: Location Details -->
         <div id="phase-3" class="hidden space-y-4 transition-all duration-500">
             <div class="mb-4">
                 <h3 class="text-xl font-bold text-slate-900">Business Location</h3>
@@ -161,7 +154,6 @@
             </div>
         </div>
 
-        <!-- Navigation Buttons -->
         <div class="flex items-center justify-between pt-10">
             <button type="button" id="prev-btn"
                 class="hidden text-sm font-bold text-slate-400 hover:text-slate-800 transition-colors uppercase tracking-widest flex items-center">
@@ -204,7 +196,6 @@
 
             let currentPhase = 0;
 
-            // 1. Define Custom Rules
             $.validator.addMethod("strongPassword", function(value, element) {
                 return this.optional(element) ||
                     (value.length >= 8 && value.length <= 16 &&
@@ -217,7 +208,6 @@
                 return this.optional(element) || !/[A-Z]/.test(value);
             }, "Email must not contain any uppercase letters.");
 
-            // 2. Initialize the Validator
             const validator = form.validate({
                 onfocusout: function(element) {
                     $(element).valid(); // Trigger validation on blur
@@ -279,12 +269,10 @@
             });
 
             function updateUI() {
-                // Toggle Phase Visibility
                 phases.forEach((id, index) => {
                     $(`#${id}`).toggleClass('hidden', index !== currentPhase);
                 });
 
-                // Update Stepper UI
                 dots.forEach((id, index) => {
                     const dot = $(`#${id}`);
                     if (index <= currentPhase) {
@@ -303,10 +291,8 @@
                         label.removeClass('text-[#DD7F61]').addClass('text-slate-400');
                 });
 
-                // Update Progress Line
                 progressLine.css('width', `${(currentPhase / (phases.length - 1)) * 100}%`);
 
-                // Button State Logic
                 prevBtn.toggleClass('hidden', currentPhase === 0);
                 backToLogin.toggleClass('hidden', currentPhase !== 0);
                 btnText.text(currentPhase === phases.length - 1 ? 'Register Now' : 'Next Step');
@@ -314,7 +300,6 @@
             }
 
             nextBtn.on('click', function() {
-                // Validate only the fields in the CURRENT phase
                 const currentPhaseId = phases[currentPhase];
                 let isValid = true;
 
