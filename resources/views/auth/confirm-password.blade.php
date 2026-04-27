@@ -9,7 +9,6 @@
     <form method="POST" action="{{ route('password.confirm') }}" class="space-y-6">
         @csrf
 
-        <!-- Password -->
         <div class="space-y-2">
             <label for="password" class="text-sm font-bold text-slate-700 ml-1">Password</label>
             <input id="password" type="password" name="password" required autocomplete="current-password"

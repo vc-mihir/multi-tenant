@@ -1,13 +1,11 @@
 <aside id="admin-sidebar" class="fixed inset-y-0 left-0 z-50 w-64 translate-x-0 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0">
     <div class="flex flex-col h-full bg-teal-900 text-white shadow-2xl border-r border-teal-800/50 backdrop-blur-xl">
-        <!-- Sidebar Brand -->
         <div class="flex items-center justify-center h-20 border-b border-teal-800/50 bg-teal-950/30">
             <span class="text-2xl font-bold tracking-wider text-teal-400">
                 ADMIN<span class="text-white">PORTAL</span>
             </span>
         </div>
 
-        <!-- Sidebar Navigation -->
         <nav class="flex-1 px-4 py-8 space-y-1 overflow-y-auto custom-scrollbar">
             <a href="{{ route('admin.dashboard') }}" 
                class="flex items-center px-4 py-3 text-sm font-medium transition-all duration-200 rounded-xl group {{ request()->routeIs('admin.dashboard') ? 'bg-teal-600 text-white shadow-lg shadow-teal-600/30' : 'text-teal-300 hover:bg-teal-800/50 hover:text-white' }}">
@@ -21,7 +19,8 @@
                 Management
             </div>
 
-            <a href="#" class="flex items-center px-4 py-3 text-sm font-medium text-teal-300 transition-all duration-200 rounded-xl group hover:bg-teal-800/50 hover:text-white">
+            <a href="{{ route('admin.companies.index') }}"
+               class="flex items-center px-4 py-3 text-sm font-medium transition-all duration-200 rounded-xl group {{ request()->routeIs('admin.companies.*') ? 'bg-teal-600 text-white shadow-lg shadow-teal-600/30' : 'text-teal-300 hover:bg-teal-800/50 hover:text-white' }}">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
@@ -48,7 +47,6 @@
             </a>
         </nav>
 
-        <!-- Sidebar Footer -->
         <div class="p-4 border-t border-teal-800/50 bg-teal-950/20">
             <div class="flex items-center space-x-3">
                 <div class="flex-shrink-0">

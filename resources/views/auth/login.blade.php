@@ -4,7 +4,6 @@
         <p class="mt-2 text-slate-500 font-medium">Please enter your credentials to log in.</p>
     </div>
 
-    <!-- Session Status -->
     @if (session('status'))
         <div class="mb-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-100 text-sm font-bold text-emerald-800 animate-in fade-in slide-in-from-top-4 duration-300">
             {{ session('status') }}
@@ -14,7 +13,6 @@
     <form method="POST" action="{{ route('login') }}" class="space-y-6">
         @csrf
 
-        <!-- Email Address -->
         <div class="space-y-2">
             <label for="email" class="text-sm font-bold text-slate-700 ml-1">Email Address</label>
             <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username"
@@ -25,7 +23,6 @@
             @endif
         </div>
 
-        <!-- Password -->
         <div class="space-y-2">
             <div class="flex items-center justify-between ml-1">
                 <label for="password" class="text-sm font-bold text-slate-700">Password</label>
@@ -43,7 +40,6 @@
             @endif
         </div>
 
-        <!-- Remember Me -->
         <div class="flex items-center ml-1">
             <label for="remember_me" class="inline-flex items-center group cursor-pointer">
                 <input id="remember_me" type="checkbox" name="remember" 
