@@ -1,6 +1,7 @@
 <?php
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\CompanyController;
+use App\Http\Controllers\Admin\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -14,6 +15,10 @@ Route::middleware(['auth', 'role:SuperAdmin'])->group(function () {
     Route::get('/admin/companies/{company}/edit', [CompanyController::class, 'edit'])->name('admin.companies.edit');
     Route::put('/admin/companies/{company}', [CompanyController::class, 'update'])->name('admin.companies.update');
     Route::delete('/admin/companies/{company}', [CompanyController::class, 'destroy'])->name('admin.companies.destroy');
+    
+    Route::get('/admin/settings', [ProfileController::class, 'edit'])->name('admin.settings');
+    Route::put('/admin/settings', [ProfileController::class, 'update'])->name('admin.settings.update');
+
     Route::post('/admin/logout', [AdminAuthController::class, 'destroy'])->name('admin.logout');
 });
 
