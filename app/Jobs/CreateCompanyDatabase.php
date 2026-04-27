@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Company;
+use App\Models\CompanyDatabase;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -11,33 +12,54 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Throwable;
 
 class CreateCompanyDatabase implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    /**
+     * Create a new job instance.
+     *
+     * @param Company $company
+     */
     public function __construct(public Company $company)
     {
     }
 
     /**
-     * Execute the job.
+     * Handle the job.
+     *
+     * @return void
      */
     public function handle(): void
     {
-        $dbName = $this->company->database_name;
+        $dbName = 'tenant_company_' . Str::slug($this->company->company_name, '_');
 
         try {
-            DB::statement("CREATE DATABASE `{$dbName}`");
+            DB::statement("CREATE DATABASE IF NOT EXISTS `{$dbName}`");
 
             config(['database.connections.tenant.database' => $dbName]);
             DB::purge('tenant');
+            
             Artisan::call('migrate', [
                 '--database' => 'tenant',
                 '--path' => 'database/migrations/tenant',
                 '--force' => true,
             ]);
+
+            $defaultConnection = config('database.default');
+            CompanyDatabase::updateOrCreate(
+                ['company_id' => $this->company->id],   
+                [
+                    'db_name' => $dbName,
+                    'db_host' => config("database.connections.{$defaultConnection}.host"),
+                    'db_port' => config("database.connections.{$defaultConnection}.port"),
+                    'db_username' => config("database.connections.{$defaultConnection}.username"),
+                    'db_password' => config("database.connections.{$defaultConnection}.password"),
+                ]
+            );
 
             DB::connection('tenant')->table('companies')->updateOrInsert(
                 ['master_company_id' => $this->company->id],

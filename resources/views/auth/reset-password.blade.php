@@ -7,10 +7,8 @@
     <form method="POST" action="{{ route('password.store') }}" class="space-y-6">
         @csrf
 
-        <!-- Password Reset Token -->
         <input type="hidden" name="token" value="{{ $request->route('token') }}">
 
-        <!-- Email Address -->
         <div class="space-y-2">
             <label for="email" class="text-sm font-bold text-slate-700 ml-1">Email Address</label>
             <input id="email" type="email" name="email" value="{{ old('email', $request->email) }}" required autofocus autocomplete="username"
@@ -20,7 +18,6 @@
             @endif
         </div>
 
-        <!-- Password -->
         <div class="space-y-2">
             <label for="password" class="text-sm font-bold text-slate-700 ml-1">New Password</label>
             <input id="password" type="password" name="password" required autocomplete="new-password"
@@ -31,7 +28,6 @@
             @endif
         </div>
 
-        <!-- Confirm Password -->
         <div class="space-y-2">
             <label for="password_confirmation" class="text-sm font-bold text-slate-700 ml-1">Confirm New Password</label>
             <input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password"

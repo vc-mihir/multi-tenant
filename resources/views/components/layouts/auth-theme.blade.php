@@ -8,16 +8,14 @@
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
 
-    <!-- Scripts & Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    <!-- jQuery & Validation Plugin -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+    <script src="/js/validation/common-validation.js"></script>
 
     <style>
         .error {
@@ -39,7 +37,6 @@
 <body class="min-h-screen bg-[#FDFDFC] font-['Instrument_Sans',sans-serif] text-slate-900">
     <div
         class="relative isolate min-h-screen overflow-hidden bg-gradient-to-br from-[#E67E5F] via-[#DD7F61] to-[#D16A4E] flex items-center justify-center p-6 sm:p-12">
-        <!-- Abstract background elements -->
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.1),transparent_40%)]">
         </div>
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(0,0,0,0.05),transparent_35%)]">
