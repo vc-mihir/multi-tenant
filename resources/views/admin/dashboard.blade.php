@@ -17,41 +17,11 @@
             </div>
             <div>
                 <p class="mb-1 text-sm font-medium text-slate-500">Total Tenants</p>
-                <p class="text-2xl font-bold text-slate-900">24</p>
+                <p class="text-2xl font-bold text-slate-900">{{ $totalCompanies }}</p>
             </div>
         </div>
 
-        <!-- Quick Stats 2: Active Users -->
-        <div
-            class="flex items-center p-6 bg-white border border-teal-100 rounded-2xl shadow-sm transition-all hover:shadow-md">
-            <div class="p-3 mr-4 text-cyan-600 bg-cyan-50 rounded-xl">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-            </div>
-            <div>
-                <p class="mb-1 text-sm font-medium text-slate-500">Active Users</p>
-                <p class="text-2xl font-bold text-slate-900">1,204</p>
-            </div>
-        </div>
-
-        <!-- Quick Stats 3: System Health -->
-        <div
-            class="flex items-center p-6 bg-white border border-teal-100 rounded-2xl shadow-sm transition-all hover:shadow-md">
-            <div class="p-3 mr-4 text-emerald-600 bg-emerald-50 rounded-xl">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-            </div>
-            <div>
-                <p class="mb-1 text-sm font-medium text-slate-500">System Status</p>
-                <p class="text-2xl font-bold text-emerald-600 uppercase text-sm tracking-widest">Optimal</p>
-            </div>
-        </div>
-
-        <!-- Quick Stats 4: Pending Approvals -->
+        <!-- Quick Stats 2: Pending Actions -->
         <div
             class="flex items-center p-6 bg-white border border-teal-100 rounded-2xl shadow-sm transition-all hover:shadow-md">
             <div class="p-3 mr-4 text-amber-600 bg-amber-50 rounded-xl">
@@ -62,7 +32,37 @@
             </div>
             <div>
                 <p class="mb-1 text-sm font-medium text-slate-500">Pending Actions</p>
-                <p class="text-2xl font-bold text-slate-900">3</p>
+                <p class="text-2xl font-bold text-slate-900">{{ $pendingCompanies }}</p>
+            </div>
+        </div>
+
+        <!-- Quick Stats 3: Inactive Tenants -->
+        <div
+            class="flex items-center p-6 bg-white border border-teal-100 rounded-2xl shadow-sm transition-all hover:shadow-md">
+            <div class="p-3 mr-4 text-slate-600 bg-slate-100 rounded-xl">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <div>
+                <p class="mb-1 text-sm font-medium text-slate-500">Inactive Tenants</p>
+                <p class="text-2xl font-bold text-slate-900">{{ $inactiveCompanies }}</p>
+            </div>
+        </div>
+
+        <!-- Quick Stats 4: Suspended Tenants -->
+        <div
+            class="flex items-center p-6 bg-white border border-teal-100 rounded-2xl shadow-sm transition-all hover:shadow-md">
+            <div class="p-3 mr-4 text-red-600 bg-red-50 rounded-xl">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+            </div>
+            <div>
+                <p class="mb-1 text-sm font-medium text-slate-500">Suspended Tenants</p>
+                <p class="text-2xl font-bold text-slate-900">{{ $suspendedCompanies }}</p>
             </div>
         </div>
     </div>

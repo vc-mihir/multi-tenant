@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\Models\Company;
 
 class AdminAuthController extends Controller
 {
@@ -17,7 +18,17 @@ class AdminAuthController extends Controller
      */
     public function index(): View
     {
-        return view('admin.dashboard');
+        $totalCompanies = Company::count();
+        $pendingCompanies = Company::where('status', 'pending')->count();
+        $inactiveCompanies = Company::where('status', 'inactive')->count();
+        $suspendedCompanies = Company::where('status', 'suspended')->count();
+        
+        return view('admin.dashboard', compact(
+            'totalCompanies', 
+            'pendingCompanies', 
+            'inactiveCompanies', 
+            'suspendedCompanies'
+        ));
     }
 
     /**
