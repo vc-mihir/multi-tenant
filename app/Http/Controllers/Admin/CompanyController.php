@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Company;
+use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\DB;
@@ -139,5 +140,36 @@ class CompanyController extends Controller
         }
 
         return response()->json(['success' => true, 'message' => 'Company and database successfully purged.']);
+    }
+
+    /**
+     * Search for companies (used in global search).
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function search(Request $request): JsonResponse
+    {
+        $query = $request->get('q');
+
+        if (empty($query)) {
+            return response()->json([]);
+        }
+
+        $companies = Company::where('company_name', 'LIKE', "%{$query}%")
+            ->orWhere('company_email', 'LIKE', "%{$query}%")
+            ->limit(5)
+            ->get(['id', 'company_name', 'company_email']);
+
+        $results = $companies->map(function($company) {
+            return [
+                'id' => $company->id,
+                'name' => $company->company_name,
+                'email' => $company->company_email,
+                'url' => route('admin.companies.edit', $company->id)
+            ];
+        });
+
+        return response()->json($results);
     }
 }

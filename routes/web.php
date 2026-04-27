@@ -19,6 +19,8 @@ Route::middleware(['auth', 'role:SuperAdmin'])->group(function () {
     Route::get('/admin/settings', [ProfileController::class, 'edit'])->name('admin.settings');
     Route::put('/admin/settings', [ProfileController::class, 'update'])->name('admin.settings.update');
 
+    Route::get('/admin/search/companies', [CompanyController::class, 'search'])->name('admin.companies.search');
+
     Route::post('/admin/logout', [AdminAuthController::class, 'destroy'])->name('admin.logout');
 });
 

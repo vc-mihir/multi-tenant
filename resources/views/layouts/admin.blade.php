@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-slate-50">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,13 +17,16 @@
         .custom-scrollbar::-webkit-scrollbar {
             width: 4px;
         }
+
         .custom-scrollbar::-webkit-scrollbar-track {
             background: transparent;
         }
+
         .custom-scrollbar::-webkit-scrollbar-thumb {
             background: rgba(45, 212, 191, 0.2);
             border-radius: 10px;
         }
+
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: rgba(45, 212, 191, 0.4);
         }
@@ -34,7 +38,9 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/js/validation/common-validation.js"></script>
 </head>
-<body class="h-full font-['Instrument_Sans',sans-serif] text-slate-900 antialiased selection:bg-teal-100 selection:text-teal-900">
+
+<body
+    class="h-full font-['Instrument_Sans',sans-serif] text-slate-900 antialiased selection:bg-teal-100 selection:text-teal-900">
     <div class="flex h-full overflow-hidden">
         @include('admin.partials.sidebar')
 
@@ -67,6 +73,35 @@
         </div>
     </div>
 
+    <script>
+        $(document).ready(function() {
+            $('#dashboard-search').on('input', function() {
+                let q = $(this).val();
+                if (q.length < 2) return $('#search-results').addClass('hidden');
+
+                $.get("{{ route('admin.companies.search') }}", {
+                    q: q
+                }, function(data) {
+                    let html = data.length ? data.map(item => `
+                        <a href="${item.url}" class="flex items-center p-3 hover:bg-teal-50 rounded-xl transition-colors group">
+                            <div class="w-8 h-8 rounded-lg bg-teal-100 flex items-center justify-center text-teal-600 font-bold mr-3 group-hover:bg-teal-600 group-hover:text-white transition-colors text-xs">
+                                ${item.name.charAt(0).toUpperCase()}
+                            </div>  
+                            <div>
+                                <div class="text-sm font-bold text-slate-800">${item.name}</div>
+                                <div class="text-[10px] text-slate-500">${item.email}</div>
+                            </div>
+                        </a>`).join('') : '<div class="p-4 text-center text-sm text-slate-500">No results found</div>';
+
+                    $('#search-results-content').html(html);
+                    $('#search-results').removeClass('hidden');
+                });
+            });
+
+        });
+    </script>
+
     @stack('scripts')
 </body>
+
 </html>
