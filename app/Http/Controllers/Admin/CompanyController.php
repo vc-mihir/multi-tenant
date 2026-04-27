@@ -9,7 +9,10 @@ use Illuminate\View\View;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Yajra\DataTables\Facades\DataTables;
+use App\Http\Requests\Admin\UpdateCompanyRequest;
 use Exception;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Config;
 
 class CompanyController extends Controller
 {
@@ -30,7 +33,6 @@ class CompanyController extends Controller
     {
         $query = Company::with('database');
 
-        // Apply status filter if provided
         $query->when(request('status'), function ($q) {
             return $q->where('status', request('status'));
         });
@@ -40,7 +42,7 @@ class CompanyController extends Controller
                 $class = match ($company->status) {
                     'active' => 'bg-emerald-50 text-emerald-700 border-emerald-200/50',
                     'pending' => 'bg-amber-50 text-amber-700 border-amber-200/50',
-                    'suspended' => 'bg-rose-50 text-rose-700 border-rose-200/50',
+                    'suspended' => 'bg-red-50 text-red-700 border-red-200/50',
                      default => 'bg-slate-50 text-slate-700 border-slate-200/50'
                 };
                 return '<span class="inline-flex items-center rounded-lg border px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider ' . $class . '">' . $company->status . '</span>';
@@ -57,6 +59,53 @@ class CompanyController extends Controller
             ->rawColumns(['status', 'email_verified_at', 'created_at', 'updated_at'])
             ->addIndexColumn()
             ->toJson();
+    }
+
+    /**
+     * Show the form for editing the specified company.
+     *
+     * @param Company $company
+     * @return View
+     */
+    public function edit(Company $company): View
+    {
+        return view('admin.companies.edit', compact('company'));
+    }
+
+    /**
+     * Update the specified company in storage.
+     *
+     * @param UpdateCompanyRequest $request
+     * @param Company $company
+     * @return RedirectResponse
+     */
+    public function update(UpdateCompanyRequest $request, Company $company): RedirectResponse
+    {
+        $validated = $request->validated();
+
+        try {
+            DB::beginTransaction();
+
+            $company->update($validated);
+
+            if ($company->database?->db_name){
+                Config::set('database.connections.tenant.database', $company->database->db_name);
+                DB::purge('tenant');
+
+                DB::connection('tenant')->table('companies')
+                    ->where('master_company_id', $company->id)
+                    ->update($validated);
+            }
+
+            DB::commit();
+
+            return redirect()->route('admin.companies.index')
+                ->with('success', 'Company details updated and synced across databases.');
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error("Failed to update and sync company [{$company->id}] - " . $e->getMessage());
+            return back()->with('error', 'Failed to update company details. ' . $e->getMessage());
+        }
     }
 
     /**

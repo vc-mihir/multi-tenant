@@ -29,7 +29,10 @@
     </style>
 
     @stack('styles')
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/jquery.validate.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/js/validation/common-validation.js"></script>
 </head>
 <body class="h-full font-['Instrument_Sans',sans-serif] text-slate-900 antialiased selection:bg-teal-100 selection:text-teal-900">
     <div class="flex h-full overflow-hidden">
@@ -40,13 +43,18 @@
 
             <main class="flex-1">
                 <div class="px-6 py-8 mx-auto max-w-7xl">
-                    <div class="mb-8">
-                        <h1 class="text-2xl font-bold tracking-tight text-slate-900 lg:text-3xl">
-                            @yield('page-title')
-                        </h1>
-                        <p class="mt-2 text-sm text-slate-500">
-                            @yield('page-subtitle')
-                        </p>
+                    <div class="mb-8 flex items-end justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold tracking-tight text-slate-900 lg:text-3xl">
+                                @yield('page-title')
+                            </h1>
+                            <p class="mt-2 text-sm text-slate-500">
+                                @yield('page-subtitle')
+                            </p>
+                        </div>
+                        <div>
+                            @yield('page-actions')
+                        </div>
                     </div>
 
                     <div class="animate-in fade-in slide-in-from-bottom-4 duration-500">

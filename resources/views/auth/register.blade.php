@@ -204,25 +204,16 @@
                         /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value));
             }, "Use 8-16 chars with Upper, Lower & Symbol.");
 
-            $.validator.addMethod("lowercaseEmail", function(value, element) {
-                return this.optional(element) || !/[A-Z]/.test(value);
-            }, "Email must not contain any uppercase letters.");
-
             const validator = form.validate({
                 onfocusout: function(element) {
                     $(element).valid(); // Trigger validation on blur
                 },
                 errorElement: "span",
                 rules: {
+                    ...window.CommonValidationRules,
                     company_name: {
                         required: true,
                         maxlength: 100
-                    },
-                    company_email: {
-                        required: true,
-                        email: true,
-                        maxlength: 100,
-                        lowercaseEmail: true
                     },
                     password: {
                         required: true,
@@ -231,31 +222,6 @@
                     password_confirmation: {
                         required: true,
                         equalTo: "#password"
-                    },
-                    website: {
-                        required: true,
-                        url: true,
-                        maxlength: 255
-                    },
-                    license_number: {
-                        required: true,
-                        maxlength: 50
-                    },
-                    address: {
-                        required: true,
-                        maxlength: 500
-                    },
-                    city: {
-                        required: true,
-                        maxlength: 100
-                    },
-                    state: {
-                        required: true,
-                        maxlength: 100
-                    },
-                    country: {
-                        required: true,
-                        maxlength: 100
                     }
                 },
                 messages: {
