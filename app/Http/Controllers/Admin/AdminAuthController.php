@@ -22,12 +22,14 @@ class AdminAuthController extends Controller
         $pendingCompanies = Company::where('status', 'pending')->count();
         $inactiveCompanies = Company::where('status', 'inactive')->count();
         $suspendedCompanies = Company::where('status', 'suspended')->count();
+        $recentCompanies = Company::latest()->take(4)->get();
         
         return view('admin.dashboard', compact(
             'totalCompanies', 
             'pendingCompanies', 
             'inactiveCompanies', 
-            'suspendedCompanies'
+            'suspendedCompanies',
+            'recentCompanies'
         ));
     }
 

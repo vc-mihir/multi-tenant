@@ -100,21 +100,34 @@
         <div class="p-6 bg-white border border-teal-100 rounded-[2rem] shadow-sm">
             <h3 class="text-lg font-bold text-slate-900 mb-6 px-2">Recent System Activity</h3>
             <div class="space-y-4">
-                @for ($i = 1; $i <= 4; $i++)
+                @forelse ($recentCompanies as $company)
                     <div
                         class="flex items-center p-4 bg-slate-50 border border-slate-100 rounded-2xl transition-all hover:bg-teal-50/50">
                         <div
                             class="w-10 h-10 rounded-full bg-teal-100 border border-teal-200 flex items-center justify-center mr-4">
-                            <span class="text-teal-700 font-bold text-xs">MT</span>
+                            <span class="text-teal-700 font-bold text-xs">{{ substr($company->company_name, 0, 2) }}</span>
                         </div>
                         <div class="flex-1">
-                            <p class="text-sm font-bold text-slate-800">New company "ViitorCloud" was provisioned.</p>
-                            <p class="text-xs text-slate-500">Today, 2:45 PM</p>
+                            <p class="text-sm font-bold text-slate-800">
+                                @if ($company->database)
+                                    Database for "{{ $company->company_name }}" has been created successfully.
+                                @else
+                                    Database creation for "{{ $company->company_name }}" is in progress.
+                                @endif
+                            </p>
+                            <p class="text-xs text-slate-500">{{ $company->created_at->diffForHumans() }}</p>
                         </div>
-                        <span
-                            class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-bold uppercase">Success</span>
+                        @if ($company->database)
+                            <span
+                                class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-bold uppercase whitespace-nowrap">Created</span>
+                        @else
+                            <span
+                                class="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-[10px] font-bold uppercase whitespace-nowrap">Pending</span>
+                        @endif
                     </div>
-                @endfor
+                @empty
+                    <div class="p-8 text-center text-slate-500 italic">No recent activity found.</div>
+                @endforelse
             </div>
         </div>
 
