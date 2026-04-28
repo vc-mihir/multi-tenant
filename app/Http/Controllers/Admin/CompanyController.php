@@ -39,6 +39,23 @@ class CompanyController extends Controller
         });
 
         return DataTables::of($query)
+            ->addColumn('database_name', function ($company) {
+                if ($company->database) {
+                    return '<code class="px-2 py-1 bg-teal-50 text-teal-700 rounded text-xs font-mono border border-teal-100">' . $company->database->db_name . '</code>';
+                }
+                
+                if ($company->email_verified_at) {
+                    return '<span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-amber-50 text-amber-700 border border-amber-100 text-[10px] font-bold uppercase">
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                        </span>
+                        Ready to Provision
+                    </span>';
+                }
+
+                return '<span class="px-2 py-1 rounded-lg bg-slate-50 text-slate-400 border border-slate-100 text-[10px] font-bold uppercase italic">Awaiting Verification</span>';
+            })
             ->editColumn('status', function ($company) {
                 $class = match ($company->status) {
                     'active' => 'bg-emerald-50 text-emerald-700 border-emerald-200/50',
@@ -57,7 +74,7 @@ class CompanyController extends Controller
             ->editColumn('updated_at', function ($company) {
                 return '<span class="font-medium text-slate-700">' . $company->updated_at->format('M d, Y') . '</span><br><span class="text-[10px] text-slate-400 uppercase">' . $company->updated_at->format('H:i') . '</span>';
             })
-            ->rawColumns(['status', 'email_verified_at', 'created_at', 'updated_at'])
+            ->rawColumns(['status', 'email_verified_at', 'created_at', 'updated_at', 'database_name'])
             ->addIndexColumn()
             ->toJson();
     }

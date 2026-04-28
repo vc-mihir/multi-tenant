@@ -23,16 +23,20 @@ class AdminAuthController extends Controller
         $inactiveCompanies = Company::where('status', 'inactive')->count();
         $suspendedCompanies = Company::where('status', 'suspended')->count();
         $recentCompanies = Company::latest()->take(4)->get();
-        
+
+        $recoveryCompanies = Company::whereNotNull('email_verified_at')
+            ->whereDoesntHave('database')
+            ->get();
+
         return view('admin.dashboard', compact(
-            'totalCompanies', 
-            'pendingCompanies', 
-            'inactiveCompanies', 
+            'totalCompanies',
+            'pendingCompanies',
+            'inactiveCompanies',
             'suspendedCompanies',
-            'recentCompanies'
+            'recentCompanies',
+            'recoveryCompanies'
         ));
     }
-
     /**
      * Display the super admin login page.
      *

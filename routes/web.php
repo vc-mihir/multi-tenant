@@ -2,6 +2,7 @@
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\CompanyController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\TenantRecoveryController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -16,6 +17,9 @@ Route::middleware(['auth', 'role:SuperAdmin'])->group(function () {
     Route::put('/admin/companies/{company}', [CompanyController::class, 'update'])->name('admin.companies.update');
     Route::delete('/admin/companies/{company}', [CompanyController::class, 'destroy'])->name('admin.companies.destroy');
     
+    // Recovery Routes for the tenant database provisioning
+    Route::post('/admin/recovery/provision/{company}', [TenantRecoveryController::class, 'provision'])->name('admin.recovery.provision');
+
     Route::get('/admin/settings', [ProfileController::class, 'edit'])->name('admin.settings');
     Route::put('/admin/settings', [ProfileController::class, 'update'])->name('admin.settings.update');
 
