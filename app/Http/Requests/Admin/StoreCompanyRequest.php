@@ -23,7 +23,7 @@ class StoreCompanyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'company_name' => ['required', 'string', 'max:100'],
+            'company_name' => ['required', 'string', 'max:100', 'unique:companies,company_name'],
             'company_email' => ['required', 'email', 'lowercase', 'max:100', 'unique:companies,company_email'],
             'password' => ['required', 'confirmed', Password::min(8)->max(16)->mixedCase()->symbols()],
             'website' => ['required', 'url'],
