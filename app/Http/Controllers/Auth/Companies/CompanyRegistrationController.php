@@ -4,15 +4,29 @@ namespace App\Http\Controllers\Auth\Companies;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\CompanyRegistrationRequest;
-use App\Models\Company;
+use App\Services\CompanyService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use Throwable;
 use Illuminate\View\View;
 
 class CompanyRegistrationController extends Controller
 {
+    /**
+     * The company service instance.
+     */
+    protected CompanyService $companyService;
+
+    /**
+     * Create a new controller instance.
+     *
+     * @param CompanyService $companyService
+     */
+    public function __construct(CompanyService $companyService)
+    {
+        $this->companyService = $companyService;
+    }
+
     /**
      * Display the registration view.
      *
@@ -34,30 +48,14 @@ class CompanyRegistrationController extends Controller
         $validated = $request->validated();
 
         try {
-            $company = Company::create([
-                'company_name' => $validated['company_name'],
-                'company_email' => $validated['company_email'],
-                'website' => $validated['website'],
-                'license_number' => $validated['license_number'],
-                'address' => $validated['address'],
-                'country' => $validated['country'],
-                'state' => $validated['state'],
-                'city' => $validated['city'],
-                'password' => $validated['password'],
-                'status' => 'inactive',
-                'email_verified_at' => null,
-            ]);
-
-            $company->assignRole('Company');
-            $company->sendEmailVerificationNotification();
+            $company = $this->companyService->createCompany($validated, false);
 
             return redirect()->route('companies.verification.notice', [
                 'id' => $company->id,
             ]);
         } catch (Throwable $e) {
-            Log::error('Company registration email verification setup failed.', [
+            Log::error('Company registration failed.', [
                 'company_email' => $validated['company_email'] ?? null,
-                'company_name' => $validated['company_name'] ?? null,
                 'exception' => $e->getMessage(),
             ]);
 

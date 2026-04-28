@@ -78,10 +78,10 @@
                     Ready to expand your ecosystem? You can now manually provision new multi-tenant databases directly from
                     the control panel.
                 </p>
-                <button
-                    class="px-8 py-3.5 bg-white text-teal-700 font-bold rounded-2xl hover:bg-teal-50 transition-all shadow-lg">
+                <a href="{{ route('admin.companies.create') }}"
+                    class="inline-flex items-center px-8 py-3.5 bg-white text-teal-700 font-bold rounded-2xl hover:bg-teal-50 transition-all shadow-lg">
                     Create New Company
-                </button>
+                </a>
             </div>
             <div class="hidden lg:block">
                 <div

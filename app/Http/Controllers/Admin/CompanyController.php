@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Yajra\DataTables\Facades\DataTables;
 use App\Http\Requests\Admin\UpdateCompanyRequest;
+use App\Http\Requests\Admin\StoreCompanyRequest;
+use App\Services\CompanyService;
 use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Config;
@@ -18,11 +20,59 @@ use Illuminate\Support\Facades\Config;
 class CompanyController extends Controller
 {
     /**
+     * The company service instance.
+     */
+    protected CompanyService $companyService;
+
+    /**
+     * Create a new controller instance.
+     *
+     * @param CompanyService $companyService
+     */
+    public function __construct(CompanyService $companyService)
+    {
+        $this->companyService = $companyService;
+    }
+
+    /**
      * Display the admin companies listing page.
+     *
+     * @return View
      */
     public function index(): View
     {
         return view('admin.companies.index');
+    }
+
+    /**
+     * Show the form for creating a new company.
+     *
+     * @return View
+     */
+    public function create(): View
+    {
+        return view('admin.companies.create');
+    }
+
+    /**
+     * Store a newly created company in storage.
+     *
+     * @param StoreCompanyRequest $request
+     * @return RedirectResponse
+     */
+    public function store(StoreCompanyRequest $request): RedirectResponse
+    {
+        $validated = $request->validated();
+
+        try {
+            $this->companyService->createCompany($validated, true);
+
+            return redirect()->route('admin.companies.index')
+                ->with('success', 'Company created successfully. Database provisioning has been queued.');
+        } catch (Exception $e) {
+            Log::error('Admin company creation failed: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Failed to create company: ' . $e->getMessage());
+        }
     }
 
     /**
