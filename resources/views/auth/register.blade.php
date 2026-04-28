@@ -211,10 +211,6 @@
                 errorElement: "span",
                 rules: {
                     ...window.CommonValidationRules,
-                    company_name: {
-                        required: true,
-                        maxlength: 100
-                    },
                     password: {
                         required: true,
                         strongPassword: true
