@@ -11,6 +11,10 @@ $.validator.addMethod(
 );
 
 window.CommonValidationRules = {
+    company_name: {
+        required: true,
+        maxlength: 100,
+    },
     company_email: {
         required: true,
         email: true,

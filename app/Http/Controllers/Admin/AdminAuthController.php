@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\Models\Company;
 
 class AdminAuthController extends Controller
 {
@@ -17,9 +18,25 @@ class AdminAuthController extends Controller
      */
     public function index(): View
     {
-        return view('admin.dashboard');
-    }
+        $totalCompanies = Company::count();
+        $pendingCompanies = Company::where('status', 'pending')->count();
+        $inactiveCompanies = Company::where('status', 'inactive')->count();
+        $suspendedCompanies = Company::where('status', 'suspended')->count();
+        $recentCompanies = Company::latest()->take(4)->get();
 
+        $recoveryCompanies = Company::whereNotNull('email_verified_at')
+            ->whereDoesntHave('database')
+            ->get();
+
+        return view('admin.dashboard', compact(
+            'totalCompanies',
+            'pendingCompanies',
+            'inactiveCompanies',
+            'suspendedCompanies',
+            'recentCompanies',
+            'recoveryCompanies'
+        ));
+    }
     /**
      * Display the super admin login page.
      *

@@ -242,19 +242,11 @@
                         className: 'whitespace-nowrap'
                     },
                     {
-                        data: 'database.db_name',
-                        name: 'database.db_name',
-                        defaultContent: '<span class="text-slate-300 italic text-[10px]">Pending Setup</span>',
-                        render: function(data) {
-                            if (!data)
-                                return '<span class="text-slate-300 italic text-[10px]">Pending Setup</span>';
-                            const formatted =
-                                `<code class="px-2 py-1 bg-slate-100 rounded text-xs font-mono text-slate-600 whitespace-nowrap">${data}</code>`;
-                            if (data.length > 20) {
-                                return `<span class="cursor-pointer show-more-text" data-full-text="${data}">${formatted.substring(0, 50)}...</span>`;
-                            }
-                            return formatted;
-                        }
+                        data: 'database_name',
+                        name: 'database_name',
+                        className: 'whitespace-nowrap',
+                        searchable: false,
+                        orderable: false
                     },
                     {
                         data: 'created_at',
