@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('master_company_id')->unique();
             $table->string('company_name', 100);
+            $table->string('subdomain')->unique();
             $table->string('company_email', 100)->unique();
             $table->string('website')->nullable();
             $table->string('license_number', 50)->nullable();

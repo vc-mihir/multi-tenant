@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Throwable;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class CreateCompanyDatabase implements ShouldQueue
 {
@@ -38,33 +40,25 @@ class CreateCompanyDatabase implements ShouldQueue
         $dbName = 'tenant_company_' . Str::slug($this->company->company_name, '_');
 
         try {
+            // 1. Create and Configure Database
             DB::statement("CREATE DATABASE IF NOT EXISTS `{$dbName}`");
 
             config(['database.connections.tenant.database' => $dbName]);
             DB::purge('tenant');
             
+            // 2. Run Migrations
             Artisan::call('migrate', [
                 '--database' => 'tenant',
                 '--path' => 'database/migrations/tenant',
                 '--force' => true,
             ]);
 
-            $defaultConnection = config('database.default');
-            CompanyDatabase::updateOrCreate(
-                ['company_id' => $this->company->id],   
-                [
-                    'db_name' => $dbName,
-                    'db_host' => config("database.connections.{$defaultConnection}.host"),
-                    'db_port' => config("database.connections.{$defaultConnection}.port"),
-                    'db_username' => config("database.connections.{$defaultConnection}.username"),
-                    'db_password' => config("database.connections.{$defaultConnection}.password"),
-                ]
-            );
-
+            // 3. Seed Tenant Data
             DB::connection('tenant')->table('companies')->updateOrInsert(
                 ['master_company_id' => $this->company->id],
                 [
                     'company_name' => $this->company->company_name,
+                    'subdomain' => $this->company->subdomain,
                     'company_email' => $this->company->company_email,
                     'website' => $this->company->website,
                     'license_number' => $this->company->license_number,
@@ -80,7 +74,36 @@ class CreateCompanyDatabase implements ShouldQueue
                 ],
             );
 
-            Log::info('Company database created successfully.', [
+            $defaultPassword = Hash::make('Hello@123');
+
+            User::on('tenant')->create([
+                'name' => 'Admin User',
+                'email' => 'admin@test.com',
+                'password' => $defaultPassword,
+                'email_verified_at' => now(),
+            ]);
+
+            User::on('tenant')->create([
+                'name' => 'Staff User',
+                'email' => 'staff@test.com',
+                'password' => $defaultPassword,
+                'email_verified_at' => now(),
+            ]);
+
+            // 4. Update Master Database with Connection Info
+            $defaultConnection = config('database.default');
+            CompanyDatabase::updateOrCreate(
+                ['company_id' => $this->company->id],   
+                [
+                    'db_name' => $dbName,
+                    'db_host' => config("database.connections.{$defaultConnection}.host"),
+                    'db_port' => config("database.connections.{$defaultConnection}.port"),
+                    'db_username' => config("database.connections.{$defaultConnection}.username"),
+                    'db_password' => config("database.connections.{$defaultConnection}.password"),
+                ]
+            );
+
+            Log::info('Company database created and seeded successfully.', [
                 'company_id' => $this->company->id,
                 'database_name' => $dbName,
             ]);

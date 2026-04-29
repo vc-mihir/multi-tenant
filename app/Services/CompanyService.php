@@ -22,6 +22,7 @@ class CompanyService
         return DB::transaction(function () use ($data, $isAdminCreation) {
             $company = Company::create([
                 'company_name' => $data['company_name'],
+                'subdomain' => $data['subdomain'],
                 'company_email' => $data['company_email'],
                 'website' => $data['website'] ?? null,
                 'license_number' => $data['license_number'] ?? null,

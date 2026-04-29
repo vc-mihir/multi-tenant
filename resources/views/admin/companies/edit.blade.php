@@ -43,7 +43,6 @@
 
                 <div class="space-y-8">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
                         <div class="space-y-1.5">
                             <label for="company_name"
                                 class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Company
@@ -58,6 +57,20 @@
                         </div>
 
                         <div class="space-y-1.5">
+                            <label for="subdomain"
+                                class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Subdomain</label>
+                            <input id="subdomain" type="text" name="subdomain"
+                                value="{{ old('subdomain', $company->subdomain) }}"
+                                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 transition-all duration-300"
+                                placeholder="acme-corp">
+                            @error('subdomain')
+                                <span class="error">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-1.5">
                             <label for="company_email"
                                 class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Company
                                 Email</label>
@@ -69,9 +82,7 @@
                                 <span class="error">{{ $message }}</span>
                             @enderror
                         </div>
-                    </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-1.5">
                             <label for="website"
                                 class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Company
@@ -84,7 +95,9 @@
                                 <span class="error">{{ $message }}</span>
                             @enderror
                         </div>
+                    </div>
 
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-1.5">
                             <label for="license_number"
                                 class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">License
@@ -97,25 +110,25 @@
                                 <span class="error">{{ $message }}</span>
                             @enderror
                         </div>
-                    </div>
 
-                    <div class="space-y-1.5">
-                        <label for="status"
-                            class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Status</label>
-                        <select id="status" name="status"
-                            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 focus:outline-none focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 transition-all duration-300 appearance-none">
-                            <option value="active" {{ old('status', $company->status) == 'active' ? 'selected' : '' }}>
-                                Active</option>
-                            <option value="inactive" {{ old('status', $company->status) == 'inactive' ? 'selected' : '' }}>
-                                Inactive</option>
-                            <option value="suspended"
-                                {{ old('status', $company->status) == 'suspended' ? 'selected' : '' }}>Suspended</option>
-                            <option value="pending" {{ old('status', $company->status) == 'pending' ? 'selected' : '' }}>
-                                Pending</option>
-                        </select>
-                        @error('status')
-                            <span class="error">{{ $message }}</span>
-                        @enderror
+                        <div class="space-y-1.5">
+                            <label for="status"
+                                class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Status</label>
+                            <select id="status" name="status"
+                                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 focus:outline-none focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 transition-all duration-300 appearance-none">
+                                <option value="active" {{ old('status', $company->status) == 'active' ? 'selected' : '' }}>
+                                    Active</option>
+                                <option value="inactive" {{ old('status', $company->status) == 'inactive' ? 'selected' : '' }}>
+                                    Inactive</option>
+                                <option value="suspended"
+                                    {{ old('status', $company->status) == 'suspended' ? 'selected' : '' }}>Suspended</option>
+                                <option value="pending" {{ old('status', $company->status) == 'pending' ? 'selected' : '' }}>
+                                    Pending</option>
+                            </select>
+                            @error('status')
+                                <span class="error">{{ $message }}</span>
+                            @enderror
+                        </div>
                     </div>
 
                     <div class="space-y-1.5">
