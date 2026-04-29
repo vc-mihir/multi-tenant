@@ -87,6 +87,7 @@
                     <tr>
                         <th>ID</th>
                         <th>Company Name</th>
+                        <th>Subdomain</th>
                         <th>Email</th>
                         <th>Website</th>
                         <th>License Number</th>
@@ -161,6 +162,13 @@
                         name: 'company_name',
                         render: function(data) {
                             return `<span class="font-semibold text-slate-900 whitespace-nowrap">${formatLongText(data, 30)}</span>`;
+                        }
+                    },
+                    {
+                        data: 'subdomain',
+                        name: 'subdomain',
+                        render: function(data) {
+                            return `<code class="px-2 py-1 bg-slate-50 text-slate-600 rounded text-xs font-mono border border-slate-100">${data || '-'}</code>`;
                         }
                     },
                     {
