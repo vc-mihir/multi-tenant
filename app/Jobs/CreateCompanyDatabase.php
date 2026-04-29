@@ -40,29 +40,20 @@ class CreateCompanyDatabase implements ShouldQueue
         $dbName = 'tenant_company_' . Str::slug($this->company->company_name, '_');
 
         try {
+            // 1. Create and Configure Database
             DB::statement("CREATE DATABASE IF NOT EXISTS `{$dbName}`");
 
             config(['database.connections.tenant.database' => $dbName]);
             DB::purge('tenant');
             
+            // 2. Run Migrations
             Artisan::call('migrate', [
                 '--database' => 'tenant',
                 '--path' => 'database/migrations/tenant',
                 '--force' => true,
             ]);
 
-            $defaultConnection = config('database.default');
-            CompanyDatabase::updateOrCreate(
-                ['company_id' => $this->company->id],   
-                [
-                    'db_name' => $dbName,
-                    'db_host' => config("database.connections.{$defaultConnection}.host"),
-                    'db_port' => config("database.connections.{$defaultConnection}.port"),
-                    'db_username' => config("database.connections.{$defaultConnection}.username"),
-                    'db_password' => config("database.connections.{$defaultConnection}.password"),
-                ]
-            );
-
+            // 3. Seed Tenant Data
             DB::connection('tenant')->table('companies')->updateOrInsert(
                 ['master_company_id' => $this->company->id],
                 [
@@ -98,6 +89,19 @@ class CreateCompanyDatabase implements ShouldQueue
                 'password' => $defaultPassword,
                 'email_verified_at' => now(),
             ]);
+
+            // 4. Update Master Database with Connection Info
+            $defaultConnection = config('database.default');
+            CompanyDatabase::updateOrCreate(
+                ['company_id' => $this->company->id],   
+                [
+                    'db_name' => $dbName,
+                    'db_host' => config("database.connections.{$defaultConnection}.host"),
+                    'db_port' => config("database.connections.{$defaultConnection}.port"),
+                    'db_username' => config("database.connections.{$defaultConnection}.username"),
+                    'db_password' => config("database.connections.{$defaultConnection}.password"),
+                ]
+            );
 
             Log::info('Company database created and seeded successfully.', [
                 'company_id' => $this->company->id,
