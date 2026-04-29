@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Throwable;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class CreateCompanyDatabase implements ShouldQueue
 {
@@ -81,7 +83,23 @@ class CreateCompanyDatabase implements ShouldQueue
                 ],
             );
 
-            Log::info('Company database created successfully.', [
+            $defaultPassword = Hash::make('Hello@123');
+
+            User::on('tenant')->create([
+                'name' => 'Admin User',
+                'email' => 'admin@test.com',
+                'password' => $defaultPassword,
+                'email_verified_at' => now(),
+            ]);
+
+            User::on('tenant')->create([
+                'name' => 'Staff User',
+                'email' => 'staff@test.com',
+                'password' => $defaultPassword,
+                'email_verified_at' => now(),
+            ]);
+
+            Log::info('Company database created and seeded successfully.', [
                 'company_id' => $this->company->id,
                 'database_name' => $dbName,
             ]);
