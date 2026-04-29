@@ -10,10 +10,23 @@ $.validator.addMethod(
     "Email must not contain any uppercase letters.",
 );
 
+$.validator.addMethod(
+    "subdomainFormat",
+    function (value, element) {
+        return this.optional(element) || /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value);
+    },
+    "Lowercase letters, numbers, and dashes (between words) only.",
+);
+
 window.CommonValidationRules = {
     company_name: {
         required: true,
         maxlength: 100,
+    },
+    subdomain: {
+        required: true,
+        maxlength: 100,
+        subdomainFormat: true,
     },
     company_email: {
         required: true,

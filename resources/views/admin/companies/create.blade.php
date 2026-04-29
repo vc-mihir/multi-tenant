@@ -42,7 +42,6 @@
 
                 <div class="space-y-8">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
                         <div class="space-y-1.5">
                             <label for="company_name"
                                 class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Company
@@ -56,6 +55,19 @@
                         </div>
 
                         <div class="space-y-1.5">
+                            <label for="subdomain"
+                                class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Subdomain</label>
+                            <input id="subdomain" type="text" name="subdomain" value="{{ old('subdomain') }}"
+                                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 transition-all duration-300"
+                                placeholder="acme-corp">
+                            @error('subdomain')
+                                <span class="error">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-1.5">
                             <label for="company_email"
                                 class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Company
                                 Email</label>
@@ -63,6 +75,18 @@
                                 class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 transition-all duration-300"
                                 placeholder="admin@co.com">
                             @error('company_email')
+                                <span class="error">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label for="website"
+                                class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Company
+                                Website</label>
+                            <input id="website" type="url" name="website" value="{{ old('website') }}"
+                                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 transition-all duration-300"
+                                placeholder="https://acme.com">
+                            @error('website')
                                 <span class="error">{{ $message }}</span>
                             @enderror
                         </div>
@@ -90,31 +114,17 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="space-y-1.5">
-                            <label for="website"
-                                class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Company
-                                Website</label>
-                            <input id="website" type="url" name="website" value="{{ old('website') }}"
-                                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 transition-all duration-300"
-                                placeholder="https://acme.com">
-                            @error('website')
-                                <span class="error">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        <div class="space-y-1.5">
-                            <label for="license_number"
-                                class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">License
-                                Number</label>
-                            <input id="license_number" type="text" name="license_number"
-                                value="{{ old('license_number') }}"
-                                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 transition-all duration-300"
-                                placeholder="REG-123456">
-                            @error('license_number')
-                                <span class="error">{{ $message }}</span>
-                            @enderror
-                        </div>
+                    <div class="space-y-1.5">
+                        <label for="license_number"
+                            class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">License
+                            Number</label>
+                        <input id="license_number" type="text" name="license_number"
+                            value="{{ old('license_number') }}"
+                            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 transition-all duration-300"
+                            placeholder="REG-123456">
+                        @error('license_number')
+                            <span class="error">{{ $message }}</span>
+                        @enderror
                     </div>
 
                     <div class="space-y-1.5">

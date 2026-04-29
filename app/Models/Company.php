@@ -24,6 +24,7 @@ class Company extends Model implements MustVerifyEmailContract
      */
     protected $fillable = [
         'company_name',
+        'subdomain',
         'company_email',
         'website',
         'license_number',

@@ -65,6 +65,7 @@ class CreateCompanyDatabase implements ShouldQueue
                 ['master_company_id' => $this->company->id],
                 [
                     'company_name' => $this->company->company_name,
+                    'subdomain' => $this->company->subdomain,
                     'company_email' => $this->company->company_email,
                     'website' => $this->company->website,
                     'license_number' => $this->company->license_number,

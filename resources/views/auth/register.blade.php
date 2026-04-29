@@ -50,18 +50,26 @@
                             placeholder="e.g. Acme Corp">
                     </div>
                     <div class="space-y-1.5">
-                        <label for="company_email"
-                            class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Company
-                            Email</label>
-                        <input id="company_email" type="email" name="company_email" value="{{ old('company_email') }}"
-                            required
+                        <label for="subdomain"
+                            class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Subdomain</label>
+                        <input id="subdomain" type="text" name="subdomain" value="{{ old('subdomain') }}" required
                             class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#DD7F61]/10 focus:border-[#DD7F61] transition-all duration-300"
-                            placeholder="admin@co.com">
+                            placeholder="acme-corp">
                     </div>
                 </div>
-                @error('company_email')
+                @error('subdomain')
                     <p class="text-[10px] font-bold text-red-500 ml-1">{{ $message }}</p>
                 @enderror
+
+                <div class="space-y-1.5">
+                    <label for="company_email"
+                        class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Company
+                        Email</label>
+                    <input id="company_email" type="email" name="company_email" value="{{ old('company_email') }}"
+                        required
+                        class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#DD7F61]/10 focus:border-[#DD7F61] transition-all duration-300"
+                        placeholder="admin@co.com">
+                </div>
 
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-1.5">
