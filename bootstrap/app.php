@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission'         => PermissionMiddleware::class,
             'role_or_permission' => RoleOrPermissionMiddleware::class,
             'central'            => \App\Http\Middleware\CentralDomainOnly::class,
+            'identify_tenant'    => \App\Http\Middleware\IdentifyTenant::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
