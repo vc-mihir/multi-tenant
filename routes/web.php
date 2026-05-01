@@ -1,42 +1,19 @@
 <?php
-use App\Http\Controllers\Admin\AdminAuthController;
-use App\Http\Controllers\Admin\CompanyController;
-use App\Http\Controllers\Admin\ProfileController;
-use App\Http\Controllers\Admin\TenantRecoveryController;
+
 use Illuminate\Support\Facades\Route;
 
-// ─── All central-domain routes ─────────────────────────────────────────────────
-// The 'central' middleware aborts with 404 if accessed via any subdomain.
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| This file is the entry point for all web routes. It separates routes
+| into Central and Tenant domain groups for better organization.
+|
+*/
 
-Route::middleware('central')->group(function () {
+// ─── Central Domain Routes ───────────────────────────────────────────────────
+require __DIR__.'/central/web.php';
 
-    // Root → redirect to company registration
-    Route::get('/', function () {
-        return redirect()->route('register');
-    });
-
-    // ── Admin Panel (SuperAdmin only) ─────────────────────────────────────────
-    Route::middleware(['auth', 'role:SuperAdmin'])->group(function () {
-        Route::get('/admin/dashboard', [AdminAuthController::class, 'index'])->name('admin.dashboard');
-        Route::get('/admin/companies', [CompanyController::class, 'index'])->name('admin.companies.index');
-        Route::get('/admin/companies/create', [CompanyController::class, 'create'])->name('admin.companies.create');
-        Route::post('/admin/companies', [CompanyController::class, 'store'])->name('admin.companies.store');
-        Route::get('/admin/companies/data', [CompanyController::class, 'data'])->name('admin.companies.data');
-        Route::get('/admin/companies/{company}/edit', [CompanyController::class, 'edit'])->name('admin.companies.edit');
-        Route::put('/admin/companies/{company}', [CompanyController::class, 'update'])->name('admin.companies.update');
-        Route::delete('/admin/companies/{company}', [CompanyController::class, 'destroy'])->name('admin.companies.destroy');
-
-        // Recovery: re-provision a tenant DB
-        Route::post('/admin/recovery/provision/{company}', [TenantRecoveryController::class, 'provision'])->name('admin.recovery.provision');
-
-        Route::get('/admin/settings', [ProfileController::class, 'edit'])->name('admin.settings');
-        Route::put('/admin/settings', [ProfileController::class, 'update'])->name('admin.settings.update');
-
-        Route::get('/admin/search/companies', [CompanyController::class, 'search'])->name('admin.companies.search');
-
-        Route::post('/admin/logout', [AdminAuthController::class, 'destroy'])->name('admin.logout');
-    });
-
-    // auth.php inherits the 'central' middleware from this group
-    require __DIR__.'/auth.php';
-});
+// ─── Tenant Domain Routes ────────────────────────────────────────────────────
+// require __DIR__.'/tenant/web.php';
