@@ -1,33 +1,19 @@
 <?php
-use App\Http\Controllers\Admin\AdminAuthController;
-use App\Http\Controllers\Admin\CompanyController;
-use App\Http\Controllers\Admin\ProfileController;
-use App\Http\Controllers\Admin\TenantRecoveryController;
+
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| This file is the entry point for all web routes. It separates routes
+| into Central and Tenant domain groups for better organization.
+|
+*/
 
-Route::middleware(['auth', 'role:SuperAdmin'])->group(function () {
-    Route::get('/admin/dashboard', [AdminAuthController::class, 'index'])->name('admin.dashboard');
-    Route::get('/admin/companies', [CompanyController::class, 'index'])->name('admin.companies.index');
-    Route::get('/admin/companies/create', [CompanyController::class, 'create'])->name('admin.companies.create');
-    Route::post('/admin/companies', [CompanyController::class, 'store'])->name('admin.companies.store');
-    Route::get('/admin/companies/data', [CompanyController::class, 'data'])->name('admin.companies.data');
-    Route::get('/admin/companies/{company}/edit', [CompanyController::class, 'edit'])->name('admin.companies.edit');
-    Route::put('/admin/companies/{company}', [CompanyController::class, 'update'])->name('admin.companies.update');
-    Route::delete('/admin/companies/{company}', [CompanyController::class, 'destroy'])->name('admin.companies.destroy');
-    
-    // Recovery Routes for the tenant database provisioning
-    Route::post('/admin/recovery/provision/{company}', [TenantRecoveryController::class, 'provision'])->name('admin.recovery.provision');
+// ─── Central Domain Routes ───────────────────────────────────────────────────
+require __DIR__.'/central/web.php';
 
-    Route::get('/admin/settings', [ProfileController::class, 'edit'])->name('admin.settings');
-    Route::put('/admin/settings', [ProfileController::class, 'update'])->name('admin.settings.update');
-
-    Route::get('/admin/search/companies', [CompanyController::class, 'search'])->name('admin.companies.search');
-
-    Route::post('/admin/logout', [AdminAuthController::class, 'destroy'])->name('admin.logout');
-});
-
-require __DIR__.'/auth.php';
+// ─── Tenant Domain Routes ────────────────────────────────────────────────────
+// require __DIR__.'/tenant/web.php';
