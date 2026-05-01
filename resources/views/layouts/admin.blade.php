@@ -42,10 +42,10 @@
 <body
     class="h-full font-['Instrument_Sans',sans-serif] text-slate-900 antialiased selection:bg-teal-100 selection:text-teal-900">
     <div class="flex h-full overflow-hidden">
-        @include('admin.partials.sidebar')
+        @include('central.admin.partials.sidebar')
 
         <div class="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
-            @include('admin.partials.header')
+            @include('central.admin.partials.header')
 
             <main class="flex-1">
                 <div class="px-6 py-8 mx-auto max-w-7xl">
@@ -69,7 +69,7 @@
                 </div>
             </main>
 
-            @include('admin.partials.footer')
+            @include('central.admin.partials.footer')
         </div>
     </div>
 
