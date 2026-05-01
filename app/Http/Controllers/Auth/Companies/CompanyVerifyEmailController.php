@@ -31,14 +31,14 @@ class CompanyVerifyEmailController extends Controller
                 CreateCompanyDatabase::dispatch($company);
             }
 
-            return redirect()->route('login')->with('status', 'Company email verified successfully. Your account is now active.');
+            return redirect()->route('register')->with('status', 'Company email verified successfully. Your account is now active.');
         } catch (Throwable $e) {
             Log::error('Company email verification failed.', [
                 'company_id' => $id,
                 'exception' => $e->getMessage(),
             ]);
 
-            return redirect()->route('login')->with('error', 'Unable to verify company email right now. Please try again.');
+            return redirect()->route('register')->with('error', 'Unable to verify company email right now. Please try again.');
         }
     }
 }

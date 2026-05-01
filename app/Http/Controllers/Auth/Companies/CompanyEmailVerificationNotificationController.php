@@ -22,7 +22,7 @@ class CompanyEmailVerificationNotificationController extends Controller
             $company = Company::findOrFail($id);
 
             if ($company->hasVerifiedEmail()) {
-                return redirect()->route('login')->with('status', 'Company account is already active.');
+                return redirect()->route('register')->with('status', 'Company account is already active.');
             }
 
             $company->sendEmailVerificationNotification();

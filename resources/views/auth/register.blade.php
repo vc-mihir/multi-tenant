@@ -171,12 +171,7 @@
                 </svg>
                 Back
             </button>
-            <div id="back-to-login" class="block">
-                <a class="text-sm font-bold text-slate-400 hover:text-slate-800 transition-colors"
-                    href="{{ route('login') }}">
-                    Already registered?
-                </a>
-            </div>
+
 
             <button type="button" id="next-btn"
                 class="px-10 py-5 bg-[#DD7F61] text-white font-black rounded-2xl shadow-xl shadow-[#DD7F61]/30 hover:bg-[#D16A4E] hover:shadow-[#DD7F61]/40 active:scale-[0.98] transition-all duration-300 flex items-center">
@@ -198,7 +193,7 @@
             const progressLine = $('#progress-line');
             const nextBtn = $('#next-btn');
             const prevBtn = $('#prev-btn');
-            const backToLogin = $('#back-to-login');
+
             const btnText = $('#btn-text');
             const nextIcon = $('#next-icon');
 
@@ -264,7 +259,7 @@
                 progressLine.css('width', `${(currentPhase / (phases.length - 1)) * 100}%`);
 
                 prevBtn.toggleClass('hidden', currentPhase === 0);
-                backToLogin.toggleClass('hidden', currentPhase !== 0);
+
                 btnText.text(currentPhase === phases.length - 1 ? 'Register Now' : 'Next Step');
                 nextIcon.toggleClass('hidden', currentPhase === phases.length - 1);
             }

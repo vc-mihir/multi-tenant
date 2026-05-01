@@ -23,7 +23,7 @@ class CompanyEmailVerificationPromptController extends Controller
             $company = Company::findOrFail($id);
 
             if ($company->hasVerifiedEmail()) {
-                return redirect()->route('login')->with('status', 'Company account is already active.');
+                return redirect()->route('register')->with('status', 'Company account is already active.');
             }
 
             return view('auth.verify-email', compact('company'));
@@ -33,7 +33,7 @@ class CompanyEmailVerificationPromptController extends Controller
                 'exception' => $e->getMessage(),
             ]);
 
-            return redirect()->route('login')->with('error', 'Unable to load verification page right now. Please try again.');
+            return redirect()->route('register')->with('error', 'Unable to load verification page right now. Please try again.');
         }
     }
 }
