@@ -11,6 +11,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/dashboard', function () {
-    return 'Tenant Dashboard (Placeholder)';
+Route::get('/', function () {
+    return view('welcome');
 })->name('dashboard');

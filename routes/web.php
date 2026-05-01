@@ -13,7 +13,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 // ─── Central Domain Routes ───────────────────────────────────────────────────
-require __DIR__.'/central/web.php';
+Route::domain(parse_url(config('app.url'), PHP_URL_HOST))->group(function () {
+    require __DIR__.'/central/web.php';
+});
 
 // ─── Tenant Domain Routes ────────────────────────────────────────────────────
-// require __DIR__.'/tenant/web.php';
+Route::domain('{tenant}.'.parse_url(config('app.url'), PHP_URL_HOST))->group(function () {
+    require __DIR__.'/tenant/web.php';
+});
