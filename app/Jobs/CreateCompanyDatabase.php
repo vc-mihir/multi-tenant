@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Models\Company;
+use App\Models\Central\Company;
 use App\Models\CompanyDatabase;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Artisan;

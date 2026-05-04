@@ -14,7 +14,7 @@ use App\Http\Controllers\Tenant\AdminDashboardController;
 
 Route::get('/', function () {
     return view('welcome');
-})->name('dashboard');
+})->name('tenant.index');
 
 Route::middleware('auth:company')->group(function () {
     Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])

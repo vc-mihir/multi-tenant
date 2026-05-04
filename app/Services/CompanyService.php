@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\Company;
+use App\Models\Central\Company;
 use App\Jobs\CreateCompanyDatabase;
 use Illuminate\Support\Facades\DB;
 use Throwable;
