@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Central\Company;
-use App\Models\CompanyDatabase;
+use App\Models\Central\CompanyDatabase;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -74,21 +74,6 @@ class CreateCompanyDatabase implements ShouldQueue
                 ],
             );
 
-            $defaultPassword = Hash::make('Hello@123');
-
-            User::on('tenant')->create([
-                'name' => 'Admin User',
-                'email' => 'admin@test.com',
-                'password' => $defaultPassword,
-                'email_verified_at' => now(),
-            ]);
-
-            User::on('tenant')->create([
-                'name' => 'Staff User',
-                'email' => 'staff@test.com',
-                'password' => $defaultPassword,
-                'email_verified_at' => now(),
-            ]);
 
             // 4. Update Master Database with Connection Info
             $defaultConnection = config('database.default');
