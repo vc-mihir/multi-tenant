@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Crypt;
 
 class IdentifyTenant
 {
@@ -43,8 +44,8 @@ class IdentifyTenant
                     'database.connections.tenant.database' => $db->db_name,
                     'database.connections.tenant.host'     => $db->db_host,
                     'database.connections.tenant.port'     => $db->db_port,
-                    'database.connections.tenant.username' => $db->db_username,
-                    'database.connections.tenant.password' => $db->db_password,
+                    'database.connections.tenant.username' => Crypt::decryptString($db->db_username),
+                    'database.connections.tenant.password' => Crypt::decryptString($db->db_password),
                 ]);
 
                 DB::purge('tenant');
