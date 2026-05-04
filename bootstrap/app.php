@@ -6,6 +6,8 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Spatie\Permission\Middleware\RoleMiddleware;
 use Spatie\Permission\Middleware\PermissionMiddleware;
 use Spatie\Permission\Middleware\RoleOrPermissionMiddleware;
+use App\Http\Middleware\CentralDomainOnly;
+use App\Http\Middleware\IdentifyTenant;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -18,8 +20,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'role'               => RoleMiddleware::class,
             'permission'         => PermissionMiddleware::class,
             'role_or_permission' => RoleOrPermissionMiddleware::class,
-            'central'            => \App\Http\Middleware\CentralDomainOnly::class,
-            'identify_tenant'    => \App\Http\Middleware\IdentifyTenant::class,
+            'central'            => CentralDomainOnly::class,
+            'identify_tenant'    => IdentifyTenant::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
