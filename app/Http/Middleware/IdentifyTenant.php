@@ -32,6 +32,10 @@ class IdentifyTenant
                 abort(404, 'Tenant not found.');
             }
 
+            if($tenant->status !== 'active') {
+                abort(403, 'Your account is ' . $tenant->status . ' .');
+            }
+
             app()->instance(Company::class, $tenant);
             
             // Set default tenant parameter for route generation
