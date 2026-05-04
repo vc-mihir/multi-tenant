@@ -2,11 +2,12 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Company;
+use App\Models\Central\Company;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
 
 class IdentifyTenant
 {
@@ -24,13 +25,16 @@ class IdentifyTenant
 
         if($host !== $centralDomain && str_ends_with($host, '.' . $centralDomain)) {
             $subdomain = explode('.', $host)[0];
-            $tenant = Company::where('subdomain', $subdomain)->with('database')->first();
+            $tenant = Company::on('mysql')->where('subdomain', $subdomain)->with('database')->first();
 
             if($tenant === null) {
                 abort(404, 'Tenant not found.');
             }
 
             app()->instance(Company::class, $tenant);
+            
+            // Set default tenant parameter for route generation
+            URL::defaults(['tenant' => $subdomain]);
 
             if($tenant->database) {
                 $db = $tenant->database;

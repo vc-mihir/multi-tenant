@@ -1,19 +1,25 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Tenant;
 
 use App\Notifications\VerifyCompanyEmail;
 use Illuminate\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Company extends Model implements MustVerifyEmailContract
+class Company extends Authenticatable implements MustVerifyEmailContract
 {
     use HasFactory, MustVerifyEmail, Notifiable, HasRoles;
+
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'companies';
 
     protected string $guard_name = 'web';
 
@@ -57,16 +63,6 @@ class Company extends Model implements MustVerifyEmailContract
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
-    }
-
-    /**
-     * Get the database connection details for the company.
-     *
-     * @return HasOne
-     */
-    public function database(): HasOne
-    {
-        return $this->hasOne(CompanyDatabase::class);
     }
 
     /**
