@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Auth;
 
 class IdentifyTenant
 {
@@ -55,6 +56,9 @@ class IdentifyTenant
                 DB::purge('tenant');
                 DB::reconnect('tenant');
                 DB::setDefaultConnection('tenant');
+
+                // Clear the authenticated user cache to ensure they are re-resolved from the correct tenant database
+                Auth::guard('company')->forgetUser();
             }
         }
 
