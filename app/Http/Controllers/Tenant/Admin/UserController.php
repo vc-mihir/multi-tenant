@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Tenant\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Tenant\UpdateUserRequest;
 use App\Models\Tenant\User;
 use App\Http\Requests\Tenant\StoreUserRequest;
 use Illuminate\Http\Request;
@@ -57,6 +58,43 @@ class UserController extends Controller
     }
 
     /**
+     * Show the form for editing the specified resource.
+     *
+     * @param string $tenant
+     * @param User $user
+     * @return View
+     */
+    public function edit(string $tenant, User $user): View
+    {
+        return view('tenant.admin.users.edit', compact('user'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param string $tenant
+     * @param UpdateUserRequest $request
+     * @param User $user
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function update(string $tenant, UpdateUserRequest $request, User $user)
+    {
+        $data = [
+            'name' => $request->name,
+            'email' => $request->email,
+        ];
+
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
+
+        $user->update($data);
+
+        return redirect()->route('tenant.admin.users.index')
+            ->with('success', 'User updated successfully.');
+    }
+
+    /**
      * Process datatables ajax request.
      *
      * @param string $tenant
@@ -69,16 +107,22 @@ class UserController extends Controller
 
         return DataTables::of($query)
             ->addIndexColumn()
+            ->editColumn('email_verified_at', function ($user) {
+                return $user->email_verified_at 
+                    ? '<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-600 border border-emerald-100">' . $user->email_verified_at->format('Y-m-d H:i') . '</span>'
+                    : '<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-50 text-rose-600 border border-rose-100">Not Verified</span>';
+            })
             ->editColumn('created_at', function ($user) {
                 return $user->created_at->format('Y-m-d H:i:s');
             })
             ->editColumn('updated_at', function ($user) {
                 return $user->updated_at->format('Y-m-d H:i:s');
             })
-            ->addColumn('actions', function ($user) {
+            ->addColumn('actions', function ($user) use ($tenant) {
+                $editUrl = route('tenant.admin.users.edit', ['tenant' => $tenant, 'user' => $user->id]);
                 return '
                     <div class="flex items-center justify-start gap-2">
-                        <a href="#" class="p-2 text-slate-400 hover:text-teal-600 transition-colors">
+                        <a href="' . $editUrl . '" class="p-2 text-slate-400 hover:text-teal-600 transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                         </a>
                         <button class="p-2 text-slate-400 hover:text-rose-600 transition-colors delete-user" data-id="' . $user->id . '">
@@ -86,7 +130,7 @@ class UserController extends Controller
                         </button>
                     </div>';
             })
-            ->rawColumns(['actions'])
+            ->rawColumns(['actions', 'email_verified_at'])
             ->make(true);
     }
 

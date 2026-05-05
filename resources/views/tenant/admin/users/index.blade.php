@@ -78,6 +78,7 @@
                         <th>ID</th>
                         <th>Name</th>
                         <th>Email</th>
+                        <th class="whitespace-nowrap">Verified At</th>
                         <th class="whitespace-nowrap">Created At</th>
                         <th class="whitespace-nowrap">Updated At</th>
                         <th class="text-right px-6">Actions</th>
@@ -123,6 +124,11 @@
                         render: function(data) {
                             return `<span class="text-slate-600">${data}</span>`;
                         }
+                    },
+                    {
+                        data: 'email_verified_at',
+                        name: 'email_verified_at',
+                        className: 'whitespace-nowrap'
                     },
                     {
                         data: 'created_at',

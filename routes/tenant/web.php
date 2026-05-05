@@ -32,6 +32,8 @@ Route::middleware('auth:company')->group(function () {
     Route::get('/admin/users/data', [UserController::class, 'data'])->name('tenant.admin.users.data');
     Route::get('/admin/users/create', [UserController::class, 'create'])->name('tenant.admin.users.create');
     Route::post('/admin/users', [UserController::class, 'store'])->name('tenant.admin.users.store');
+    Route::get('/admin/users/{user}/edit', [UserController::class, 'edit'])->name('tenant.admin.users.edit');
+    Route::put('/admin/users/{user}', [UserController::class, 'update'])->name('tenant.admin.users.update');
     Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('tenant.admin.users.destroy');
 });
 
