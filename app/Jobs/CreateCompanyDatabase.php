@@ -16,6 +16,7 @@ use Illuminate\Support\Str;
 use Throwable;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Illuminate\Support\Facades\Crypt;
 
 class CreateCompanyDatabase implements ShouldQueue
 {
@@ -83,8 +84,8 @@ class CreateCompanyDatabase implements ShouldQueue
                     'db_name' => $dbName,
                     'db_host' => config("database.connections.{$defaultConnection}.host"),
                     'db_port' => config("database.connections.{$defaultConnection}.port"),
-                    'db_username' => config("database.connections.{$defaultConnection}.username"),
-                    'db_password' => config("database.connections.{$defaultConnection}.password"),
+                    'db_username' => Crypt::encryptString(config("database.connections.{$defaultConnection}.username")),
+                    'db_password' => Crypt::encryptString(config("database.connections.{$defaultConnection}.password")),
                 ]
             );
 

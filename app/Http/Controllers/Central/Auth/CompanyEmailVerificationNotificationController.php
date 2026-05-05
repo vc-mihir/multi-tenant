@@ -27,7 +27,7 @@ class CompanyEmailVerificationNotificationController extends Controller
 
             $company->sendEmailVerificationNotification();
 
-            return back()->with('status', 'verification-link-sent');
+            return back()->with('status', 'Verification link sent successfully. Please check your inbox.');
         } catch (Throwable $e) {
             Log::error('Company verification resend failed.', [
                 'company_id' => $id,

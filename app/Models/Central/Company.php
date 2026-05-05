@@ -2,15 +2,17 @@
 
 namespace App\Models\Central;
 
+use App\Notifications\VerifyCompanyEmail;
+use Illuminate\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Company extends Model
+class Company extends Authenticatable implements MustVerifyEmailContract
 {
-    use HasFactory, Notifiable, HasRoles;
+    use HasFactory, MustVerifyEmail, Notifiable, HasRoles;
 
     /**
      * Force the model to always use the central connection.
@@ -73,10 +75,40 @@ class Company extends Model
     /**
      * Get the database connection details for the company.
      *
-     * @return HasOne
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function database(): HasOne
+    public function database(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(CompanyDatabase::class);
+    }
+
+    /**
+     * Get the email address that should be used for email verification.
+     *
+     * @return string
+     */
+    public function getEmailForVerification(): string
+    {
+        return $this->company_email;
+    }
+
+    /**
+     * Get the notification routing information for a notification.
+     *
+     * @return string
+     */
+    public function routeNotificationForMail(): string
+    {
+        return $this->company_email;
+    }
+
+    /**
+     * Send the email verification notification.
+     *
+     * @return void
+     */
+    public function sendEmailVerificationNotification(): void
+    {
+        $this->notify(new VerifyCompanyEmail());
     }
 }
