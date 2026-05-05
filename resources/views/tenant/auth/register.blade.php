@@ -4,7 +4,7 @@
         <p class="mt-1 text-sm text-slate-500 font-medium">Register your account to get started.</p>
     </div>
 
-    <form method="POST" action="#" class="space-y-3">
+    <form method="POST" action="{{ route('tenant.register.post') }}" class="space-y-3">
         @csrf
 
         <div class="space-y-1">
