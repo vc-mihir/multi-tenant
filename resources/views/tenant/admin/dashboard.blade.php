@@ -10,27 +10,27 @@
     <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-4" style="margin-bottom: 25px;">
         <!-- Stat 1: Total Users -->
         <div class="flex items-center p-5 bg-white border border-gray-100 rounded-2xl shadow-sm transition-all hover:shadow-md">
-            <div class="p-2.5 mr-3 rounded-xl" style="background-color: rgba(16, 185, 129, 0.1); color: #10b981;">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="p-2.5 mr-4 rounded-xl" style="background-color: rgba(16, 185, 129, 0.1); color: #10b981;">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
             </div>
             <div>
                 <p class="mb-0.5 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Total Users</p>
-                <p class="text-2xl font-black text-slate-900">2,842</p>
+                <p class="text-2xl font-black text-slate-900">{{ number_format($usersCount) }}</p>
             </div>
         </div>
 
-        <!-- Stat 2: Active Sessions -->
+        <!-- Stat 2: Unverified Users -->
         <div class="flex items-center p-5 bg-white border border-gray-100 rounded-2xl shadow-sm transition-all hover:shadow-md">
-            <div class="p-2.5 mr-3 rounded-xl" style="background-color: rgba(14, 165, 233, 0.1); color: #0ea5e9;">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            <div class="p-2.5 mr-3 rounded-xl" style="background-color: rgba(244, 63, 94, 0.1); color: #f43f5e;">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
             </div>
             <div>
-                <p class="mb-0.5 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Active Sessions</p>
-                <p class="text-2xl font-black text-slate-900">418</p>
+                <p class="mb-0.5 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Unverified Users</p>
+                <p class="text-2xl font-black text-slate-900">{{ number_format($unverifiedUsersCount) }}</p>
             </div>
         </div>
 

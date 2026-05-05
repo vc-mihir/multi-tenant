@@ -60,7 +60,7 @@
                         style="background-color: #10b981;">
                         Create User
                     </button>
-                    <a href="{{ route('tenant.admin.users.index') }}"
+                    <a href="{{ route('tenant.admin.dashboard') }}"
                         class="px-8 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl transition-all active:scale-95">
                         Cancel
                     </a>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Tenant\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Tenant\User;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -16,6 +17,8 @@ class AdminDashboardController extends Controller
      */
     public function index(string $tenant): View
     {
-        return view('tenant.admin.dashboard');
+        $usersCount = User::count();
+        $unverifiedUsersCount = User::whereNull('email_verified_at')->count();
+        return view('tenant.admin.dashboard', compact('usersCount', 'unverifiedUsersCount'));
     }
 }
