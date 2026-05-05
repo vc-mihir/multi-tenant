@@ -144,6 +144,51 @@
                 ]
             });
 
+            $(document).on('click', '.delete-user', function() {
+                const userId = $(this).data('id');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You are about to delete this user from the tenant database. This action cannot be undone!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#64748b',
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'Cancel',
+                    borderRadius: '1.25rem'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: `/admin/users/${userId}`,
+                            type: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            success: function(response) {
+                                if (response.success) {
+                                    Swal.fire({
+                                        title: 'Deleted!',
+                                        text: response.message,
+                                        icon: 'success',
+                                        confirmButtonColor: '#6366f1',
+                                        borderRadius: '1.25rem'
+                                    });
+                                    table.draw(false);
+                                } else {
+                                    Swal.fire('Error!', response.message, 'error');
+                                }
+                            },
+                            error: function(xhr) {
+                                let errorMessage = 'An unexpected error occurred.';
+                                if (xhr.responseJSON && xhr.responseJSON.message) {
+                                    errorMessage = xhr.responseJSON.message;
+                                }
+                                Swal.fire('Error!', errorMessage, 'error');
+                            }
+                        });
+                    }
+                });
+            });
         });
     </script>
 @endpush

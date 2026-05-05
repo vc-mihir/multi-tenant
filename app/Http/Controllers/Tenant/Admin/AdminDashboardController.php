@@ -11,9 +11,10 @@ class AdminDashboardController extends Controller
     /**
      * Display the tenant admin dashboard.
      *
+     * @param string $tenant
      * @return View
      */
-    public function index(): View
+    public function index(string $tenant): View
     {
         return view('tenant.admin.dashboard');
     }

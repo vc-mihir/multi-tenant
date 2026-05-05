@@ -30,6 +30,7 @@ Route::middleware('auth:company')->group(function () {
     // User Management
     Route::get('/admin/users', [UserController::class, 'index'])->name('tenant.admin.users.index');
     Route::get('/admin/users/data', [UserController::class, 'data'])->name('tenant.admin.users.data');
+    Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('tenant.admin.users.destroy');
 });
 
 require __DIR__.'/auth.php';

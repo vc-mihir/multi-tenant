@@ -18,9 +18,10 @@ class ProfileController extends Controller
     /**
      * Show the form for editing the company profile.
      *
+     * @param string $tenant
      * @return View
      */
-    public function edit(): View
+    public function edit(string $tenant): View
     {
         $company = Auth::guard('company')->user();
 
@@ -30,10 +31,11 @@ class ProfileController extends Controller
     /**
      * Update the company profile.
      *
+     * @param string $tenant
      * @param UpdateProfileRequest $request
      * @return RedirectResponse
      */
-    public function update(UpdateProfileRequest $request): RedirectResponse
+    public function update(string $tenant, UpdateProfileRequest $request): RedirectResponse
     {
         $tenantUser = Auth::guard('company')->user();
         $validated = $request->validated();
