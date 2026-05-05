@@ -1,8 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Tenant\AdminDashboardController;
-use App\Http\Controllers\Tenant\ProfileController;
+use App\Http\Controllers\Tenant\Admin\AdminDashboardController;
+use App\Http\Controllers\Tenant\Admin\ProfileController;
+use App\Http\Controllers\Tenant\Admin\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +26,10 @@ Route::middleware('auth:company')->group(function () {
         ->name('tenant.admin.profile');
     Route::put('/admin/profile', [ProfileController::class, 'update'])
         ->name('tenant.admin.profile.update');
+
+    // User Management
+    Route::get('/admin/users', [UserController::class, 'index'])->name('tenant.admin.users.index');
+    Route::get('/admin/users/data', [UserController::class, 'data'])->name('tenant.admin.users.data');
 });
 
 require __DIR__.'/auth.php';
