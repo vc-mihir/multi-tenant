@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Models\Company;
-use App\Models\CompanyDatabase;
+use App\Models\Central\Company;
+use App\Models\Central\CompanyDatabase;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -16,6 +16,7 @@ use Illuminate\Support\Str;
 use Throwable;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Illuminate\Support\Facades\Crypt;
 
 class CreateCompanyDatabase implements ShouldQueue
 {
@@ -74,21 +75,6 @@ class CreateCompanyDatabase implements ShouldQueue
                 ],
             );
 
-            $defaultPassword = Hash::make('Hello@123');
-
-            User::on('tenant')->create([
-                'name' => 'Admin User',
-                'email' => 'admin@test.com',
-                'password' => $defaultPassword,
-                'email_verified_at' => now(),
-            ]);
-
-            User::on('tenant')->create([
-                'name' => 'Staff User',
-                'email' => 'staff@test.com',
-                'password' => $defaultPassword,
-                'email_verified_at' => now(),
-            ]);
 
             // 4. Update Master Database with Connection Info
             $defaultConnection = config('database.default');
@@ -98,8 +84,8 @@ class CreateCompanyDatabase implements ShouldQueue
                     'db_name' => $dbName,
                     'db_host' => config("database.connections.{$defaultConnection}.host"),
                     'db_port' => config("database.connections.{$defaultConnection}.port"),
-                    'db_username' => config("database.connections.{$defaultConnection}.username"),
-                    'db_password' => config("database.connections.{$defaultConnection}.password"),
+                    'db_username' => Crypt::encryptString(config("database.connections.{$defaultConnection}.username")),
+                    'db_password' => Crypt::encryptString(config("database.connections.{$defaultConnection}.password")),
                 ]
             );
 

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Central\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\Company;
+use App\Models\Central\Company;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -27,7 +27,7 @@ class CompanyEmailVerificationNotificationController extends Controller
 
             $company->sendEmailVerificationNotification();
 
-            return back()->with('status', 'verification-link-sent');
+            return back()->with('status', 'Verification link sent successfully. Please check your inbox.');
         } catch (Throwable $e) {
             Log::error('Company verification resend failed.', [
                 'company_id' => $id,
