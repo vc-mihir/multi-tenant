@@ -18,6 +18,16 @@ Route::get('/', function () {
     return view('welcome');
 })->name('tenant.index');
 
+Route::middleware('guest:company')->group(function () {
+    Route::get('/login', function () {
+        return view('welcome');
+    })->name('tenant.login');
+
+    Route::get('/register', function () {
+        return view('tenant.auth.register');
+    })->name('tenant.register');
+});
+
 Route::middleware('auth:company')->group(function () {
     Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])
         ->name('tenant.admin.dashboard');
