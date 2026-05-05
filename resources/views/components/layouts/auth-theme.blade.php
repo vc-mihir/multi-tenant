@@ -46,6 +46,28 @@
             <div
                 class="backdrop-blur-xl bg-white/95 rounded-[2.5rem] border border-white/20 p-10 sm:p-12 shadow-[0_40px_100px_rgba(180,70,30,0.25)]">
 
+                @if (session('status'))
+                    <div class="mb-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-500">
+                        <div class="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+                            </svg>
+                        </div>
+                        <p class="text-sm font-bold text-emerald-800">{{ session('status') }}</p>
+                    </div>
+                @endif
+
+                @if (session('error'))
+                    <div class="mb-6 p-4 rounded-2xl bg-rose-50 border border-rose-100 flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-500">
+                        <div class="w-8 h-8 rounded-full bg-rose-500 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+                            </svg>
+                        </div>
+                        <p class="text-sm font-bold text-rose-800">{{ session('error') }}</p>
+                    </div>
+                @endif
+
                 {{ $slot }}
 
                 <div class="mt-12 text-center">

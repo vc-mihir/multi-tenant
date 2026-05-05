@@ -9,7 +9,7 @@ use Exception;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use App\Models\Company;
+use App\Models\Central\Company;
 
 class AdminAuthController extends Controller
 {

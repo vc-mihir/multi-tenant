@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Central\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\Company;
+use App\Models\Central\Company;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -26,7 +26,7 @@ class CompanyEmailVerificationPromptController extends Controller
                 return redirect()->route('register')->with('status', 'Company account is already active.');
             }
 
-            return view('auth.verify-email', compact('company'));
+            return view('central.auth.verify-email', compact('company'));
         } catch (Throwable $e) {
             Log::error('Company verification prompt failed.', [
                 'company_id' => $id,
