@@ -78,7 +78,7 @@
                     You can now manually provision new users directly from your tenant control panel. Our infrastructure is ready to scale with your needs.
                 </p>
                 <div class="flex flex-wrap gap-4">
-                    <a href="#" class="inline-flex items-center px-10 py-4 text-white font-black rounded-xl shadow-2xl transition-all active:scale-95 group" style="background-color: #10b981;">
+                    <a href="{{ route('tenant.admin.users.create') }}" class="inline-flex items-center px-10 py-4 text-white font-black rounded-xl shadow-2xl transition-all active:scale-95 group" style="background-color: #10b981;">
                         Create User
                         <svg class="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17 8l4 4m0 0l-4 4m4-4H3" />

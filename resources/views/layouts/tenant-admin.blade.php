@@ -14,59 +14,138 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
-        body { font-family: 'Instrument Sans', sans-serif; }
+        body {
+            font-family: 'Instrument Sans', sans-serif;
+        }
 
         /* ── Sidebar ── */
-        .t-sidebar       { background: #0f172a; }
-        .t-nav-active    { background: rgba(79, 70, 229, 0.15); color: #818cf8; border-left: 3px solid #6366f1; }
-        .t-nav-item      { color: rgba(255,255,255,0.4); border-left: 3px solid transparent; transition: all 0.2s; }
-        .t-nav-item:hover{ background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.9); }
+        .t-sidebar {
+            background: #0f172a;
+        }
+
+        .t-nav-active {
+            background: rgba(79, 70, 229, 0.15);
+            color: #818cf8;
+            border-left: 3px solid #6366f1;
+        }
+
+        .t-nav-item {
+            color: rgba(255, 255, 255, 0.4);
+            border-left: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .t-nav-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.9);
+        }
 
         /* ── Cards ── */
-        .t-card { background:#fff; border:1px solid #e0e7ff; border-radius:1.25rem; }
-        .t-card-hover { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .t-card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05); }
+        .t-card {
+            background: #fff;
+            border: 1px solid #e0e7ff;
+            border-radius: 1.25rem;
+        }
+
+        .t-card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .t-card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
 
         /* ── Progress ── */
-        .t-track { height:8px; border-radius:99px; background:#f1f5f9; }
-        .t-fill  { height:100%; border-radius:99px; }
+        .t-track {
+            height: 8px;
+            border-radius: 99px;
+            background: #f1f5f9;
+        }
+
+        .t-fill {
+            height: 100%;
+            border-radius: 99px;
+        }
 
         /* ── Scrollbar ── */
-        .t-scroll::-webkit-scrollbar { width:4px; }
-        .t-scroll::-webkit-scrollbar-track { background:transparent; }
-        .t-scroll::-webkit-scrollbar-thumb { background:rgba(99, 102, 241, 0.2); border-radius:10px; }
-        .t-scroll::-webkit-scrollbar-thumb:hover { background:rgba(99, 102, 241, 0.4); }
+        .t-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .t-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .t-scroll::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.2);
+            border-radius: 10px;
+        }
+
+        .t-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.4);
+        }
     </style>
 
     @stack('styles')
 </head>
 
 <body class="h-full antialiased text-slate-900 selection:bg-indigo-100 selection:text-indigo-900">
-<div class="flex h-full overflow-hidden">
+    <div class="flex h-full overflow-hidden">
 
-    @include('tenant.admin.partials.sidebar')
+        @include('tenant.admin.partials.sidebar')
 
-    <div class="flex flex-col flex-1 overflow-hidden">
-        @include('tenant.admin.partials.header')
+        <div class="flex flex-col flex-1 overflow-hidden">
+            @include('tenant.admin.partials.header')
 
-        <main class="flex-1 overflow-y-auto t-scroll bg-gray-50">
-            <div class="max-w-7xl mx-auto px-6 py-5">
+            <main class="flex-1 overflow-y-auto t-scroll bg-gray-50">
+                <div class="max-w-7xl mx-auto px-6 py-5">
 
-                <div class="mb-4">
-                    <h1 class="text-2xl font-bold text-gray-900">@yield('page-title', 'Dashboard')</h1>
-                    <p class="text-sm text-gray-400 mt-1">@yield('page-subtitle')</p>
+                    <div class="mb-4">
+                        <h1 class="text-2xl font-bold text-gray-900">@yield('page-title', 'Dashboard')</h1>
+                        <p class="text-sm text-gray-400 mt-1">@yield('page-subtitle')</p>
+                    </div>
+
+                    {{-- Session Alerts --}}
+                    @if (session('success'))
+                        <div
+                            class="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-500">
+                            <div class="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                        d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                            <p class="text-sm font-bold text-emerald-800">{{ session('success') }}</p>
+                        </div>
+                    @endif
+
+                    @if (session('error'))
+                        <div
+                            class="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-100 flex items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-500">
+                            <div class="w-8 h-8 rounded-full bg-rose-500 flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                        d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </div>
+                            <p class="text-sm font-bold text-rose-800">{{ session('error') }}</p>
+                        </div>
+                    @endif
+
+                    <div class="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                        @yield('content')
+                    </div>
                 </div>
+            </main>
 
-                <div class="animate-in fade-in slide-in-from-bottom-2 duration-300">
-                    @yield('content')
-                </div>
-            </div>
-        </main>
+            @include('tenant.admin.partials.footer')
+        </div>
 
-        @include('tenant.admin.partials.footer')
     </div>
-
-</div>
-@stack('scripts')
+    @stack('scripts')
 </body>
+
 </html>

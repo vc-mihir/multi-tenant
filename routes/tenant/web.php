@@ -30,6 +30,8 @@ Route::middleware('auth:company')->group(function () {
     // User Management
     Route::get('/admin/users', [UserController::class, 'index'])->name('tenant.admin.users.index');
     Route::get('/admin/users/data', [UserController::class, 'data'])->name('tenant.admin.users.data');
+    Route::get('/admin/users/create', [UserController::class, 'create'])->name('tenant.admin.users.create');
+    Route::post('/admin/users', [UserController::class, 'store'])->name('tenant.admin.users.store');
     Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('tenant.admin.users.destroy');
 });
 

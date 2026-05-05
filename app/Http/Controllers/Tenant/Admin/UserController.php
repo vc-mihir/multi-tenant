@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Tenant\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\User;
+use App\Http\Requests\Tenant\StoreUserRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\View\View;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -21,6 +23,37 @@ class UserController extends Controller
     public function index(string $tenant): View
     {
         return view('tenant.admin.users.index');
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @param string $tenant
+     * @return View
+     */
+    public function create(string $tenant): View
+    {
+        return view('tenant.admin.users.create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param string $tenant
+     * @param StoreUserRequest $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function store(string $tenant, StoreUserRequest $request)
+    {
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'email_verified_at' => now(),
+        ]);
+
+        return redirect()->route('tenant.admin.users.index')
+            ->with('success', 'User created successfully.');
     }
 
     /**
