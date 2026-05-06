@@ -1,9 +1,9 @@
 <?php
 
 use App\Http\Controllers\Tenant\Auth\AdminLoginController;
+use App\Http\Controllers\Tenant\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Tenant\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Tenant\Auth\EmailVerificationPromptController;
-use App\Http\Controllers\Tenant\Auth\LoginController;
 use App\Http\Controllers\Tenant\Auth\NewPasswordController;
 use App\Http\Controllers\Tenant\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Tenant\Auth\RegisterController;
@@ -35,9 +35,11 @@ Route::middleware('auth:company')->group(function () {
 
 // ─── Tenant User Guest Routes ────────────────────────────────────────────────
 Route::middleware('guest:tenant_user')->group(function () {
-    Route::get('/login', function () {
-        return view('tenant.auth.login');
-    })->name('tenant.login');
+    Route::get('/login', [AuthenticatedSessionController::class, 'create'])
+        ->name('tenant.login');
+
+    Route::post('/login', [AuthenticatedSessionController::class, 'store'])
+        ->name('tenant.login.post');
 
     Route::get('/register', [RegisterController::class, 'create'])
         ->name('tenant.register');
@@ -61,7 +63,7 @@ Route::middleware('guest:tenant_user')->group(function () {
 
 // ─── Tenant User Auth Routes ─────────────────────────────────────────────────
 Route::middleware('auth:tenant_user')->group(function () {
-    Route::get('/logout', [LoginController::class, 'logout'])
+    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('tenant.logout');
 
     // Email Verification

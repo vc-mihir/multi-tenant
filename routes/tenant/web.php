@@ -18,6 +18,11 @@ Route::get('/', function () {
     return view('welcome');
 })->name('tenant.index');
 
+Route::middleware(['auth:tenant_user', 'verified'])->group(function () {
+    Route::get('/dashboard', function () {
+        return view('tenant.dashboard');
+    })->name('tenant.dashboard');
+});
 
 Route::middleware('auth:company')->group(function () {
     Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])
