@@ -39,7 +39,7 @@
             </button>
         </form>
 
-        <form method="POST" action="{{ route('tenant.admin.logout') }}">
+        <form method="GET" action="{{ route('tenant.index') }}">
             @csrf
             <button type="submit"
                 class="w-full py-3 bg-slate-100 text-slate-600 font-bold rounded-xl hover:bg-slate-200 active:scale-[0.98] transition-all duration-300 text-sm">
