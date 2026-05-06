@@ -6,12 +6,6 @@
         </p>
     </div>
 
-    @if (session('status'))
-        <div
-            class="mb-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-100 text-sm font-bold text-emerald-800 animate-in fade-in slide-in-from-top-4 duration-300">
-            {{ session('status') }}
-        </div>
-    @endif
 
     <form method="POST" action="{{ route('password.email') }}" class="space-y-6">
         @csrf
