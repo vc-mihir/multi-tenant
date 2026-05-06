@@ -20,7 +20,7 @@ Route::get('/', function () {
 
 Route::middleware(['auth:tenant_user', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
-        return view('tenant.dashboard');
+        return view('tenant.user.dashboard');
     })->name('tenant.dashboard');
 });
 
