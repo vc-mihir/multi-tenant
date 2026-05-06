@@ -14,6 +14,28 @@
 
     <!-- Scripts & Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        window.showAlert = (icon, title, text) => {
+            Swal.fire({
+                icon: icon,
+                title: title,
+                text: text,
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                background: '#ffffff',
+                color: '#064e3b',
+                iconColor: '#059669',
+                customClass: {
+                    popup: 'rounded-3xl border border-emerald-50 shadow-2xl shadow-emerald-900/10'
+                }
+            });
+        };
+    </script>
 
     <style>
         .bg-mint-card {
@@ -38,9 +60,9 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between h-20">
                     <div class="flex items-center">
-                        <div class="flex-shrink-0 flex items-center gap-3">
+                        <a href="{{ route('tenant.dashboard') }}" class="flex-shrink-0 flex items-center gap-3 group">
                             <div
-                                class="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-200">
+                                class="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-200 group-hover:scale-110 transition-transform duration-300">
                                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -50,7 +72,7 @@
                             <span
                                 class="text-xl font-black text-emerald-950 font-outfit tracking-tight font-outfit uppercase">Tenant<span
                                     class="text-emerald-600">Hub</span></span>
-                        </div>
+                        </a>
                     </div>
 
                     <div class="flex items-center gap-6">
@@ -91,7 +113,7 @@
                                     <p class="text-sm font-bold text-emerald-900 truncate">{{ $user->email }}</p>
                                 </div>
 
-                                <a href="#"
+                                <a href="{{ route('tenant.user.profile') }}"
                                     class="flex items-center gap-3 px-4 py-3 text-sm font-bold text-emerald-700 hover:bg-emerald-50 transition-colors">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -125,6 +147,13 @@
             {{ $slot }}
         </main>
     </div>
+    @if (session('success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                showAlert('success', 'Success', "{{ session('success') }}");
+            });
+        </script>
+    @endif
 </body>
 
 </html>

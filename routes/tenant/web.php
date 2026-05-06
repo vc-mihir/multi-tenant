@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Tenant\Admin\AdminDashboardController;
 use App\Http\Controllers\Tenant\Admin\ProfileController;
 use App\Http\Controllers\Tenant\Admin\UserController;
+use App\Http\Controllers\Tenant\User\ProfileController as UserProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,6 +23,10 @@ Route::middleware(['auth:tenant_user', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
         return view('tenant.user.dashboard');
     })->name('tenant.dashboard');
+
+    Route::get('/profile', [UserProfileController::class, 'edit'])->name('tenant.user.profile');
+    Route::put('/profile', [UserProfileController::class, 'update'])->name('tenant.user.profile.update');
+    Route::delete('/profile', [UserProfileController::class, 'destroy'])->name('tenant.user.profile.destroy');
 });
 
 Route::middleware('auth:company')->group(function () {
