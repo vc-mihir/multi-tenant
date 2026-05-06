@@ -3,6 +3,7 @@
 use App\Http\Controllers\Tenant\Auth\AdminLoginController;
 use App\Http\Controllers\Tenant\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Tenant\Auth\EmailVerificationPromptController;
+use App\Http\Controllers\Tenant\Auth\LoginController;
 use App\Http\Controllers\Tenant\Auth\NewPasswordController;
 use App\Http\Controllers\Tenant\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Tenant\Auth\RegisterController;
@@ -58,8 +59,12 @@ Route::middleware('guest:tenant_user')->group(function () {
         ->name('password.store');
 });
 
-// ─── Tenant User Email Verification ──────────────────────────────────────────
+// ─── Tenant User Auth Routes ─────────────────────────────────────────────────
 Route::middleware('auth:tenant_user')->group(function () {
+    Route::get('/logout', [LoginController::class, 'logout'])
+        ->name('tenant.logout');
+
+    // Email Verification
     Route::get('/verify-email', EmailVerificationPromptController::class)
         ->name('verification.notice');
 
