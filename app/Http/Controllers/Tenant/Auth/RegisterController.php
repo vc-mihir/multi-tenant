@@ -14,6 +14,8 @@ class RegisterController extends Controller
 {
     /**
      * Display the registration view.
+     *
+     * @return View
      */
     public function create(): View
     {
@@ -21,7 +23,10 @@ class RegisterController extends Controller
     }
 
     /**
-     * Handle an incoming registration request.
+     * Handle user registration request.
+     *
+     * @param StoreUserRequest $request
+     * @return RedirectResponse
      */
     public function store(StoreUserRequest $request): RedirectResponse
     {
