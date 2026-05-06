@@ -15,7 +15,29 @@
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/js/validation/common-validation.js"></script>
+
+    <script>
+        window.showAlert = (icon, title, text) => {
+            Swal.fire({
+                icon: icon,
+                title: title,
+                text: text,
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                background: '#ffffff',
+                color: '#064e3b',
+                iconColor: '#059669',
+                customClass: {
+                    popup: 'rounded-3xl border border-emerald-50 shadow-2xl shadow-emerald-900/10'
+                }
+            });
+        };
+    </script>
 
     <style>
         .error {
@@ -78,6 +100,13 @@
             </div>
         </div>
     </div>
+    @if (session('success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                showAlert('success', 'Success', "{{ session('success') }}");
+            });
+        </script>
+    @endif
 </body>
 
 </html>
