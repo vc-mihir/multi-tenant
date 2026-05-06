@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Tenant\Admin\AdminDashboardController;
 use App\Http\Controllers\Tenant\Admin\ProfileController;
 use App\Http\Controllers\Tenant\Admin\UserController;
+use App\Http\Controllers\Tenant\Auth\RegisterController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,6 +18,18 @@ use App\Http\Controllers\Tenant\Admin\UserController;
 Route::get('/', function () {
     return view('welcome');
 })->name('tenant.index');
+
+Route::middleware('guest:tenant_user')->group(function () {
+    Route::get('/login', function () {
+        return view('welcome');
+    })->name('tenant.login');
+
+    Route::get('/register', [RegisterController::class, 'create'])
+        ->name('tenant.register');
+
+    Route::post('/register', [RegisterController::class, 'store'])
+        ->name('tenant.register.post');
+});
 
 Route::middleware('auth:company')->group(function () {
     Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])
