@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\Tenant\Auth\AdminLoginController;
+use App\Http\Controllers\Tenant\Auth\EmailVerificationNotificationController;
+use App\Http\Controllers\Tenant\Auth\EmailVerificationPromptController;
+use App\Http\Controllers\Tenant\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,4 +27,18 @@ Route::middleware('guest:company')->group(function () {
 Route::middleware('auth:company')->group(function () {
     Route::post('/admin/logout', [AdminLoginController::class, 'destroy'])
         ->name('tenant.admin.logout');
+});
+
+// ─── Tenant User Email Verification ──────────────────────────────────────────
+Route::middleware('auth:tenant_user')->group(function () {
+    Route::get('/verify-email', EmailVerificationPromptController::class)
+        ->name('verification.notice');
+
+    Route::get('/verify-email/{id}/{hash}', VerifyEmailController::class)
+        ->middleware(['signed', 'throttle:6,1'])
+        ->name('verification.verify');
+
+    Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
+        ->middleware('throttle:6,1')
+        ->name('verification.send');
 });
