@@ -7,24 +7,22 @@ use App\Http\Controllers\Central\Auth\CompanyRegistrationController;
 use App\Http\Controllers\Central\Auth\CompanyVerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
-// ─── Guest-only (no session required) ─────────────────────────────────────────
-
-Route::middleware('guest')->group(function () {
-
-    // SuperAdmin login (central domain only)
+// ─── SuperAdmin login (guest only) ──────────────────────────────────────────────
+Route::middleware('guest:web')->group(function () {
     Route::get('admin/login', [AdminAuthController::class, 'create'])
         ->name('admin.login');
 
     Route::post('admin/login', [AdminAuthController::class, 'store'])
         ->middleware('throttle:admin_login')
         ->name('admin.login.post');
-
-    // Company self-registration (central domain only)
-    Route::get('company-register', [CompanyRegistrationController::class, 'create'])
-        ->name('register');
-
-    Route::post('company-register', [CompanyRegistrationController::class, 'store']);
 });
+
+// ─── Company self-registration (publicly accessible) ────────────────────────────
+// Not wrapped in guest middleware — admins should still be able to open this page.
+Route::get('company-register', [CompanyRegistrationController::class, 'create'])
+    ->name('register');
+
+Route::post('company-register', [CompanyRegistrationController::class, 'store']);
 
 // ─── Company email verification (signed URLs, no auth required) ────────────────
 
