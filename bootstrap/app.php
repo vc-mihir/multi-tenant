@@ -29,6 +29,40 @@ return Application::configure(basePath: dirname(__DIR__))
             IdentifyTenant::class,
             SubstituteBindings::class,
         ]);
+
+        $middleware->redirectUsersTo(function () {
+            $host = request()->getHost();
+            $centralDomain = parse_url(config('app.url'), PHP_URL_HOST);
+
+            // Central Domain Redirection
+            if ($host === $centralDomain) {
+                return route('admin.dashboard');
+            }
+
+            // Tenant Subdomain Redirection
+            if (request()->is('admin/*')) {
+                return route('tenant.admin.dashboard');
+            }
+
+            return route('tenant.dashboard');
+        });
+
+        $middleware->redirectGuestsTo(function () {
+            $host = request()->getHost();
+            $centralDomain = parse_url(config('app.url'), PHP_URL_HOST);
+
+            // Central Domain Redirection
+            if ($host === $centralDomain) {
+                return route('admin.login');
+            }
+
+            // Tenant Subdomain Redirection
+            if (request()->is('admin/*')) {
+                return route('tenant.admin.login');
+            }
+
+            return route('tenant.login');
+        });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
