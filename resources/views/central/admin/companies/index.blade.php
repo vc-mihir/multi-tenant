@@ -455,17 +455,5 @@
                 });
             });
         });
-
-        @if (session('success'))
-            $(function() {
-                Swal.fire({
-                    title: 'Success!',
-                    text: "{{ session('success') }}",
-                    icon: 'success',
-                    confirmButtonColor: '#0d9488',
-                    borderRadius: '1.5rem'
-                });
-            });
-        @endif
     </script>
 @endpush

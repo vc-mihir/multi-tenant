@@ -12,6 +12,9 @@
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/jquery.validate.min.js"></script>
+    <script src="/js/validation/common-validation.js"></script>
 
     <style>
         body {
@@ -106,34 +109,6 @@
                         <p class="text-sm text-gray-400 mt-1">@yield('page-subtitle')</p>
                     </div>
 
-                    {{-- Session Alerts --}}
-                    @if (session('success'))
-                        <div
-                            class="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-500">
-                            <div class="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                        d="M5 13l4 4L19 7" />
-                                </svg>
-                            </div>
-                            <p class="text-sm font-bold text-emerald-800">{{ session('success') }}</p>
-                        </div>
-                    @endif
-
-                    @if (session('error'))
-                        <div
-                            class="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-100 flex items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-500">
-                            <div class="w-8 h-8 rounded-full bg-rose-500 flex items-center justify-center shrink-0">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                        d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </div>
-                            <p class="text-sm font-bold text-rose-800">{{ session('error') }}</p>
-                        </div>
-                    @endif
 
                     <div class="animate-in fade-in slide-in-from-bottom-2 duration-300">
                         @yield('content')
@@ -145,6 +120,7 @@
         </div>
 
     </div>
+    <x-toast-alert />
     @stack('scripts')
 </body>
 
