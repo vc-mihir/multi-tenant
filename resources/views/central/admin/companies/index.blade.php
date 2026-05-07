@@ -65,7 +65,20 @@
 @section('content')
     <div class="rounded-3xl border border-teal-100 bg-white p-6 shadow-sm ring-1 ring-slate-900/5">
         <div class="flex items-center justify-between mb-6">
-            <h2 class="text-lg font-semibold text-slate-800">Company Records</h2>
+            <div class="flex items-center gap-4">
+                <h2 class="text-lg font-semibold text-slate-800">Company Records</h2>
+                <div id="bulk-actions" class="hidden">
+                    <button id="bulk-delete-btn"
+                        class="flex items-center gap-2 px-4 py-2 bg-rose-50 text-rose-600 border border-rose-100 rounded-xl hover:bg-rose-100 transition-all text-xs font-bold uppercase tracking-wider shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                        </svg>
+                        Delete Selected (<span id="selected-count">0</span>)
+                    </button>
+                </div>
+            </div>
             <div class="flex items-center gap-4">
                 <div class="flex items-center gap-2">
                     <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Status:</span>
@@ -85,6 +98,10 @@
             <table id="companies-table" class="w-full text-left border-collapse">
                 <thead>
                     <tr>
+                        <th class="w-10">
+                            <input type="checkbox" id="select-all"
+                                class="w-4 h-4 rounded border-slate-300 text-teal-600 focus:ring-teal-500 cursor-pointer">
+                        </th>
                         <th>ID</th>
                         <th>Company Name</th>
                         <th>Subdomain</th>
@@ -150,6 +167,14 @@
                 ],
                 pageLength: 10,
                 columns: [{
+                        data: 'id',
+                        orderable: false,
+                        searchable: false,
+                        render: function(data) {
+                            return `<input type="checkbox" class="company-checkbox w-4 h-4 rounded border-slate-300 text-teal-600 focus:ring-teal-500 cursor-pointer" value="${data}">`;
+                        }
+                    },
+                    {
                         data: 'DT_RowIndex',
                         orderable: false,
                         searchable: false,
@@ -286,6 +311,84 @@
                         }
                     }
                 ]
+            });
+
+            $(document).on('change', '#select-all', function() {
+                $('.company-checkbox').prop('checked', this.checked);
+                toggleBulkActions();
+            });
+
+            $(document).on('change', '.company-checkbox', function() {
+                toggleBulkActions();
+            });
+
+            function toggleBulkActions() {
+                const count = $('.company-checkbox:checked').length;
+                if (count > 0) {
+                    $('#bulk-actions').removeClass('hidden');
+                    $('#selected-count').text(count);
+                } else {
+                    $('#bulk-actions').addClass('hidden');
+                }
+            }
+
+            table.on('draw', function() {
+                $('#select-all').prop('checked', false);
+                toggleBulkActions();
+            });
+
+            // Bulk Delete Action
+            $('#bulk-delete-btn').on('click', function() {
+                const selectedIds = $('.company-checkbox:checked').map(function() {
+                    return $(this).val();
+                }).get();
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: `You are about to delete ${selectedIds.length} companies and their databases. This action is IRREVERSIBLE!`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#be123c',
+                    cancelButtonColor: '#64748b',
+                    confirmButtonText: 'Yes, Delete Everything!',
+                    borderRadius: '1.5rem'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Deleting...',
+                            allowOutsideClick: false,
+                            didOpen: () => Swal.showLoading()
+                        });
+
+                        $.ajax({
+                            url: '{{ route('admin.companies.bulk-delete') }}',
+                            type: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            data: {
+                                ids: selectedIds
+                            },
+                            success: function(response) {
+                                if (response.success) {
+                                    Swal.fire({
+                                        title: 'Deleted!',
+                                        text: response.message,
+                                        icon: 'success',
+                                        confirmButtonColor: '#0d9488',
+                                        borderRadius: '1.5rem'
+                                    });
+                                    table.draw(false);
+                                } else {
+                                    Swal.fire('Error!', response.message, 'error');
+                                }
+                            },
+                            error: function() {
+                                Swal.fire('Error!', 'An unexpected error occurred.', 'error');
+                            }
+                        });
+                    }
+                });
             });
 
             $(document).on('change', '#status-filter', function() {
