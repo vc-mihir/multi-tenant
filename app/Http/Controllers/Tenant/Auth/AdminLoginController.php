@@ -33,7 +33,7 @@ class AdminLoginController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('tenant.admin.dashboard', absolute: false));
+        return redirect()->route('tenant.admin.dashboard');
     }
 
     /**
