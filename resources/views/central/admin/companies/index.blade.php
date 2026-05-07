@@ -384,7 +384,8 @@
                                 }
                             },
                             error: function() {
-                                Swal.fire('Error!', 'An unexpected error occurred.', 'error');
+                                Swal.fire('Error!', 'An unexpected error occurred.',
+                                    'error');
                             }
                         });
                     }
@@ -458,7 +459,7 @@
         @if (session('success'))
             $(function() {
                 Swal.fire({
-                    title: 'Updated!',
+                    title: 'Success!',
                     text: "{{ session('success') }}",
                     icon: 'success',
                     confirmButtonColor: '#0d9488',
