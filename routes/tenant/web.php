@@ -37,6 +37,8 @@ Route::middleware('auth:company')->group(function () {
         ->name('tenant.admin.profile');
     Route::put('/admin/profile', [ProfileController::class, 'update'])
         ->name('tenant.admin.profile.update');
+    Route::delete('/admin/profile', [ProfileController::class, 'destroy'])
+        ->name('tenant.admin.profile.destroy');
 
     // User Management
     Route::get('/admin/users', [UserController::class, 'index'])->name('tenant.admin.users.index');

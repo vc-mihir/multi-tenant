@@ -29,6 +29,22 @@
         </div>
     </div>
 
+    @if (request()->query('account_deleted'))
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                if (typeof window.showAlert === 'function') {
+                    window.showAlert('success', 'Account Deleted',
+                        'Your company account and data have been completely erased.');
+
+                    // Clean up the `URL so the query parameter disappears instantly
+                    const url = new URL(window.location);
+                    url.searchParams.delete('account_deleted');
+                    window.history.replaceState({}, '', url);
+                }
+            });
+        </script>
+    @endif
+
     <form method="POST" action="{{ route('register') }}" id="registration-form">
         @csrf
 
