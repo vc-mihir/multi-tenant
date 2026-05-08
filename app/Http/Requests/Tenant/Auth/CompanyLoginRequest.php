@@ -61,9 +61,18 @@ class CompanyLoginRequest extends FormRequest
      */
     protected function credentials(): array
     {
+        $centralDomain = parse_url(config('app.url'), PHP_URL_HOST);
+        $host = $this->getHost();
+        $subdomain = '';
+
+        if ($host !== $centralDomain && str_ends_with($host, '.' . $centralDomain)) {
+            $subdomain = explode('.', $host)[0];
+        }
+
         return [
             'company_email' => $this->email,
             'password' => $this->password,
+            'subdomain' => $subdomain,
         ];
     }
 
