@@ -210,6 +210,41 @@ class CompanyController extends Controller
     }
 
     /**
+     * Bulk Delete Selected Companies and their Databases.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function bulkDelete(Request $request): JsonResponse
+    {
+        $ids = $request->input('ids', []);
+        if (empty($ids)) {
+            return response()->json(['success' => false, 'message' => 'No companies selected.'], 422);
+        }
+
+        $companies = Company::whereIn('id', $ids)->with('database')->get();
+        $deletedCount = 0;
+
+        foreach ($companies as $company) {
+            $dbName = $company->database?->db_name;
+            try {
+                if ($dbName) {
+                    DB::statement("DROP DATABASE IF EXISTS `{$dbName}`");
+                }
+                $company->delete();
+                $deletedCount++;
+            } catch (Exception $e) {
+                Log::error("Bulk delete failed for company [{$company->id}]: " . $e->getMessage());
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "Successfully deleted {$deletedCount} companies and their databases."
+        ]);
+    }
+
+    /**
      * Search for companies (used in global search).
      *
      * @param Request $request

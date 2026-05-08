@@ -60,8 +60,8 @@
                             <label for="subdomain"
                                 class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Subdomain</label>
                             <input id="subdomain" type="text" name="subdomain"
-                                value="{{ old('subdomain', $company->subdomain) }}"
-                                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 transition-all duration-300"
+                                value="{{ old('subdomain', $company->subdomain) }}" readonly
+                                class="w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-2xl text-slate-500 cursor-not-allowed focus:outline-none transition-all duration-300"
                                 placeholder="acme-corp">
                             @error('subdomain')
                                 <span class="error">{{ $message }}</span>
@@ -118,11 +118,14 @@
                                 class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 focus:outline-none focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 transition-all duration-300 appearance-none">
                                 <option value="active" {{ old('status', $company->status) == 'active' ? 'selected' : '' }}>
                                     Active</option>
-                                <option value="inactive" {{ old('status', $company->status) == 'inactive' ? 'selected' : '' }}>
+                                <option value="inactive"
+                                    {{ old('status', $company->status) == 'inactive' ? 'selected' : '' }}>
                                     Inactive</option>
                                 <option value="suspended"
-                                    {{ old('status', $company->status) == 'suspended' ? 'selected' : '' }}>Suspended</option>
-                                <option value="pending" {{ old('status', $company->status) == 'pending' ? 'selected' : '' }}>
+                                    {{ old('status', $company->status) == 'suspended' ? 'selected' : '' }}>Suspended
+                                </option>
+                                <option value="pending"
+                                    {{ old('status', $company->status) == 'pending' ? 'selected' : '' }}>
                                     Pending</option>
                             </select>
                             @error('status')
@@ -156,7 +159,8 @@
                         <div class="space-y-1.5">
                             <label for="state"
                                 class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">State</label>
-                            <input id="state" type="text" name="state" value="{{ old('state', $company->state) }}"
+                            <input id="state" type="text" name="state"
+                                value="{{ old('state', $company->state) }}"
                                 class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 transition-all duration-300"
                                 placeholder="e.g. CA">
                             @error('state')

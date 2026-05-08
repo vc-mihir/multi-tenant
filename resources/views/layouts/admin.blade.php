@@ -101,6 +101,7 @@
         });
     </script>
 
+    <x-toast-alert />
     @stack('scripts')
 </body>
 

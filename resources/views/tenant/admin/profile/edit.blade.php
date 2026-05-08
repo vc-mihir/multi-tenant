@@ -121,6 +121,15 @@
                             </svg>
                         </div>
 
+                        <div class="p-4 rounded-xl bg-amber-50 border border-amber-100 mx-1">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <p class="text-[10px] font-bold text-amber-800 uppercase tracking-wide">Leave password blank to keep current</p>
+                            </div>
+                        </div>
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                             <div class="space-y-1.5">
                                 <label for="password" class="text-xs font-semibold text-slate-500 ml-1">New
