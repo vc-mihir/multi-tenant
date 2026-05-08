@@ -72,4 +72,47 @@ class ProfileController extends Controller
                 ->with('error', 'An error occurred while updating your profile. Please try again.');
         }
     }
+
+    /**
+     * Delete the company account and drop the tenant database.
+     *
+     * @param string $tenant
+     * @return RedirectResponse
+     */
+    public function destroy(string $tenant): RedirectResponse
+    {
+        $tenantUser = Auth::guard('company')->user();
+        $subdomain = $tenantUser->subdomain;
+        
+        // Ensure we are fetching the company from central DB
+        $centralCompany = CentralCompany::on('mysql')->where('subdomain', $subdomain)->first();
+        
+        if ($centralCompany) {
+            $dbName = $centralCompany->database->db_name ?? null;
+            
+            try {
+                // Delete central record (cascades to company_databases)
+                DB::transaction(function () use ($centralCompany) {
+                    $centralCompany->delete();
+                });
+
+                // Drop the actual database outside of transaction
+                if ($dbName) {
+                    DB::connection('mysql')->statement("DROP DATABASE IF EXISTS `{$dbName}`");
+                }
+                
+                Log::info("Tenant account and database deleted successfully for: {$subdomain}");
+
+            } catch (Exception $e) {
+                Log::error("Failed to delete tenant {$subdomain}: " . $e->getMessage());
+                return redirect()->back()->with('error', 'Failed to delete account. Please try again later.');
+            }
+        }
+
+        Auth::guard('company')->logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+
+        return redirect()->route('register', ['account_deleted' => true]);
+    }
 }
