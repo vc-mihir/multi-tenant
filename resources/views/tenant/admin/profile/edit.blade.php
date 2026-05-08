@@ -166,5 +166,66 @@
                 </div>
             </div>
         </form>
+
+        {{-- Danger Zone --}}
+        <div class="mt-8 bg-white rounded-2xl border border-red-100 shadow-sm overflow-hidden">
+            <div class="px-6 py-4 border-b border-red-50 bg-red-50/30">
+                <h2 class="text-sm font-bold text-red-800 uppercase tracking-tight">Danger Zone</h2>
+            </div>
+            <div class="p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                    <h3 class="text-sm font-bold text-slate-800">Delete Organization Account</h3>
+                    <p class="text-xs text-slate-500 mt-1 max-w-xl">
+                        Permanently delete your company account, subdomain, and all associated data. This action will completely drop your isolated database and cannot be undone.
+                    </p>
+                </div>
+                <form id="delete-account-form" action="{{ route('tenant.admin.profile.destroy') }}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button type="button" id="delete-account-btn"
+                        class="px-5 py-2.5 bg-white text-red-600 border border-red-200 rounded-lg text-sm font-bold shadow-sm transition-all active:scale-95 whitespace-nowrap">
+                        Delete Account
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.getElementById('delete-account-btn').addEventListener('click', function() {
+            Swal.fire({
+                title: 'Are you absolutely sure?',
+                text: "This will permanently delete your company account and completely erase your database. This action cannot be undone!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#475569',
+                confirmButtonText: 'Yes, permanently delete it',
+                cancelButtonText: 'Cancel',
+                reverseButtons: true,
+                customClass: {
+                    title: 'text-xl font-bold text-slate-800',
+                    htmlContainer: 'text-sm text-slate-500',
+                    confirmButton: 'px-6 py-2.5 rounded-lg font-bold text-sm shadow-sm transition-all',
+                    cancelButton: 'px-6 py-2.5 rounded-lg font-bold text-sm transition-all'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Deleting Account...',
+                        text: 'Please wait while we erase your data.',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                    document.getElementById('delete-account-form').submit();
+                }
+            });
+        });
+    </script>
+@endpush
