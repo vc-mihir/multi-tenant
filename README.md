@@ -112,10 +112,10 @@ QUEUE_CONNECTION=database # CRITICAL: Must be database (or redis) for tenant cre
 ### 3. Database Setup
 
 Create a new database named `multi_tenant_central` in your MySQL server.
-Run the central migrations to set up the main tables and the `jobs` table:
+Run the central migrations and database seeders to set up the main tables, the `jobs` table, and the super admin record:
 
 ```bash
-php artisan migrate
+php artisan migrate --seed
 ```
 
 ### 4. Hosts File Configuration
