@@ -1,4 +1,5 @@
 import './bootstrap';
+import './csrf-handler';
 
 import Alpine from 'alpinejs';
 
