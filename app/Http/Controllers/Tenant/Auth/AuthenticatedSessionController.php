@@ -38,6 +38,8 @@ class AuthenticatedSessionController extends Controller
     {
         Auth::guard('tenant_user')->logout();
 
+        $request->session()->invalidate();
+
         $request->session()->regenerateToken();
 
         return redirect()->route('tenant.login')->with('status', 'You have been logged out successfully.');

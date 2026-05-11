@@ -63,6 +63,9 @@ class AdminAuthController extends Controller
             }
 
             Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
             return back()->with('error', 'credentials does not match try again');
         } catch (Exception $e) {
             return back()->with('error', 'credentials does not match try again');

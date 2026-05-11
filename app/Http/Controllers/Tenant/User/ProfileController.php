@@ -66,6 +66,9 @@ class ProfileController extends Controller
 
         Auth::guard('tenant_user')->logout();
 
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
         $user->delete();
 
         return redirect()
