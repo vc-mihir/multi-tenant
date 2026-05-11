@@ -46,7 +46,7 @@ class AdminLoginController extends Controller
     {
         Auth::guard('company')->logout();
 
-        $request->session()->invalidate();
+        $request->session()->regenerate();
 
         $request->session()->regenerateToken();
 
