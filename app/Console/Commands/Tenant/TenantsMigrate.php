@@ -14,7 +14,7 @@ class TenantsMigrate extends Command
     /**
      * The name and signature of the console command.
      */
-    protected $signature = 'tenants:migrate {tenant?} {--fresh : Drop all tables and re-run all migrations} {--refresh : Reset and re-run all migrations}';
+    protected $signature = 'tenants:migrate {tenant?} {--fresh : Drop all tables and re-run all migrations} {--refresh : Reset and re-run all migrations} {--seed : Seed the database with bootstrap data}';
 
     /**
      * The console command description.
@@ -85,6 +85,16 @@ class TenantsMigrate extends Command
                 '--path'     => 'database/migrations/tenant',
                 '--force'    => true,
             ]);
+
+            // Automatically seed bootstrap data after destructive migrations or if --seed is provided
+            if (in_array($command, ['migrate:fresh', 'migrate:refresh']) || $this->option('seed')) {
+                $this->line("Seeding bootstrap data for: {$tenant->db_name}");
+                Artisan::call('db:seed', [
+                    '--class'    => 'Database\Seeders\Tenant\TenantDatabaseSeeder',
+                    '--database' => 'tenant',
+                    '--force'    => true,
+                ]);
+            }
 
             $output = Artisan::output();
 
