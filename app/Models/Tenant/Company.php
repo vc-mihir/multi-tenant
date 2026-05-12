@@ -13,13 +13,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class Company extends Authenticatable implements MustVerifyEmailContract
 {
     use HasFactory, MustVerifyEmail, Notifiable, HasRoles;
- 
-    /**
-     * The connection name for the model.
-     *
-     * @var string|null
-     */
-    protected $connection = 'mysql';
 
     /**
      * The table associated with the model.
