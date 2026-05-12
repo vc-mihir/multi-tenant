@@ -5,6 +5,7 @@ use App\Http\Controllers\Tenant\Admin\AdminDashboardController;
 use App\Http\Controllers\Tenant\Admin\ProfileController;
 use App\Http\Controllers\Tenant\Admin\UserController;
 use App\Http\Controllers\Tenant\User\ProfileController as UserProfileController;
+use App\Http\Controllers\Shared\CsrfTokenController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,6 +19,9 @@ use App\Http\Controllers\Tenant\User\ProfileController as UserProfileController;
 Route::get('/', function () {
     return view('welcome');
 })->name('tenant.index');
+
+// Shared CSRF Refresh Endpoint
+Route::get('/refresh-csrf', [CsrfTokenController::class, 'refresh'])->name('tenant.csrf.refresh');
 
 Route::middleware(['auth:tenant_user', 'verified'])->group(function () {
     Route::get('/dashboard', function () {

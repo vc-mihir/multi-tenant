@@ -3,6 +3,7 @@ use App\Http\Controllers\Central\Admin\AdminAuthController;
 use App\Http\Controllers\Central\Admin\CompanyController;
 use App\Http\Controllers\Central\Admin\ProfileController;
 use App\Http\Controllers\Central\Admin\TenantRecoveryController;
+use App\Http\Controllers\Shared\CsrfTokenController;
 use Illuminate\Support\Facades\Route;
 
 // ─── All central-domain routes ─────────────────────────────────────────────────
@@ -14,6 +15,9 @@ Route::middleware('central')->group(function () {
     Route::get('/', function () {
         return redirect()->route('register');
     });
+
+    // Shared CSRF Refresh Endpoint
+    Route::get('/refresh-csrf', [CsrfTokenController::class, 'refresh'])->name('csrf.refresh');
 
     // ── Admin Panel (SuperAdmin only) ─────────────────────────────────────────
     Route::middleware(['auth', 'role:SuperAdmin'])->group(function () {

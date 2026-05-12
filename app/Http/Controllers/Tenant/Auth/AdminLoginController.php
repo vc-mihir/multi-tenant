@@ -46,6 +46,8 @@ class AdminLoginController extends Controller
     {
         Auth::guard('company')->logout();
 
+        $request->session()->regenerate();
+
         $request->session()->regenerateToken();
 
         return redirect()->route('tenant.admin.login')->with('status', 'Logout successfully');
