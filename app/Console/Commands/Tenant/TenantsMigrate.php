@@ -14,12 +14,12 @@ class TenantsMigrate extends Command
     /**
      * The name and signature of the console command.
      */
-    protected $signature = 'tenants:migrate {tenant?}';
+    protected $signature = 'tenants:migrate {tenant?} {--fresh : Drop all tables and re-run all migrations} {--refresh : Reset and re-run all migrations}';
 
     /**
      * The console command description.
      */
-    protected $description = 'Run migrations for existing tenants';
+    protected $description = 'Run, fresh, or refresh migrations for existing tenants';
 
     /**
      * Execute the console command.
@@ -57,7 +57,18 @@ class TenantsMigrate extends Command
      */
     protected function migrateTenant(CompanyDatabase $tenant)
     {
-        $this->line("Migrating tenant: {$tenant->db_name}");
+        $command = 'migrate';
+        $message = 'Migrating';
+
+        if ($this->option('fresh')) {
+            $command = 'migrate:fresh';
+            $message = 'Freshing (dropping and recreating)';
+        } elseif ($this->option('refresh')) {
+            $command = 'migrate:refresh';
+            $message = 'Refreshing (rolling back and recreating)';
+        }
+
+        $this->line("{$message} tenant: {$tenant->db_name}");
 
         try {
             Config::set('database.connections.tenant.database', $tenant->db_name);
@@ -69,7 +80,7 @@ class TenantsMigrate extends Command
             DB::purge('tenant');
             DB::reconnect('tenant');
 
-            Artisan::call('migrate', [
+            Artisan::call($command, [
                 '--database' => 'tenant',
                 '--path'     => 'database/migrations/tenant',
                 '--force'    => true,
@@ -80,7 +91,7 @@ class TenantsMigrate extends Command
             if (str_contains($output, 'Nothing to migrate')) {
                 $this->comment("Nothing to migrate for {$tenant->db_name}");
             } else {
-                $this->info("Success: Migrated {$tenant->db_name}");
+                $this->info("Success: {$tenant->db_name}");
                 $this->line($output);
             }
         } catch (\Exception $e) {
