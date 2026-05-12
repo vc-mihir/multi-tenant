@@ -7,12 +7,11 @@ use Illuminate\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Company extends Authenticatable implements MustVerifyEmailContract
 {
-    use HasFactory, MustVerifyEmail, Notifiable, HasRoles;
+    use HasFactory, MustVerifyEmail, Notifiable;
 
     /**
      * The table associated with the model.
@@ -20,8 +19,6 @@ class Company extends Authenticatable implements MustVerifyEmailContract
      * @var string
      */
     protected $table = 'companies';
-
-    protected string $guard_name = 'web';
 
     /**
      * The attributes that are mass assignable.
