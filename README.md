@@ -1,9 +1,5 @@
 # Multi-Tenant Laravel Architecture
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="300" alt="Laravel Logo">
-</p>
-
 ## 🚀 Overview
 
 This is a robust, custom-built multi-tenant web application developed on Laravel 12. It implements a strict **Database-per-Tenant** architecture with domain-based isolation. The project cleanly separates the central administrative platform from isolated tenant environments, ensuring data security, performance scalability, and clean code separation.
@@ -14,8 +10,8 @@ This is a robust, custom-built multi-tenant web application developed on Laravel
 
 ### Central Domain vs Tenant Subdomain
 
-- **Central Domain**: (e.g., `myapp.test`) Handles the public landing page, registration of new tenants (companies), and central system administration.
-- **Tenant Subdomain**: (e.g., `company1.myapp.test`) Each tenant receives their own dedicated subdomain. When a request hits a subdomain, the application dynamically resolves the tenant and switches to their dedicated database connection.
+- **Central Domain**: (e.g., `multi-tenant.test`) Handles the registration of new tenants (companies), and central system administration / Super Admin.
+- **Tenant Subdomain**: (e.g., `company1.multi-tenant.test`) Each tenant receives their own dedicated subdomain. When a request hits a subdomain, the application dynamically resolves the tenant and switches to their dedicated database connection.
 
 ### Multi-Tenant Implementation
 
@@ -56,7 +52,11 @@ Tenant provisioning is heavy (creating databases, running migrations). To keep t
 The codebase is strictly organized to separate Central logic from Tenant logic:
 
 - `app/Models/Central` & `app/Models/Tenant`
-- `app/Http/Controllers/Central` & `app/Http/Controllers/Tenant`
+- `app/Http/Controllers/Central`, `app/Http/Controllers/Tenant` & `app/Http/Controllers/Shared`
+- `app/Http/Middleware` — `IdentifyTenant` & `CentralDomainOnly`
+- `app/Jobs` — Background tenant provisioning
+- `app/Services` — Business logic services (e.g., `CompanyService`)
+- `app/Notifications` — Email verification notifications
 - `routes/central/` & `routes/tenant/`
 - `database/migrations/` (Central) & `database/migrations/tenant/` (Tenant-specific)
 
@@ -96,22 +96,29 @@ Open the `.env` file and configure the essential variables:
 
 ```env
 # It is highly recommended to use a local domain like .test instead of localhost for session stability across subdomains
-APP_URL=http://myapp.test
-SESSION_DOMAIN=.myapp.test # Prefix with a dot to allow sessions across subdomains, or leave null for strict isolation
+APP_URL=http://multi-tenant.test
 
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=multi_tenant_central # Create this DB in your MySQL client first
+DB_DATABASE=multi_tenant_master # Create this DB in your MySQL client first
 DB_USERNAME=root # Must have CREATE DATABASE privileges
 DB_PASSWORD=
+
+MAIL_MAILER=smtp
+MAIL_HOST=sandbox.smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=your_mailtrap_username
+MAIL_PASSWORD=your_mailtrap_password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS="admin@multi-tenant.test"
 
 QUEUE_CONNECTION=database # CRITICAL: Must be database (or redis) for tenant creation to work
 ```
 
 ### 3. Database Setup
 
-Create a new database named `multi_tenant_central` in your MySQL server.
+Create a new database named `multi_tenant_master` in your MySQL server.
 Run the central migrations and database seeders to set up the main tables, the `jobs` table, and the super admin record:
 
 ```bash
@@ -123,9 +130,9 @@ php artisan migrate --seed
 To test subdomains locally without Valet/Herd, you must map them in your OS `hosts` file (`/etc/hosts` on Mac/Linux, `C:\Windows\System32\drivers\etc\hosts` on Windows):
 
 ```text
-127.0.0.1   myapp.test
-127.0.0.1   company1.myapp.test
-127.0.0.1   company2.myapp.test
+127.0.0.1   multi-tenant.test
+127.0.0.1   company1.multi-tenant.test
+127.0.0.1   company2.multi-tenant.test
 ```
 
 ### 5. Start the Services
@@ -135,7 +142,7 @@ You need to run **three** separate terminal processes simultaneously:
 **Terminal 1: Laravel Web Server**
 
 ```bash
-php artisan serve --host=myapp.test --port=8000
+php artisan serve --host=multi-tenant.test --port=8000
 # (Skip this if using Valet or Herd)
 ```
 
@@ -155,9 +162,21 @@ _(Without the queue worker, new tenant databases will **never** be created when 
 
 ### 6. Using the Application
 
-1. **Register a Tenant**: Go to `http://myapp.test:8000/register` (or your configured URL) and create a new company (e.g., "Company 1" with subdomain "company1").
+1. **Register a Tenant**: Go to `http://multi-tenant.test:8000/company-register` (or your configured URL) and create a new company (e.g., "Company 1" with subdomain "company1").
 2. **Watch the Queue**: Look at Terminal 3. You should see the `CreateCompanyDatabase` job process successfully.
-3. **Login to Tenant**: Navigate to `http://company1.myapp.test:8000` to access the isolated tenant environment and log in with the credentials you just created.
+3. **Login to Tenant**: Navigate to `http://company1.multi-tenant.test:8000` to access the isolated tenant environment and log in with the credentials you just created.
+
+---
+
+## 📺 Video Demonstration
+
+Click on the thumbnail below to watch the full application flow in action:
+
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=TuYLEXKYl0A" target="_blank">
+    <img src="https://img.youtube.com/vi/TuYLEXKYl0A/maxresdefault.jpg" alt="Multi-Tenant Application Demo" width="100%" />
+  </a>
+</p>
 
 ---
 
