@@ -4,6 +4,8 @@
 @section('page-title', 'Dashboard')
 @section('page-subtitle', 'Welcome back, ' . Auth::guard('company')->user()->company_name)
 
+@section('page-id', 'tenant-admin-dashboard')
+
 @section('content')
 
     {{-- ── QUICK STATS ────────────────────────────── --}}
@@ -98,14 +100,3 @@
 
 @endsection
 
-@push('styles')
-<style>
-    /* Absolute background guarantee */
-    main { 
-        background-color: #f8fafc !important;
-        background-image: 
-            radial-gradient(at 100% 0%, rgba(15, 23, 42, 0.02) 0px, transparent 50%),
-            radial-gradient(at 0% 100%, rgba(16, 185, 129, 0.02) 0px, transparent 50%) !important;
-    }
-</style>
-@endpush

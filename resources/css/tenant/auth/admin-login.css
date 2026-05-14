@@ -1,0 +1,17 @@
+/* Tenant Auth - Admin Login Styles */
+
+.font-serif {
+    font-family: "Playfair Display", serif;
+}
+
+.bg-mint-card {
+    background-color: #dff5e9;
+}
+
+.btn-dark {
+    background-color: #1c2e30;
+}
+
+.btn-dark:hover {
+    background-color: #142123;
+}

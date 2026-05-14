@@ -1,4 +1,4 @@
-<x-layouts.auth-theme>
+<x-layouts.auth-theme page-id="central-auth-register">
     <div class="mb-10 px-2">
         <div class="flex items-center justify-between relative">
             <div class="absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 -translate-y-1/2"></div>
@@ -61,7 +61,7 @@
                             class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Company
                             Name</label>
                         <input id="company_name" type="text" name="company_name" value="{{ old('company_name') }}"
-                            required
+                            required autocomplete="off"
                             class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#DD7F61]/10 focus:border-[#DD7F61] transition-all duration-300"
                             placeholder="e.g. Acme Corp">
                     </div>
@@ -199,113 +199,4 @@
             </button>
         </div>
     </form>
-
-    <script>
-        $(document).ready(function() {
-            const form = $('#registration-form');
-            const phases = ['phase-1', 'phase-2', 'phase-3'];
-            const dots = ['step-1-dot', 'step-2-dot', 'step-3-dot'];
-            const labels = ['', 'step-2-label', 'step-3-label'];
-            const progressLine = $('#progress-line');
-            const nextBtn = $('#next-btn');
-            const prevBtn = $('#prev-btn');
-
-            const btnText = $('#btn-text');
-            const nextIcon = $('#next-icon');
-
-            let currentPhase = 0;
-
-            $.validator.addMethod("strongPassword", function(value, element) {
-                return this.optional(element) ||
-                    (value.length >= 8 && value.length <= 16 &&
-                        /[A-Z]/.test(value) &&
-                        /[a-z]/.test(value) &&
-                        /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value));
-            }, "Use 8-16 chars with Upper, Lower & Symbol.");
-
-            const validator = form.validate({
-                onfocusout: function(element) {
-                    $(element).valid(); // Trigger validation on blur
-                },
-                errorElement: "span",
-                rules: {
-                    ...window.CommonValidationRules,
-                    password: {
-                        required: true,
-                        strongPassword: true
-                    },
-                    password_confirmation: {
-                        required: true,
-                        equalTo: "#password"
-                    }
-                },
-                messages: {
-                    company_email: {
-                        email: "Please enter a valid business email."
-                    },
-                    password_confirmation: {
-                        equalTo: "Passwords do not match."
-                    }
-                }
-            });
-
-            function updateUI() {
-                phases.forEach((id, index) => {
-                    $(`#${id}`).toggleClass('hidden', index !== currentPhase);
-                });
-
-                dots.forEach((id, index) => {
-                    const dot = $(`#${id}`);
-                    if (index <= currentPhase) {
-                        dot.removeClass('bg-slate-100 text-slate-400').addClass(
-                            'bg-[#DD7F61] text-white shadow-lg shadow-[#DD7F61]/20');
-                    } else {
-                        dot.removeClass('bg-[#DD7F61] text-white shadow-lg shadow-[#DD7F61]/20').addClass(
-                            'bg-slate-100 text-slate-400');
-                    }
-                });
-
-                labels.forEach((id, index) => {
-                    if (!id) return;
-                    const label = $(`#${id}`);
-                    index <= currentPhase ? label.removeClass('text-slate-400').addClass('text-[#DD7F61]') :
-                        label.removeClass('text-[#DD7F61]').addClass('text-slate-400');
-                });
-
-                progressLine.css('width', `${(currentPhase / (phases.length - 1)) * 100}%`);
-
-                prevBtn.toggleClass('hidden', currentPhase === 0);
-
-                btnText.text(currentPhase === phases.length - 1 ? 'Register Now' : 'Next Step');
-                nextIcon.toggleClass('hidden', currentPhase === phases.length - 1);
-            }
-
-            nextBtn.on('click', function() {
-                const currentPhaseId = phases[currentPhase];
-                let isValid = true;
-
-                $(`#${currentPhaseId} :input`).each(function() {
-                    if (!$(this).valid()) {
-                        isValid = false;
-                    }
-                });
-
-                if (isValid) {
-                    if (currentPhase < phases.length - 1) {
-                        currentPhase++;
-                        updateUI();
-                    } else {
-                        form.submit();
-                    }
-                }
-            });
-
-            prevBtn.on('click', function() {
-                if (currentPhase > 0) {
-                    currentPhase--;
-                    updateUI();
-                }
-            });
-        });
-    </script>
 </x-layouts.auth-theme>

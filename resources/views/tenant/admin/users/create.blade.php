@@ -4,6 +4,8 @@
 @section('page-title', 'Create New User')
 @section('page-subtitle', 'Add a new user to your tenant workspace')
 
+@section('page-id', 'tenant-admin-users-create')
+
 @section('content')
     <div class="max-w-3xl">
         <div class="t-card p-8 shadow-sm">

@@ -1,4 +1,4 @@
-<x-layouts.auth-theme>
+<x-layouts.auth-theme page-id="tenant-auth-register">
     <div class="mb-4 text-center">
         <h2 class="text-2xl font-bold text-slate-900 leading-tight">Create Account</h2>
         <p class="mt-1 text-sm text-slate-500 font-medium">Register your account to get started.</p>

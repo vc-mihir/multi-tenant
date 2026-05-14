@@ -1,0 +1,52 @@
+.dt-container .dt-layout-row:has(table) {
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(45, 212, 191, 0.4) transparent;
+}
+
+.dt-container .dt-layout-row:has(table)::-webkit-scrollbar {
+    height: 6px;
+}
+
+.dt-container .dt-layout-row:has(table)::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.dt-container .dt-layout-row:has(table)::-webkit-scrollbar-thumb {
+    background: rgba(45, 212, 191, 0.2);
+    border-radius: 10px;
+}
+
+.dt-container .dt-layout-row:has(table)::-webkit-scrollbar-thumb:hover {
+    background: rgba(45, 212, 191, 0.4);
+}
+
+.dt-search input {
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    padding: 0.375rem 0.75rem;
+    outline: none;
+    background: #f8fafc;
+}
+
+.dt-paging-button.current {
+    background: #0d9488 !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 0.5rem !important;
+}
+
+#companies-table th,
+#companies-table td {
+    padding: 1rem 1.25rem !important;
+    vertical-align: middle;
+}
+
+#companies-table thead th {
+    white-space: nowrap;
+    background: #f8fafc;
+    color: #64748b;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}

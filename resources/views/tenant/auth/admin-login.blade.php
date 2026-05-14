@@ -14,26 +14,10 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    <style>
-        .font-serif {
-            font-family: 'Playfair Display', serif;
-        }
-
-        .bg-mint-card {
-            background-color: #dff5e9;
-        }
-
-        .btn-dark {
-            background-color: #1c2e30;
-        }
-
-        .btn-dark:hover {
-            background-color: #142123;
-        }
-    </style>
 </head>
 
-<body class="antialiased font-['Instrument_Sans',sans-serif] bg-mint-card text-slate-700 h-screen overflow-hidden">
+<body class="antialiased font-['Instrument_Sans',sans-serif] bg-mint-card text-slate-700 h-screen overflow-hidden"
+    data-page="tenant-admin-login">
     <div class="h-full w-full flex items-center justify-center p-6">
 
         <!-- Centered Login Card -->
