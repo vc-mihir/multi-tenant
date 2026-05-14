@@ -1,6 +1,7 @@
 @extends('layouts.admin')
 
 @section('title', 'Dashboard')
+@section('page-id', 'central-admin-dashboard')
 @section('page-title', 'System Overview')
 @section('page-subtitle', 'Welcome back, ' . auth()->user()->name)
 
@@ -193,41 +194,4 @@
         </div>
     </div>
 
-    @push('scripts')
-        <script>
-            $(document).ready(function() {
-                @if (session('success'))
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success!',
-                        text: "{{ session('success') }}",
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                        background: '#ecfdf5',
-                        color: '#065f46',
-                        iconColor: '#10b981'
-                    });
-                @endif
-
-                @if (session('error'))
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error!',
-                        text: "{{ session('error') }}",
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                        background: '#fef2f2',
-                        color: '#991b1b',
-                        iconColor: '#ef4444'
-                    });
-                @endif
-            });
-        </script>
-    @endpush
 @endsection

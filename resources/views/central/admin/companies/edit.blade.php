@@ -1,6 +1,7 @@
 @extends('layouts.admin')
 
 @section('title', 'Edit Company')
+@section('page-id', 'central-admin-companies-edit')
 @section('page-title', 'Edit Company')
 @section('page-subtitle', 'Update details for ' . $company->company_name)
 
@@ -14,25 +15,6 @@
     </a>
 @endsection
 
-@push('styles')
-    <style>
-        .error {
-            color: #ef4444;
-            font-size: 10px;
-            font-weight: 700;
-            margin-left: 0.25rem;
-            margin-top: 0.25rem;
-            display: block;
-        }
-
-        input.error,
-        select.error,
-        textarea.error {
-            border-color: #ef4444 !important;
-            background-color: #fef2f2 !important;
-        }
-    </style>
-@endpush
 
 @section('content')
     <div class="max-w-4xl mx-auto">
@@ -197,28 +179,3 @@
     </div>
 @endsection
 
-@push('scripts')
-    <script>
-        $(document).ready(function() {
-            const form = $('#edit-company-form');
-
-            const validator = form.validate({
-                onfocusout: function(element) {
-                    $(element).valid();
-                },
-                errorElement: "span",
-                rules: {
-                    ...window.CommonValidationRules,
-                    status: {
-                        required: true
-                    }
-                },
-                messages: {
-                    company_email: {
-                        email: "Please enter a valid business email."
-                    }
-                }
-            });
-        });
-    </script>
-@endpush

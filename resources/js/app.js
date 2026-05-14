@@ -1,8 +1,61 @@
-import './bootstrap';
-import './csrf-handler';
+import "./bootstrap";
+import "./validation/common-validation";
+import "./central/admin/layout/search";
 
-import Alpine from 'alpinejs';
+window.showAlert = (icon, title, text) => {
+    if (typeof Swal !== "undefined") {
+        Swal.fire({
+            icon: icon,
+            title: title,
+            text: text,
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            background: "#ffffff",
+            color: "#064e3b",
+            iconColor: "#059669",
+            customClass: {
+                popup: "rounded-3xl border border-emerald-50 shadow-2xl shadow-emerald-900/10",
+            },
+        });
+    }
+};
+import "./csrf-handler";
+
+import Alpine from "alpinejs";
 
 window.Alpine = Alpine;
 
 Alpine.start();
+
+/**
+ * Dynamic Asset Router
+ * Loads page-specific JS/CSS based on document.body.dataset.page
+ */
+document.addEventListener("DOMContentLoaded", () => {
+    const pageId = document.body.dataset.page;
+    if (!pageId) return;
+
+    switch (pageId) {
+        case "central-admin-dashboard":
+            import("./central/admin/dashboard/dashboard.js");
+            break;
+        case "central-admin-companies-index":
+            import("./central/admin/companies/index.js");
+            break;
+        case "central-admin-companies-create":
+            import("./central/admin/companies/create.js");
+            break;
+        case "central-admin-companies-edit":
+            import("./central/admin/companies/edit.js");
+            break;
+        case "central-auth-register":
+            import("./central/auth/register.js");
+            break;
+        case "central-admin-settings":
+            import("./central/admin/settings/settings.js");
+            break;
+    }
+});

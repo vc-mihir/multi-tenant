@@ -1,7 +1,8 @@
 <header
     class="sticky top-0 z-40 flex items-center justify-between h-20 px-6 bg-white/80 border-b border-teal-100 backdrop-blur-md">
     <div class="flex flex-1">
-        <form action="#" method="GET" class="w-full max-w-sm ml-0 lg:ml-4 relative" id="search-form">
+        <form action="#" method="GET" class="w-full max-w-sm ml-0 lg:ml-4 relative" id="search-form"
+            data-search-url="{{ route('admin.companies.search') }}">
             <div class="relative text-slate-400 focus-within:text-teal-600">
                 <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
