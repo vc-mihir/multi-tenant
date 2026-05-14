@@ -1,0 +1,20 @@
+/* Error Page Styling */
+.error-page-body {
+    background: radial-gradient(circle at top right, #134e4a, #020617);
+    background-attachment: fixed;
+}
+
+.error-card {
+    background: #ffffff;
+    border-radius: 3rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px rgba(20, 184, 166, 0.1);
+}
+
+.glow {
+    position: absolute;
+    width: 40rem;
+    height: 40rem;
+    background: radial-gradient(circle, rgba(20, 184, 166, 0.15), transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}

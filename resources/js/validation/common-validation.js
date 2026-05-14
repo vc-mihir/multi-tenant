@@ -1,62 +1,67 @@
 /**
  * Common jQuery Validation Rules and Methods
+ * Guarded: only runs when jQuery + jQuery Validate are available.
  */
+if (typeof $ !== "undefined" && $.validator) {
+    $.validator.addMethod(
+        "lowercaseEmail",
+        function (value, element) {
+            return this.optional(element) || !/[A-Z]/.test(value);
+        },
+        "Email must not contain any uppercase letters.",
+    );
 
-$.validator.addMethod(
-    "lowercaseEmail",
-    function (value, element) {
-        return this.optional(element) || !/[A-Z]/.test(value);
-    },
-    "Email must not contain any uppercase letters.",
-);
+    $.validator.addMethod(
+        "subdomainFormat",
+        function (value, element) {
+            return (
+                this.optional(element) ||
+                /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value)
+            );
+        },
+        "Lowercase letters, numbers, and dashes (between words) only.",
+    );
 
-$.validator.addMethod(
-    "subdomainFormat",
-    function (value, element) {
-        return this.optional(element) || /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value);
-    },
-    "Lowercase letters, numbers, and dashes (between words) only.",
-);
-
-window.CommonValidationRules = {
-    company_name: {
-        required: true,
-        maxlength: 100,
-    },
-    subdomain: {
-        required: true,
-        maxlength: 100,
-        subdomainFormat: true,
-    },
-    company_email: {
-        required: true,
-        email: true,
-        maxlength: 100,
-        lowercaseEmail: true,
-    },
-    website: {
-        required: true,
-        url: true,
-        maxlength: 255,
-    },
-    license_number: {
-        required: true,
-        maxlength: 50,
-    },
-    address: {
-        required: true,
-        maxlength: 500,
-    },
-    city: {
-        required: true,
-        maxlength: 100,
-    },
-    state: {
-        required: true,
-        maxlength: 100,
-    },
-    country: {
-        required: true,
-        maxlength: 100,
-    },
-};
+    window.CommonValidationRules = {
+        company_name: {
+            required: true,
+            maxlength: 100,
+        },
+        subdomain: {
+            required: true,
+            maxlength: 100,
+            subdomainFormat: true,
+        },
+        company_email: {
+            required: true,
+            email: true,
+            maxlength: 100,
+            lowercaseEmail: true,
+        },
+        website: {
+            required: true,
+            url: true,
+            maxlength: 255,
+        },
+        license_number: {
+            required: true,
+            maxlength: 50,
+        },
+        address: {
+            required: true,
+            maxlength: 500,
+        },
+        city: {
+            required: true,
+            maxlength: 100,
+        },
+        state: {
+            required: true,
+            maxlength: 100,
+        },
+        country: {
+            required: true,
+            maxlength: 100,
+        },
+    };
+}

@@ -12,32 +12,10 @@
 
     <!-- Scripts & Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    <style>
-        body {
-            font-family: 'Instrument Sans', sans-serif;
-            background: radial-gradient(circle at top right, #134e4a, #020617);
-            background-attachment: fixed;
-        }
-
-        .error-card {
-            background: #ffffff;
-            border-radius: 3rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px rgba(20, 184, 166, 0.1);
-        }
-
-        .glow {
-            position: absolute;
-            width: 40rem;
-            height: 40rem;
-            background: radial-gradient(circle, rgba(20, 184, 166, 0.15), transparent 70%);
-            border-radius: 50%;
-            pointer-events: none;
-        }
-    </style>
 </head>
 
-<body class="h-full antialiased selection:bg-teal-500 selection:text-white overflow-hidden">
+<body class="h-full antialiased selection:bg-teal-500 selection:text-white overflow-hidden error-page-body"
+    data-page="error-page">
     <div class="relative flex min-h-screen items-center justify-center p-6">
         <!-- Glowing Orbs -->
         <div class="glow -top-20 -left-20"></div>
@@ -71,12 +49,6 @@
             </div>
         </div>
     </div>
-
-    <script>
-        function smartBack() {
-            window.history.back();
-        }
-    </script>
 </body>
 
 </html>

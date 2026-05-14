@@ -57,5 +57,16 @@ document.addEventListener("DOMContentLoaded", () => {
         case "central-admin-settings":
             import("./central/admin/settings/settings.js");
             break;
+        case "error-page":
+            import("../css/errors/error-layout.css");
+            import("./shared/error-handler.js");
+            break;
+        case "tenant-user-layout":
+            import("../css/tenant/user/user-layout.css");
+            break;
+    }
+
+    if (pageId.startsWith("tenant-admin-")) {
+        import("../css/tenant/admin-layout.css");
     }
 });
