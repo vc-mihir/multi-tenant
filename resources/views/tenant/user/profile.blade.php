@@ -1,4 +1,4 @@
-<x-layouts.user.tenant-user-header>
+<x-layouts.user.tenant-user-header page-id="tenant-user-profile">
     <x-slot:title>My Profile | {{ config('app.name') }}</x-slot:title>
 
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -125,7 +125,7 @@
                 <form id="delete-account-form" action="{{ route('tenant.user.profile.destroy') }}" method="POST">
                     @csrf
                     @method('DELETE')
-                    <button type="button" onclick="confirmDelete()"
+                    <button type="button"
                         class="px-8 py-4 bg-rose-600 text-white font-black rounded-xl hover:bg-rose-700 transition-all duration-300 uppercase tracking-widest text-[10px] shadow-lg shadow-rose-200">
                         Delete Account
                     </button>
@@ -134,44 +134,6 @@
         </div>
     </div>
 
-    <script>
-        function confirmDelete() {
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "Your account will be permanently deleted. This action cannot be undone!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#e11d48',
-                cancelButtonColor: '#64748b',
-                confirmButtonText: 'Yes, delete it!',
-                cancelButtonText: 'No, keep it',
-                background: '#ffffff',
-                color: '#4c0519',
-                customClass: {
-                    popup: 'rounded-[2.5rem] border border-rose-50',
-                    confirmButton: 'rounded-xl font-bold uppercase tracking-widest text-xs px-6 py-3',
-                    cancelButton: 'rounded-xl font-bold uppercase tracking-widest text-xs px-6 py-3'
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire({
-                        title: 'Deleting Account...',
-                        text: 'Please wait while we process your request.',
-                        timer: 2000,
-                        showConfirmButton: false,
-                        allowOutsideClick: false,
-                        didOpen: () => {
-                            Swal.showLoading();
-                        }
-                    }).then((result) => {
-                        if (result.dismiss === Swal.DismissReason.timer) {
-                            document.getElementById('delete-account-form').submit();
-                        }
-                    });
-                }
-            })
-        }
-    </script>
     </div>
     </div>
 </x-layouts.user.tenant-user-header>

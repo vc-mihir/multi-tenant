@@ -61,8 +61,28 @@ document.addEventListener("DOMContentLoaded", () => {
             import("../css/errors/error-layout.css");
             import("./shared/error-handler.js");
             break;
+        case "tenant-admin-login":
+            import("../css/tenant/auth/admin-login.css");
+            break;
         case "tenant-user-layout":
             import("../css/tenant/user/user-layout.css");
+            break;
+        case "tenant-user-dashboard":
+            import("../css/tenant/user/user-layout.css");
+            break;
+        case "tenant-user-profile":
+            import("../css/tenant/user/user-layout.css");
+            import("./tenant/user/profile.js");
+            break;
+        case "tenant-admin-profile-edit":
+            import("./tenant/admin/profile/edit.js");
+            break;
+        case "tenant-admin-users-index":
+            import("../css/tenant/admin/users/index.css");
+            import("./tenant/admin/users/index.js");
+            break;
+        case "tenant-admin-dashboard":
+            import("../css/tenant/admin/dashboard.css");
             break;
     }
 
