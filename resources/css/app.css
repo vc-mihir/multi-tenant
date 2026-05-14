@@ -1,3 +1,38 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* jQuery Validation Error Styling */
+.error {
+    color: #ef4444 !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    margin-left: 0.25rem !important;
+    margin-top: 0.25rem !important;
+    display: block !important;
+}
+
+input.error,
+select.error,
+textarea.error {
+    border-color: #ef4444 !important;
+    background-color: #fef2f2 !important;
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(45, 212, 191, 0.2);
+    border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(45, 212, 191, 0.4);
+}

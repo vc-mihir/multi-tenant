@@ -1,6 +1,7 @@
 @extends('layouts.admin')
 
 @section('title', 'Create New Company')
+@section('page-id', 'central-admin-companies-create')
 @section('page-title', 'Create Company')
 @section('page-subtitle', 'Manually register a new tenant and provision their database')
 
@@ -14,25 +15,6 @@
     </a>
 @endsection
 
-@push('styles')
-    <style>
-        .error {
-            color: #ef4444;
-            font-size: 10px;
-            font-weight: 700;
-            margin-left: 0.25rem;
-            margin-top: 0.25rem;
-            display: block;
-        }
-
-        input.error,
-        select.error,
-        textarea.error {
-            border-color: #ef4444 !important;
-            background-color: #fef2f2 !important;
-        }
-    </style>
-@endpush
 
 @section('content')
     <div class="max-w-4xl mx-auto">
@@ -192,41 +174,3 @@
     </div>
 @endsection
 
-@push('scripts')
-    <script>
-        $(document).ready(function() {
-            const form = $('#create-company-form');
-
-            $.validator.addMethod("strongPassword", function(value, element) {
-                return this.optional(element) ||
-                    (value.length >= 8 && value.length <= 16 &&
-                        /[A-Z]/.test(value) &&
-                        /[a-z]/.test(value) &&
-                        /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value));
-            }, "Use 8-16 chars with Upper, Lower & Symbol.");
-
-            form.validate({
-                onfocusout: function(element) {
-                    $(element).valid();
-                },
-                errorElement: "span",
-                rules: {
-                    ...window.CommonValidationRules,
-                    password: {
-                        required: true,
-                        strongPassword: true
-                    },
-                    password_confirmation: {
-                        required: true,
-                        equalTo: "#password"
-                    }
-                },
-                messages: {
-                    company_email: {
-                        email: "Please enter a valid business email."
-                    }
-                }
-            });
-        });
-    </script>
-@endpush

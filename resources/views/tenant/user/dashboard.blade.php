@@ -1,4 +1,4 @@
-<x-layouts.user.tenant-user-header>
+<x-layouts.user.tenant-user-header page-id="tenant-user-dashboard">
     <x-slot:title>User Dashboard | {{ config('app.name') }}</x-slot:title>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

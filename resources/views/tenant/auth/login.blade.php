@@ -1,4 +1,4 @@
-<x-layouts.auth-theme>
+<x-layouts.auth-theme page-id="tenant-auth-login">
     <div class="mb-10 text-center">
         <h2 class="text-3xl font-bold text-slate-900 leading-tight">Welcome Back</h2>
         <p class="mt-2 text-slate-500 font-medium">Please enter your credentials to log in.</p>

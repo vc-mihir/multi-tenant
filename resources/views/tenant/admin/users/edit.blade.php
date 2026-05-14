@@ -4,6 +4,8 @@
 @section('page-title', 'Edit User')
 @section('page-subtitle', 'Modify user details for ' . $user->name)
 
+@section('page-id', 'tenant-admin-users-edit')
+
 @section('content')
     <div class="max-w-3xl">
         <div class="t-card p-8 shadow-sm">

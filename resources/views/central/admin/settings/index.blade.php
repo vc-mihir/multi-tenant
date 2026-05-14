@@ -1,6 +1,7 @@
 @extends('layouts.admin')
 
 @section('title', 'General Settings')
+@section('page-id', 'central-admin-settings')
 @section('page-title', 'General Settings')
 @section('page-subtitle', 'Manage your super admin profile information')
 
@@ -90,7 +91,3 @@
     </div>
 @endsection
 
-@push('scripts')
-    <script>
-    </script>
-@endpush
