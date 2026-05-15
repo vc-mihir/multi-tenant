@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Central\Auth\CompanyRegistrationRequest;
 use App\Services\CompanyService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Log;
 use Throwable;
 use Illuminate\View\View;
 
@@ -54,10 +53,10 @@ class CompanyRegistrationController extends Controller
                 'id' => $company->id,
             ]);
         } catch (Throwable $e) {
-            Log::error('Company registration failed.', [
+            activity()->withProperties([
                 'company_email' => $validated['company_email'] ?? null,
                 'exception' => $e->getMessage(),
-            ]);
+            ])->log('Company registration failed');
 
             return back()
                 ->withInput($request->except(['password', 'password_confirmation']))

@@ -3,9 +3,13 @@
 namespace App\Models\Central;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 class CompanyDatabase extends Model
 {
+    use LogsActivity;
+
     /**
      * Force the model to always use the central connection.
      *
@@ -28,5 +32,13 @@ class CompanyDatabase extends Model
     public function company()
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->logOnlyDirty()
+            ->setDescriptionForEvent(fn(string $eventName) => "Company database has been {$eventName}");
     }
 }

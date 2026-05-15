@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Jobs\CreateCompanyDatabase;
 use App\Models\Central\Company;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class CompanyVerifyEmailController extends Controller
@@ -33,10 +32,10 @@ class CompanyVerifyEmailController extends Controller
 
             return redirect()->route('register')->with('status', 'Company email verified successfully. Your account is now active.');
         } catch (Throwable $e) {
-            Log::error('Company email verification failed.', [
+            activity()->withProperties([
                 'company_id' => $id,
                 'exception' => $e->getMessage(),
-            ]);
+            ])->log('Company email verification failed');
 
             return redirect()->route('register')->with('error', 'Unable to verify company email right now. Please try again.');
         }

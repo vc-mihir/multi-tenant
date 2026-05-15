@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Yajra\DataTables\Facades\DataTables;
 use App\Http\Requests\Central\Admin\UpdateCompanyRequest;
 use App\Http\Requests\Central\Admin\StoreCompanyRequest;
@@ -70,7 +69,7 @@ class CompanyController extends Controller
             return redirect()->route('admin.companies.index')
                 ->with('success', 'Company created successfully. Database provisioning has been queued.');
         } catch (Exception $e) {
-            Log::error('Admin company creation failed: ' . $e->getMessage());
+            activity()->withProperties(['error' => $e->getMessage()])->log('Admin company creation failed');
             return back()->withInput()->with('error', 'Failed to create company: ' . $e->getMessage());
         }
     }
@@ -171,7 +170,7 @@ class CompanyController extends Controller
                 ->with('success', 'Company details updated and synced across databases.');
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error("Failed to update and sync company [{$company->id}] - " . $e->getMessage());
+            activity()->withProperties(['error' => $e->getMessage(), 'company_id' => $company->id])->log('Failed to update and sync company');
             return back()->with('error', 'Failed to update company details. ' . $e->getMessage());
         }
     }
@@ -195,14 +194,14 @@ class CompanyController extends Controller
                 DB::statement("DROP DATABASE IF EXISTS `{$dbName}`");
             }
         } catch (Exception $e) {
-            Log::error("Failed to drop database [{$dbName}] - " . $e->getMessage());
+            activity()->withProperties(['error' => $e->getMessage(), 'db_name' => $dbName])->log('Failed to purge tenant database');
             return response()->json(['success' => false, 'message' => 'Failed to purge tenant database.'], 500);
         }
 
         try {
             $company->delete();
         } catch (Exception $e) {
-            Log::error("Failed to delete master record for [{$company->id}] - " . $e->getMessage());
+            activity()->withProperties(['error' => $e->getMessage(), 'company_id' => $company->id])->log('Failed to delete master record');
             return response()->json(['success' => false, 'message' => 'Failed to delete master record.'], 500);
         }
 
@@ -234,7 +233,7 @@ class CompanyController extends Controller
                 $company->delete();
                 $deletedCount++;
             } catch (Exception $e) {
-                Log::error("Bulk delete failed for company [{$company->id}]: " . $e->getMessage());
+                activity()->withProperties(['error' => $e->getMessage(), 'company_id' => $company->id])->log('Bulk delete failed for company');
             }
         }
 
