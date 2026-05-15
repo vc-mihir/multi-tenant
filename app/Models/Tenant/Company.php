@@ -8,10 +8,12 @@ use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 class Company extends Authenticatable implements MustVerifyEmailContract
 {
-    use HasFactory, MustVerifyEmail, Notifiable;
+    use HasFactory, MustVerifyEmail, Notifiable, LogsActivity;
 
     /**
      * The table associated with the model.
@@ -90,5 +92,13 @@ class Company extends Authenticatable implements MustVerifyEmailContract
     public function sendEmailVerificationNotification(): void
     {
         $this->notify(new VerifyCompanyEmail());
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->logOnlyDirty()
+            ->setDescriptionForEvent(fn(string $eventName) => "Tenant company has been {$eventName}");
     }
 }
