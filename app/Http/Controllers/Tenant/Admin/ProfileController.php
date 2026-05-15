@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 use Exception;
 
@@ -57,14 +56,12 @@ class ProfileController extends Controller
 
             Auth::guard('company')->login($tenantUser);
 
-            Log::info("Profile updated successfully for tenant: {$tenantUser->subdomain}");
-
             return redirect()
                 ->route('tenant.admin.profile')
                 ->with('success', 'Company profile updated successfully.');
 
         } catch (Exception $e) {
-            Log::error("Failed to update profile for tenant {$tenantUser->subdomain}: " . $e->getMessage());
+            activity()->withProperties(['error' => $e->getMessage(), 'subdomain' => $tenantUser->subdomain])->log('Failed to update profile for tenant');
 
             return redirect()
                 ->back()
@@ -100,11 +97,9 @@ class ProfileController extends Controller
                 if ($dbName) {
                     DB::connection('mysql')->statement("DROP DATABASE IF EXISTS `{$dbName}`");
                 }
-                
-                Log::info("Tenant account and database deleted successfully for: {$subdomain}");
 
             } catch (Exception $e) {
-                Log::error("Failed to delete tenant {$subdomain}: " . $e->getMessage());
+                activity()->withProperties(['error' => $e->getMessage(), 'subdomain' => $subdomain])->log('Failed to delete tenant');
                 return redirect()->back()->with('error', 'Failed to delete account. Please try again later.');
             }
         }

@@ -11,7 +11,6 @@ use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Throwable;
 use Illuminate\Support\Facades\Hash;
@@ -88,17 +87,12 @@ class CreateCompanyDatabase implements ShouldQueue
                     'db_password' => Crypt::encryptString(config("database.connections.{$defaultConnection}.password")),
                 ]
             );
-
-            Log::info('Company database created and seeded successfully.', [
-                'company_id' => $this->company->id,
-                'database_name' => $dbName,
-            ]);
         } catch (Throwable $e) {
-            Log::error('Company database creation failed.', [
+            activity()->withProperties([
                 'company_id' => $this->company->id,
                 'database_name' => $dbName,
                 'exception' => $e->getMessage(),
-            ]);
+            ])->log('Company database creation failed');
 
             throw $e;
         }
