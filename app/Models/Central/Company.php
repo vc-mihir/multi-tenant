@@ -122,7 +122,9 @@ class Company extends Authenticatable implements MustVerifyEmailContract
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
+            ->useLogName('company')
             ->logFillable()
-            ->logOnlyDirty();
+            ->logOnlyDirty()
+            ->setDescriptionForEvent(fn(string $eventName) => "Company has been {$eventName}");
     }
 }

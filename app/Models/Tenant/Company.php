@@ -97,6 +97,7 @@ class Company extends Authenticatable implements MustVerifyEmailContract
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
+            ->useLogName('tenant_company')
             ->logFillable()
             ->logOnlyDirty()
             ->setDescriptionForEvent(fn(string $eventName) => "Tenant company has been {$eventName}");

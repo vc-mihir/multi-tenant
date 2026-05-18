@@ -66,6 +66,7 @@ class User extends Authenticatable implements MustVerifyEmailContract
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
+            ->useLogName('tenant_user')
             ->logFillable()
             ->logOnlyDirty()
             ->setDescriptionForEvent(fn(string $eventName) => "User has been {$eventName}");

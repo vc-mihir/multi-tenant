@@ -37,6 +37,7 @@ class CompanyDatabase extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
+            ->useLogName('company_database')
             ->logFillable()
             ->logOnlyDirty()
             ->setDescriptionForEvent(fn(string $eventName) => "Company database has been {$eventName}");
