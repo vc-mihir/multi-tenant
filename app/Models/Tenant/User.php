@@ -63,6 +63,11 @@ class User extends Authenticatable implements MustVerifyEmailContract
         $this->notify(new \App\Notifications\VerifyTenantUserEmail());
     }
 
+    public function sendEmailChangedVerificationNotification(): void
+    {
+        $this->notify(new \App\Notifications\VerifyTenantUserEmail(emailChanged: true));
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
