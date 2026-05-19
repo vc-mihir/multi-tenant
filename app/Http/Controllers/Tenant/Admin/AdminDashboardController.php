@@ -3,12 +3,18 @@
 namespace App\Http\Controllers\Tenant\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Tenant\User;
-use Illuminate\Http\Request;
+use App\Services\Tenant\Admin\TenantDashboardService;
 use Illuminate\View\View;
 
 class AdminDashboardController extends Controller
 {
+    /**
+     * Initialize dependencies
+     *
+     * @param TenantDashboardService $dashboardService
+     */
+    public function __construct(protected TenantDashboardService $dashboardService) {}
+
     /**
      * Display the tenant admin dashboard.
      *
@@ -17,8 +23,6 @@ class AdminDashboardController extends Controller
      */
     public function index(string $tenant): View
     {
-        $usersCount = User::count();
-        $unverifiedUsersCount = User::whereNull('email_verified_at')->count();
-        return view('tenant.admin.dashboard', compact('usersCount', 'unverifiedUsersCount'));
+        return view('tenant.admin.dashboard', $this->dashboardService->getStats());
     }
 }

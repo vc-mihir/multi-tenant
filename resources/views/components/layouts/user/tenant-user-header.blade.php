@@ -17,7 +17,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
-<body class="antialiased user-layout-body" data-page="tenant-user-layout">
+<body class="antialiased user-layout-body" data-page="{{ $pageId ?? 'tenant-user-layout' }}">
     <div class="min-h-screen bg-mint-card">
         <!-- Navigation Header -->
         <header class="bg-white border-b border-emerald-100/50 sticky top-0 z-50">

@@ -3,31 +3,36 @@
 namespace App\Http\Controllers\Tenant\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Tenant\User\ProfileUpdateRequest;
+use App\Services\Tenant\User\TenantUserProfileService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
-
-use App\Http\Requests\Tenant\User\ProfileUpdateRequest;
 
 class ProfileController extends Controller
 {
     /**
-     * Show the user profile page
+     * Initialize dependencies
+     *
+     * @param TenantUserProfileService $profileService
+     */
+    public function __construct(protected TenantUserProfileService $profileService) {}
+
+    /**
+     * Show the user profile page.
      *
      * @return View
      */
     public function edit(): View
     {
         return view('tenant.user.profile', [
-            'user' => Auth::guard('tenant_user')->user()
+            'user' => Auth::guard('tenant_user')->user(),
         ]);
     }
 
     /**
-     * Update the user profile
+     * Update the user profile.
      *
      * @param ProfileUpdateRequest $request
      * @return RedirectResponse
@@ -35,19 +40,8 @@ class ProfileController extends Controller
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
         $user = Auth::guard('tenant_user')->user();
-        $validated = $request->validated();
 
-        $user->name  = $validated['name'];
-        $user->email = $validated['email'];
-
-        if (!empty($validated['password'])) {
-            $user->password = Hash::make($validated['password']);
-        }
-
-        $user->save();
-
-        // Re-authenticate to keep the session alive after password change
-        Auth::guard('tenant_user')->login($user);
+        $this->profileService->update($user, $request->validated());
 
         return redirect()
             ->route('tenant.user.profile')
@@ -55,7 +49,7 @@ class ProfileController extends Controller
     }
 
     /**
-     * Delete the user's account
+     * Delete the user's account.
      *
      * @param Request $request
      * @return RedirectResponse
@@ -65,11 +59,10 @@ class ProfileController extends Controller
         $user = Auth::guard('tenant_user')->user();
 
         Auth::guard('tenant_user')->logout();
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        $user->delete();
+        $this->profileService->deleteAccount($user);
 
         return redirect()
             ->route('tenant.login')

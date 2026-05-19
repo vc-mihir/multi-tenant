@@ -4,13 +4,20 @@ namespace App\Http\Controllers\Tenant\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Tenant\Auth\CompanyLoginRequest;
+use App\Services\Tenant\Auth\TenantAdminAuthService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class AdminLoginController extends Controller
 {
+    /**
+     * Initialize dependencies
+     *
+     * @param TenantAdminAuthService $authService
+     */
+    public function __construct(protected TenantAdminAuthService $authService) {}
+
     /**
      * Display the tenant admin login view.
      *
@@ -44,11 +51,7 @@ class AdminLoginController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
-        Auth::guard('company')->logout();
-
-        $request->session()->regenerate();
-
-        $request->session()->regenerateToken();
+        $this->authService->logout($request);
 
         return redirect()->route('tenant.admin.login')->with('status', 'Logout successfully');
     }

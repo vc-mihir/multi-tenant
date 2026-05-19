@@ -4,15 +4,24 @@ namespace App\Http\Controllers\Tenant\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Tenant\Auth\LoginRequest;
+use App\Services\Tenant\Auth\TenantUserAuthService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
 {
     /**
+     * Initialize dependencies
+     *
+     * @param TenantUserAuthService $authService
+     */
+    public function __construct(protected TenantUserAuthService $authService) {}
+
+    /**
      * Display the login view.
+     *
+     * @return View
      */
     public function create(): View
     {
@@ -21,6 +30,9 @@ class AuthenticatedSessionController extends Controller
 
     /**
      * Handle an incoming authentication request.
+     *
+     * @param LoginRequest $request
+     * @return RedirectResponse
      */
     public function store(LoginRequest $request): RedirectResponse
     {
@@ -33,14 +45,13 @@ class AuthenticatedSessionController extends Controller
 
     /**
      * Destroy an authenticated session.
+     *
+     * @param Request $request
+     * @return RedirectResponse
      */
     public function destroy(Request $request): RedirectResponse
     {
-        Auth::guard('tenant_user')->logout();
-
-        $request->session()->regenerate();
-
-        $request->session()->regenerateToken();
+        $this->authService->logout($request);
 
         return redirect()->route('tenant.login')->with('status', 'You have been logged out successfully.');
     }
