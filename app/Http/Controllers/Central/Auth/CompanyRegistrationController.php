@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Central\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Central\Auth\CompanyRegistrationRequest;
-use App\Services\CompanyService;
+use App\Services\Central\CompanyService;
 use Illuminate\Http\RedirectResponse;
 use Throwable;
 use Illuminate\View\View;
