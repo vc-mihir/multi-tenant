@@ -29,8 +29,11 @@ class CompanyVerifyEmailController extends Controller
             $company = Company::findOrFail($id);
             $this->companyService->verifyEmail($company);
 
+            $baseHost = parse_url(config('app.url'), PHP_URL_HOST);
+            $tenantUrl = 'http://' . $company->subdomain . '.' . $baseHost;
+
             return redirect()->route('register')
-                ->with('status', 'Company email verified successfully. Your account is now active.');
+                ->with('status', "Company email verified successfully. Your account is now active. You can visit your website at {$tenantUrl} and for admin login visit {$tenantUrl}/admin/login");
         } catch (Throwable $e) {
             activity()->withProperties([
                 'company_id' => $id,
