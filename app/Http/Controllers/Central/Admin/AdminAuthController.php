@@ -4,41 +4,38 @@ namespace App\Http\Controllers\Central\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Central\Admin\AdminLoginRequest;
-use Illuminate\Support\Facades\Auth;
+use App\Services\Central\Admin\AdminAuthService;
+use App\Services\Central\Admin\AdminDashboardService;
 use Exception;
-use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use App\Models\Central\Company;
+use Illuminate\View\View;
 
 class AdminAuthController extends Controller
 {
     /**
-     * Display the admin dashboard.
+     * Initialize dependencies
+     *
+     * @param AdminDashboardService $dashboardService
+     * @param AdminAuthService $authService
+     */
+    public function __construct(
+        protected AdminDashboardService $dashboardService,
+        protected AdminAuthService $authService,
+    ) {}
+
+    /**
+     * Load Admin Dashboard View and display statistics
+     *
+     * @return View
      */
     public function index(): View
     {
-        $totalCompanies = Company::count();
-        $pendingCompanies = Company::where('status', 'pending')->count();
-        $inactiveCompanies = Company::where('status', 'inactive')->count();
-        $suspendedCompanies = Company::where('status', 'suspended')->count();
-        $recentCompanies = Company::latest()->take(4)->get();
-
-        $recoveryCompanies = Company::whereNotNull('email_verified_at')
-            ->whereDoesntHave('database')
-            ->get();
-
-        return view('central.admin.dashboard', compact(
-            'totalCompanies',
-            'pendingCompanies',
-            'inactiveCompanies',
-            'suspendedCompanies',
-            'recentCompanies',
-            'recoveryCompanies'
-        ));
+        return view('central.admin.dashboard', $this->dashboardService->getStats());
     }
+
     /**
-     * Display the super admin login page.
+     * Load Admin Login View
      *
      * @return View
      */
@@ -48,7 +45,7 @@ class AdminAuthController extends Controller
     }
 
     /**
-     * Handle the super admin authentication.
+     * Check Credentials and Login Admin
      *
      * @param AdminLoginRequest $request
      * @return RedirectResponse
@@ -56,15 +53,9 @@ class AdminAuthController extends Controller
     public function store(AdminLoginRequest $request): RedirectResponse
     {
         try {
-            
-            if (Auth::attempt($request->validated()) && Auth::user()->hasRole('SuperAdmin')) {
-                $request->session()->regenerate();
+            if ($this->authService->attemptLogin($request->validated(), $request)) {
                 return redirect()->intended(route('admin.dashboard'));
             }
-
-            Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
 
             return back()->with('error', 'credentials does not match try again');
         } catch (Exception $e) {
@@ -73,17 +64,14 @@ class AdminAuthController extends Controller
     }
 
     /**
-     * Destroy an authenticated session.
+     * Logout Admin 
      *
      * @param Request $request
      * @return RedirectResponse
      */
     public function destroy(Request $request): RedirectResponse
     {
-        Auth::logout();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        $this->authService->logout($request);
 
         return redirect()->route('admin.login')->with('success', 'Logout successfully');
     }

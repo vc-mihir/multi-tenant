@@ -4,14 +4,20 @@ namespace App\Http\Controllers\Tenant\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Tenant\StoreUserRequest;
-use App\Models\Tenant\User;
-use Illuminate\Auth\Events\Registered;
+use App\Services\Tenant\Auth\TenantUserAuthService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class RegisterController extends Controller
 {
+    /**
+     * Initialize dependencies
+     *
+     * @param TenantUserAuthService $authService
+     */
+    public function __construct(protected TenantUserAuthService $authService) {}
+
     /**
      * Display the registration view.
      *
@@ -30,13 +36,7 @@ class RegisterController extends Controller
      */
     public function store(StoreUserRequest $request): RedirectResponse
     {
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => $request->password,
-        ]);
-
-        event(new Registered($user));
+        $user = $this->authService->register($request->validated());
 
         Auth::guard('tenant_user')->login($user);
 

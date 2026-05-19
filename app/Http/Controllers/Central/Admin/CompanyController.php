@@ -3,38 +3,32 @@
 namespace App\Http\Controllers\Central\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Central\Company;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
-use Illuminate\View\View;
-use Illuminate\Support\Facades\DB;
-use Yajra\DataTables\Facades\DataTables;
-use App\Http\Requests\Central\Admin\UpdateCompanyRequest;
 use App\Http\Requests\Central\Admin\StoreCompanyRequest;
-use App\Services\CompanyService;
+use App\Http\Requests\Central\Admin\UpdateCompanyRequest;
+use App\Models\Central\Company;
+use App\Services\Central\Admin\CompanyDataTableService;
+use App\Services\Central\CompanyService;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Config;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class CompanyController extends Controller
 {
     /**
-     * The company service instance.
-     */
-    protected CompanyService $companyService;
-
-    /**
-     * Create a new controller instance.
+     * Initialize dependencies
      *
      * @param CompanyService $companyService
+     * @param CompanyDataTableService $dataTableService
      */
-    public function __construct(CompanyService $companyService)
-    {
-        $this->companyService = $companyService;
-    }
+    public function __construct(
+        protected CompanyService $companyService,
+        protected CompanyDataTableService $dataTableService,
+    ) {}
 
     /**
-     * Display the admin companies listing page.
+     * Load Admin Companies View
      *
      * @return View
      */
@@ -44,7 +38,7 @@ class CompanyController extends Controller
     }
 
     /**
-     * Show the form for creating a new company.
+     * Load Admin Companies Create View
      *
      * @return View
      */
@@ -54,17 +48,15 @@ class CompanyController extends Controller
     }
 
     /**
-     * Store a newly created company in storage.
+     * Store new company
      *
      * @param StoreCompanyRequest $request
      * @return RedirectResponse
      */
     public function store(StoreCompanyRequest $request): RedirectResponse
     {
-        $validated = $request->validated();
-
         try {
-            $this->companyService->createCompany($validated, true);
+            $this->companyService->createCompany($request->validated(), true);
 
             return redirect()->route('admin.companies.index')
                 ->with('success', 'Company created successfully. Database provisioning has been queued.');
@@ -75,61 +67,17 @@ class CompanyController extends Controller
     }
 
     /**
-     * Provide company records for Yajra DataTables.
+     * Get Companies Data
      *
      * @return JsonResponse
      */
     public function data(): JsonResponse
     {
-        $query = Company::with('database');
-
-        $query->when(request('status'), function ($q) {
-            return $q->where('status', request('status'));
-        });
-
-        return DataTables::of($query)
-            ->addColumn('database_name', function ($company) {
-                if ($company->database) {
-                    return '<code class="px-2 py-1 bg-teal-50 text-teal-700 rounded text-xs font-mono border border-teal-100">' . $company->database->db_name . '</code>';
-                }
-                
-                if ($company->email_verified_at) {
-                    return '<span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-amber-50 text-amber-700 border border-amber-100 text-[10px] font-bold uppercase">
-                        <span class="relative flex h-2 w-2">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
-                        </span>
-                        Ready to Provision
-                    </span>';
-                }
-
-                return '<span class="px-2 py-1 rounded-lg bg-slate-50 text-slate-400 border border-slate-100 text-[10px] font-bold uppercase italic">Awaiting Verification</span>';
-            })
-            ->editColumn('status', function ($company) {
-                $class = match ($company->status) {
-                    'active' => 'bg-emerald-50 text-emerald-700 border-emerald-200/50',
-                    'pending' => 'bg-amber-50 text-amber-700 border-amber-200/50',
-                    'suspended' => 'bg-red-50 text-red-700 border-red-200/50',
-                     default => 'bg-slate-50 text-slate-700 border-slate-200/50'
-                };
-                return '<span class="inline-flex items-center rounded-lg border px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider ' . $class . '">' . $company->status . '</span>';
-            })
-            ->editColumn('email_verified_at', function ($company) {
-                return $company->email_verified_at ? $company->email_verified_at->format('M d, Y H:i') : '<span class="text-slate-400 italic text-xs">Not Verified</span>';
-            })
-            ->editColumn('created_at', function ($company) {
-                return '<span class="font-medium text-slate-700">' . $company->created_at->format('M d, Y') . '</span><br><span class="text-[10px] text-slate-400 uppercase">' . $company->created_at->format('H:i') . '</span>';
-            })
-            ->editColumn('updated_at', function ($company) {
-                return '<span class="font-medium text-slate-700">' . $company->updated_at->format('M d, Y') . '</span><br><span class="text-[10px] text-slate-400 uppercase">' . $company->updated_at->format('H:i') . '</span>';
-            })
-            ->rawColumns(['status', 'email_verified_at', 'created_at', 'updated_at', 'database_name'])
-            ->addIndexColumn()
-            ->toJson();
+        return $this->dataTableService->getData(request('status'));
     }
 
     /**
-     * Show the form for editing the specified company.
+     * Load Admin Companies Edit View
      *
      * @param Company $company
      * @return View
@@ -140,7 +88,7 @@ class CompanyController extends Controller
     }
 
     /**
-     * Update the specified company in storage.
+     * Update company details
      *
      * @param UpdateCompanyRequest $request
      * @param Company $company
@@ -148,68 +96,43 @@ class CompanyController extends Controller
      */
     public function update(UpdateCompanyRequest $request, Company $company): RedirectResponse
     {
-        $validated = $request->validated();
-
         try {
-            DB::beginTransaction();
-
-            $company->update($validated);
-
-            if ($company->database?->db_name){
-                Config::set('database.connections.tenant.database', $company->database->db_name);
-                DB::purge('tenant');
-
-                DB::connection('tenant')->table('companies')
-                    ->where('master_company_id', $company->id)
-                    ->update($validated);
-            }
-
-            DB::commit();
+            $this->companyService->updateCompany($company, $request->validated());
 
             return redirect()->route('admin.companies.index')
                 ->with('success', 'Company details updated and synced across databases.');
         } catch (Exception $e) {
-            DB::rollBack();
-            activity()->withProperties(['error' => $e->getMessage(), 'company_id' => $company->id])->log('Failed to update and sync company');
+            activity()->withProperties(['error' => $e->getMessage(), 'company_id' => $company->id])
+                ->log('Failed to update and sync company');
             return back()->with('error', 'Failed to update company details. ' . $e->getMessage());
         }
     }
 
     /**
-     * Remove the specified company from master and tenant databases.
+     * Delete company and its database
      *
      * @param Company $company
      * @return JsonResponse
      */
     public function destroy(Company $company): JsonResponse
     {
-        if (!auth()->user()->hasRole('SuperAdmin')) {
+        if (! auth()->user()->hasRole('SuperAdmin')) {
             return response()->json(['success' => false, 'message' => 'Unauthorized access.'], 403);
         }
 
-        $dbName = $company->database?->db_name;
-
         try {
-            if ($dbName) {
-                DB::statement("DROP DATABASE IF EXISTS `{$dbName}`");
-            }
+            $this->companyService->deleteCompany($company);
         } catch (Exception $e) {
-            activity()->withProperties(['error' => $e->getMessage(), 'db_name' => $dbName])->log('Failed to purge tenant database');
-            return response()->json(['success' => false, 'message' => 'Failed to purge tenant database.'], 500);
-        }
-
-        try {
-            $company->delete();
-        } catch (Exception $e) {
-            activity()->withProperties(['error' => $e->getMessage(), 'company_id' => $company->id])->log('Failed to delete master record');
-            return response()->json(['success' => false, 'message' => 'Failed to delete master record.'], 500);
+            activity()->withProperties(['error' => $e->getMessage(), 'company_id' => $company->id])
+                ->log('Failed to delete company');
+            return response()->json(['success' => false, 'message' => 'Failed to delete company.'], 500);
         }
 
         return response()->json(['success' => true, 'message' => 'Company and database successfully purged.']);
     }
 
     /**
-     * Bulk Delete Selected Companies and their Databases.
+     * Bulk delete companies and their databases
      *
      * @param Request $request
      * @return JsonResponse
@@ -217,34 +140,21 @@ class CompanyController extends Controller
     public function bulkDelete(Request $request): JsonResponse
     {
         $ids = $request->input('ids', []);
+
         if (empty($ids)) {
             return response()->json(['success' => false, 'message' => 'No companies selected.'], 422);
         }
 
-        $companies = Company::whereIn('id', $ids)->with('database')->get();
-        $deletedCount = 0;
-
-        foreach ($companies as $company) {
-            $dbName = $company->database?->db_name;
-            try {
-                if ($dbName) {
-                    DB::statement("DROP DATABASE IF EXISTS `{$dbName}`");
-                }
-                $company->delete();
-                $deletedCount++;
-            } catch (Exception $e) {
-                activity()->withProperties(['error' => $e->getMessage(), 'company_id' => $company->id])->log('Bulk delete failed for company');
-            }
-        }
+        $deletedCount = $this->companyService->bulkDeleteCompanies($ids);
 
         return response()->json([
             'success' => true,
-            'message' => "Successfully deleted {$deletedCount} companies and their databases."
+            'message' => "Successfully deleted {$deletedCount} companies and their databases.",
         ]);
     }
 
     /**
-     * Search for companies (used in global search).
+     * Search companies by name or email
      *
      * @param Request $request
      * @return JsonResponse
@@ -257,19 +167,12 @@ class CompanyController extends Controller
             return response()->json([]);
         }
 
-        $companies = Company::where('company_name', 'LIKE', "%{$query}%")
-            ->orWhere('company_email', 'LIKE', "%{$query}%")
-            ->limit(5)
-            ->get(['id', 'company_name', 'company_email']);
-
-        $results = $companies->map(function($company) {
-            return [
-                'id' => $company->id,
-                'name' => $company->company_name,
-                'email' => $company->company_email,
-                'url' => route('admin.companies.edit', $company->id)
-            ];
-        });
+        $results = $this->companyService->searchCompanies($query)->map(fn ($company) => [
+            'id'    => $company->id,
+            'name'  => $company->company_name,
+            'email' => $company->company_email,
+            'url'   => route('admin.companies.edit', $company->id),
+        ]);
 
         return response()->json($results);
     }

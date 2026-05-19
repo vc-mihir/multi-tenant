@@ -3,18 +3,25 @@
 namespace App\Http\Controllers\Central\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\View\View;
-use Illuminate\Http\RedirectResponse;
-use App\Models\User;
 use App\Http\Requests\Central\Admin\UpdateProfileRequest;
+use App\Services\Central\Admin\AdminProfileService;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
     /**
-     * Display the admin profile settings page.
+     * Initialize dependencies
+     *
+     * @param AdminProfileService $profileService
+     */
+    public function __construct(
+        protected AdminProfileService $profileService,
+    ) {}
+
+    /**
+     * Load profile edit view
      *
      * @return View
      */
@@ -26,25 +33,14 @@ class ProfileController extends Controller
     }
 
     /**
-     * Update the admin profile.
+     * Update admin profile
      *
      * @param UpdateProfileRequest $request
      * @return RedirectResponse
      */
     public function update(UpdateProfileRequest $request): RedirectResponse
     {
-        $user = Auth::user();
-
-        $validated = $request->validated();
-
-        $user->name = $validated['name'];
-        $user->email = $validated['email'];
-
-        if (!empty($validated['password'])) {
-            $user->password = Hash::make($validated['password']);
-        }
-
-        $user->save();
+        $this->profileService->update(Auth::user(), $request->validated());
 
         return back()->with('success', 'Profile updated successfully.');
     }

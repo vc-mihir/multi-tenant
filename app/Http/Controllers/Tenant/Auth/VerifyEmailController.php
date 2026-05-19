@@ -3,14 +3,24 @@
 namespace App\Http\Controllers\Tenant\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Auth\Events\Verified;
+use App\Services\Tenant\Auth\TenantEmailVerificationService;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\RedirectResponse;
 
 class VerifyEmailController extends Controller
 {
     /**
+     * Initialize dependencies
+     *
+     * @param TenantEmailVerificationService $verificationService
+     */
+    public function __construct(protected TenantEmailVerificationService $verificationService) {}
+
+    /**
      * Mark the authenticated user's email address as verified.
+     *
+     * @param EmailVerificationRequest $request
+     * @return RedirectResponse
      */
     public function __invoke(EmailVerificationRequest $request): RedirectResponse
     {
@@ -18,9 +28,7 @@ class VerifyEmailController extends Controller
             return redirect()->intended(route('tenant.dashboard', absolute: false).'?verified=1');
         }
 
-        if ($request->user()->markEmailAsVerified()) {
-            event(new Verified($request->user()));
-        }
+        $this->verificationService->verify($request->user());
 
         return redirect()->intended(route('tenant.dashboard', absolute: false).'?verified=1');
     }
