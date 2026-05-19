@@ -105,6 +105,36 @@ class UserController extends Controller
     }
 
     /**
+     * Bulk delete multiple users by IDs.
+     *
+     * @param string $tenant
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function bulkDestroy(string $tenant, Request $request): JsonResponse
+    {
+        try {
+            $ids = $request->input('ids', []);
+
+            if (empty($ids)) {
+                return response()->json(['success' => false, 'message' => 'No users selected.'], 422);
+            }
+
+            $count = $this->userService->bulkDeleteUsers($ids);
+
+            return response()->json([
+                'success' => true,
+                'message' => "{$count} user(s) deleted successfully.",
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
      * Remove the specified user.
      *
      * @param string $tenant

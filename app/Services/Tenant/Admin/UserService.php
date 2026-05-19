@@ -61,4 +61,20 @@ class UserService
 
         $user->delete();
     }
+
+    /**
+     * Bulk delete tenant users by IDs.
+     *
+     * @param array $ids
+     * @return int  number of deleted records
+     * @throws Exception  when the active connection is the central database.
+     */
+    public function bulkDeleteUsers(array $ids): int
+    {
+        if (DB::getDefaultConnection() === 'mysql') {
+            throw new Exception('Security Error: Attempted deletion on central database blocked.');
+        }
+
+        return User::whereIn('id', $ids)->delete();
+    }
 }
