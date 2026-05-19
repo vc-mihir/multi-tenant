@@ -41,7 +41,13 @@ class ProfileController extends Controller
     {
         $user = Auth::guard('tenant_user')->user();
 
-        $this->profileService->update($user, $request->validated());
+        $needsVerification = $this->profileService->update($user, $request->validated());
+
+        if ($needsVerification) {
+            return redirect()->route('verification.notice')
+                ->with('status', 'verification-link-sent')
+                ->with('email_changed', true);
+        }
 
         return redirect()
             ->route('tenant.user.profile')

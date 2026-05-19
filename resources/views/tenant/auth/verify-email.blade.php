@@ -8,8 +8,11 @@
         </div>
         <h2 class="text-2xl font-bold text-slate-900 leading-tight">Verify Your Email</h2>
         <p class="mt-2 text-sm text-slate-500 font-medium leading-relaxed">
-            Thanks for signing up! Before getting started, could you verify your email address by clicking on the
-            link we just emailed to you?
+            @if (session('email_changed'))
+                Your email address has been updated. Please verify your new email address by clicking on the link we just sent to you.
+            @else
+                Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you?
+            @endif
         </p>
     </div>
 
