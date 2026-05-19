@@ -31,7 +31,7 @@
             <div
                 class="backdrop-blur-xl bg-white/95 rounded-[2.5rem] border border-white/20 p-6 sm:p-8 shadow-[0_40px_100px_rgba(180,70,30,0.25)] flex-1">
 
-                @if (session('status'))
+                @if (session('status') && session('status') !== 'verification-link-sent')
                     <div
                         class="mb-4 p-3 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-500">
                         <div class="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center flex-shrink-0">

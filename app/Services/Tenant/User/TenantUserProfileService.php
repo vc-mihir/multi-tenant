@@ -15,10 +15,16 @@ class TenantUserProfileService
      * @param array $data
      * @return void
      */
-    public function update(User $user, array $data): void
+    public function update(User $user, array $data): bool
     {
+        $emailChanged = $user->email !== $data['email'];
+
         $user->name  = $data['name'];
         $user->email = $data['email'];
+
+        if ($emailChanged) {
+            $user->email_verified_at = null;
+        }
 
         if (!empty($data['password'])) {
             $user->password = Hash::make($data['password']);
@@ -26,8 +32,15 @@ class TenantUserProfileService
 
         $user->save();
 
-        // Re-authenticate to keep the session alive after a password change
+        // Re-authenticate to keep the session alive after an email/password change
         Auth::guard('tenant_user')->login($user);
+
+        if ($emailChanged) {
+            $user->sendEmailChangedVerificationNotification();
+            return true;
+        }
+
+        return false;
     }
 
     /**
