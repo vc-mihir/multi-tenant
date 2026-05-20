@@ -28,7 +28,8 @@ $(document).ready(function() {
         },
         errorElement: "span",
         errorPlacement: function(error, element) {
-            element.closest('.relative').after(error);
+            const wrapper = element.parent('.relative');
+            (wrapper.length ? wrapper : element).after(error);
         },
         rules: {
             ...window.CommonValidationRules,
