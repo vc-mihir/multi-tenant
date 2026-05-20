@@ -24,6 +24,17 @@ window.showAlert = (icon, title, text) => {
 };
 import "./csrf-handler";
 
+window.togglePasswordVisibility = (inputId, toggleBtn) => {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    const isHidden = input.type === "password";
+    input.type = isHidden ? "text" : "password";
+    const eyeOpen = toggleBtn.querySelector(".eye-open");
+    const eyeClosed = toggleBtn.querySelector(".eye-closed");
+    if (eyeOpen) eyeOpen.classList.toggle("hidden", !isHidden);
+    if (eyeClosed) eyeClosed.classList.toggle("hidden", isHidden);
+};
+
 import Alpine from "alpinejs";
 
 window.Alpine = Alpine;
@@ -60,6 +71,11 @@ document.addEventListener("DOMContentLoaded", () => {
         case "error-page":
             import("../css/errors/error-layout.css");
             import("./shared/error-handler.js");
+            break;
+        case "error-429":
+            import("../css/errors/error-layout.css");
+            import("./shared/error-handler.js");
+            import("./errors/429.js");
             break;
         case "tenant-admin-login":
             import("../css/tenant/auth/admin-login.css");

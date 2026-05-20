@@ -15,7 +15,7 @@
 </head>
 
 <body class="h-full antialiased selection:bg-teal-500 selection:text-white overflow-hidden error-page-body"
-    data-page="error-page">
+    data-page="@yield('page_id', 'error-page')">
     <div class="relative flex min-h-screen items-center justify-center p-6">
         <!-- Glowing Orbs -->
         <div class="glow -top-20 -left-20"></div>
@@ -28,6 +28,8 @@
                 <p class="mt-8 text-lg leading-8 text-slate-600 max-w-2xl mx-auto">
                     @yield('message')
                 </p>
+
+                @yield('extra')
 
                 <div class="mt-12 flex items-center justify-center">
                     <button onclick="smartBack()"

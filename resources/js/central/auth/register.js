@@ -27,6 +27,10 @@ $(document).ready(function() {
             $(element).valid();
         },
         errorElement: "span",
+        errorPlacement: function(error, element) {
+            const wrapper = element.parent('.relative');
+            (wrapper.length ? wrapper : element).after(error);
+        },
         rules: {
             ...window.CommonValidationRules,
             password: {
