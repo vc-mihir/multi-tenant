@@ -27,6 +27,9 @@ $(document).ready(function() {
             $(element).valid();
         },
         errorElement: "span",
+        errorPlacement: function(error, element) {
+            element.closest('.relative').after(error);
+        },
         rules: {
             ...window.CommonValidationRules,
             password: {

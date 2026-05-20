@@ -24,6 +24,17 @@ window.showAlert = (icon, title, text) => {
 };
 import "./csrf-handler";
 
+window.togglePasswordVisibility = (inputId, toggleBtn) => {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    const isHidden = input.type === "password";
+    input.type = isHidden ? "text" : "password";
+    const eyeOpen = toggleBtn.querySelector(".eye-open");
+    const eyeClosed = toggleBtn.querySelector(".eye-closed");
+    if (eyeOpen) eyeOpen.classList.toggle("hidden", !isHidden);
+    if (eyeClosed) eyeClosed.classList.toggle("hidden", isHidden);
+};
+
 import Alpine from "alpinejs";
 
 window.Alpine = Alpine;
