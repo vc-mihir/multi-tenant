@@ -72,6 +72,11 @@ document.addEventListener("DOMContentLoaded", () => {
             import("../css/errors/error-layout.css");
             import("./shared/error-handler.js");
             break;
+        case "error-429":
+            import("../css/errors/error-layout.css");
+            import("./shared/error-handler.js");
+            import("./errors/429.js");
+            break;
         case "tenant-admin-login":
             import("../css/tenant/auth/admin-login.css");
             break;
