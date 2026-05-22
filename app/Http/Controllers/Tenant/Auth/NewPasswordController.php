@@ -3,12 +3,11 @@
 namespace App\Http\Controllers\Tenant\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Tenant\Auth\ResetPasswordRequest;
 use App\Services\Tenant\Auth\TenantPasswordService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Validation\Rules;
-use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class NewPasswordController extends Controller
@@ -34,30 +33,12 @@ class NewPasswordController extends Controller
     /**
      * Handle an incoming new password request.
      *
-     * @param Request $request
+     * @param ResetPasswordRequest $request
      * @return RedirectResponse
-     * @throws ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(ResetPasswordRequest $request): RedirectResponse
     {
-        $request->validate([
-            'token'    => ['required'],
-            'email'    => ['required', 'email'],
-            'password' => [
-                'required',
-                'confirmed',
-                Rules\Password::min(8)
-                    ->max(16)
-                    ->letters()
-                    ->mixedCase()
-                    ->numbers()
-                    ->symbols(),
-            ],
-        ]);
-
-        $status = $this->passwordService->resetPassword(
-            $request->only('email', 'password', 'password_confirmation', 'token')
-        );
+        $status = $this->passwordService->resetPassword($request->validated());
 
         return $status == Password::PASSWORD_RESET
             ? redirect()->route('tenant.login')->with('status', __($status))

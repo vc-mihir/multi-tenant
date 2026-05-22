@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Central\Admin\AdminLoginRequest;
 use App\Services\Central\Admin\AdminAuthService;
 use App\Services\Central\Admin\AdminDashboardService;
-use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -14,7 +13,7 @@ use Illuminate\View\View;
 class AdminAuthController extends Controller
 {
     /**
-     * Initialize dependencies
+     * Injecting dependencies
      *
      * @param AdminDashboardService $dashboardService
      * @param AdminAuthService $authService
@@ -25,7 +24,7 @@ class AdminAuthController extends Controller
     ) {}
 
     /**
-     * Load Admin Dashboard View and display statistics
+     * Display a listing of the resource.
      *
      * @return View
      */
@@ -35,7 +34,7 @@ class AdminAuthController extends Controller
     }
 
     /**
-     * Load Admin Login View
+     * Show the form for creating a new resource.
      *
      * @return View
      */
@@ -45,26 +44,20 @@ class AdminAuthController extends Controller
     }
 
     /**
-     * Check Credentials and Login Admin
+     * Admin login handler
      *
      * @param AdminLoginRequest $request
      * @return RedirectResponse
      */
     public function store(AdminLoginRequest $request): RedirectResponse
     {
-        try {
-            if ($this->authService->attemptLogin($request->validated(), $request)) {
-                return redirect()->intended(route('admin.dashboard'));
-            }
+        $this->authService->attemptLogin($request->validated(), $request);
 
-            return back()->with('error', 'credentials does not match try again');
-        } catch (Exception $e) {
-            return back()->with('error', 'credentials does not match try again');
-        }
+        return redirect()->route('admin.dashboard')->with('success', 'Login successfully');
     }
 
     /**
-     * Logout Admin 
+     * Admin logout handler
      *
      * @param Request $request
      * @return RedirectResponse

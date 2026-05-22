@@ -6,28 +6,19 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Central\Auth\CompanyRegistrationRequest;
 use App\Services\Central\CompanyService;
 use Illuminate\Http\RedirectResponse;
-use Throwable;
 use Illuminate\View\View;
 
 class CompanyRegistrationController extends Controller
 {
     /**
-     * The company service instance.
-     */
-    protected CompanyService $companyService;
-
-    /**
-     * Create a new controller instance.
+     * Inject dependencies
      *
      * @param CompanyService $companyService
      */
-    public function __construct(CompanyService $companyService)
-    {
-        $this->companyService = $companyService;
-    }
+    public function __construct(protected CompanyService $companyService) {}
 
     /**
-     * Display the registration view.
+     * Load company registration view
      *
      * @return View
      */
@@ -37,30 +28,15 @@ class CompanyRegistrationController extends Controller
     }
 
     /**
-     * Validate the incoming company registration request.
+     * Register a new company
      *
      * @param CompanyRegistrationRequest $request
      * @return RedirectResponse
      */
     public function store(CompanyRegistrationRequest $request): RedirectResponse
     {
-        $validated = $request->validated();
+        $company = $this->companyService->createCompany($request->validated(), false);
 
-        try {
-            $company = $this->companyService->createCompany($validated, false);
-
-            return redirect()->route('companies.verification.notice', [
-                'id' => $company->id,
-            ]);
-        } catch (Throwable $e) {
-            activity()->withProperties([
-                'company_email' => $validated['company_email'] ?? null,
-                'exception' => $e->getMessage(),
-            ])->log('Company registration failed');
-
-            return back()
-                ->withInput($request->except(['password', 'password_confirmation']))
-                ->with('error', 'Unable to complete registration right now. Please try again.');
-        }
+        return redirect()->route('companies.verification.notice', ['id' => $company->id]);
     }
 }

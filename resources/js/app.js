@@ -4,6 +4,26 @@ import "./central/admin/layout/search";
 
 window.showAlert = (icon, title, text) => {
     if (typeof Swal !== "undefined") {
+        const styles = {
+            success: {
+                color: "#064e3b",
+                iconColor: "#059669",
+                popup: "rounded-3xl border border-emerald-50 shadow-2xl shadow-emerald-900/10",
+            },
+            error: {
+                color: "#7f1d1d",
+                iconColor: "#dc2626",
+                popup: "rounded-3xl border border-red-100 shadow-2xl shadow-red-900/10",
+            },
+            warning: {
+                color: "#78350f",
+                iconColor: "#d97706",
+                popup: "rounded-3xl border border-amber-100 shadow-2xl shadow-amber-900/10",
+            },
+        };
+
+        const theme = styles[icon] ?? styles.success;
+
         Swal.fire({
             icon: icon,
             title: title,
@@ -14,10 +34,10 @@ window.showAlert = (icon, title, text) => {
             timer: 3000,
             timerProgressBar: true,
             background: "#ffffff",
-            color: "#064e3b",
-            iconColor: "#059669",
+            color: theme.color,
+            iconColor: theme.iconColor,
             customClass: {
-                popup: "rounded-3xl border border-emerald-50 shadow-2xl shadow-emerald-900/10",
+                popup: theme.popup,
             },
         });
     }

@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Tenant\User\ProfileUpdateRequest;
 use App\Services\Tenant\User\TenantUserProfileService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
@@ -57,18 +56,11 @@ class ProfileController extends Controller
     /**
      * Delete the user's account.
      *
-     * @param Request $request
      * @return RedirectResponse
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(): RedirectResponse
     {
-        $user = Auth::guard('tenant_user')->user();
-
-        Auth::guard('tenant_user')->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        $this->profileService->deleteAccount($user);
+        $this->profileService->deleteAccount(Auth::guard('tenant_user')->user());
 
         return redirect()
             ->route('tenant.login')

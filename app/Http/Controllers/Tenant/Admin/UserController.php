@@ -3,16 +3,16 @@
 namespace App\Http\Controllers\Tenant\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Tenant\BulkDeleteUsersRequest;
 use App\Http\Requests\Tenant\StoreUserRequest;
 use App\Http\Requests\Tenant\UpdateUserRequest;
 use App\Models\Tenant\User;
 use App\Services\Tenant\Admin\UserDataTableService;
 use App\Services\Tenant\Admin\UserService;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class UserController extends Controller
 {
@@ -108,30 +108,17 @@ class UserController extends Controller
      * Bulk delete multiple users by IDs.
      *
      * @param string $tenant
-     * @param Request $request
+     * @param BulkDeleteUsersRequest $request
      * @return JsonResponse
      */
-    public function bulkDestroy(string $tenant, Request $request): JsonResponse
+    public function bulkDestroy(string $tenant, BulkDeleteUsersRequest $request): JsonResponse
     {
-        try {
-            $ids = $request->input('ids', []);
+        $count = $this->userService->bulkDeleteUsers($request->validated()['ids']);
 
-            if (empty($ids)) {
-                return response()->json(['success' => false, 'message' => 'No users selected.'], 422);
-            }
-
-            $count = $this->userService->bulkDeleteUsers($ids);
-
-            return response()->json([
-                'success' => true,
-                'message' => "{$count} user(s) deleted successfully.",
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], 500);
-        }
+        return response()->json([
+            'success' => true,
+            'message' => "{$count} user(s) deleted successfully.",
+        ]);
     }
 
     /**
@@ -143,18 +130,11 @@ class UserController extends Controller
      */
     public function destroy(string $tenant, User $user): JsonResponse
     {
-        try {
-            $this->userService->deleteUser($user);
+        $this->userService->deleteUser($user);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'User deleted successfully.',
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], 500);
-        }
+        return response()->json([
+            'success' => true,
+            'message' => 'User deleted successfully.',
+        ]);
     }
 }

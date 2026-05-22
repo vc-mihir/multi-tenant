@@ -4,9 +4,11 @@ namespace App\Services\Tenant\Admin;
 
 use App\Models\Central\Company as CentralCompany;
 use App\Models\Tenant\Company;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class TenantAdminProfileService
 {
@@ -25,15 +27,23 @@ class TenantAdminProfileService
             unset($data['password']);
         }
 
-        DB::transaction(function () use ($tenantUser, $data) {
-            $tenantUser->update($data);
+        try {
+            DB::transaction(function () use ($tenantUser, $data) {
+                $tenantUser->update($data);
 
-            CentralCompany::on('mysql')
-                ->where('subdomain', $tenantUser->subdomain)
-                ->update($data);
-        });
+                CentralCompany::on('mysql')
+                    ->where('subdomain', $tenantUser->subdomain)
+                    ->update($data);
+            });
 
-        Auth::guard('company')->login($tenantUser);
+            Auth::guard('company')->login($tenantUser);
+        } catch (Exception $e) {
+            Log::error('TenantAdminProfileService::update', [
+                'subdomain' => $tenantUser->subdomain,
+                'error'     => $e->getMessage(),
+            ]);
+            throw new Exception('Failed to update company profile. Please try again.');
+        }
     }
 
     /**
@@ -51,13 +61,25 @@ class TenantAdminProfileService
         if ($centralCompany) {
             $dbName = $centralCompany->database->db_name ?? null;
 
-            DB::transaction(function () use ($centralCompany) {
-                $centralCompany->delete();
-            });
+            try {
+                DB::transaction(function () use ($centralCompany) {
+                    $centralCompany->delete();
+                });
 
-            if ($dbName) {
-                DB::connection('mysql')->statement("DROP DATABASE IF EXISTS `{$dbName}`");
+                if ($dbName) {
+                    DB::connection('mysql')->statement("DROP DATABASE IF EXISTS `{$dbName}`");
+                }
+            } catch (Exception $e) {
+                Log::error('TenantAdminProfileService::deleteAccount', [
+                    'subdomain' => $tenantUser->subdomain,
+                    'error'     => $e->getMessage(),
+                ]);
+                throw new Exception('Failed to delete company account. Please try again.');
             }
         }
+
+        Auth::guard('company')->logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
     }
 }

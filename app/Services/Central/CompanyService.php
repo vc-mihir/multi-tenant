@@ -2,159 +2,277 @@
 
 namespace App\Services\Central;
 
-use App\Models\Central\Company;
 use App\Jobs\CreateCompanyDatabase;
-use Exception;
+use App\Models\Central\Company;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
-use InvalidArgumentException;
-use Throwable;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
 
 class CompanyService
 {
     /**
-     * Create a new company record and handle verification/provisioning logic.
+     * Create a new company and handle verification or provisioning
      *
      * @param array $data
      * @param bool $isAdminCreation
      * @return Company
-     * @throws Throwable
      */
     public function createCompany(array $data, bool $isAdminCreation = false): Company
     {
-        return DB::transaction(function () use ($data, $isAdminCreation) {
-            $company = Company::create([
-                'company_name' => $data['company_name'],
-                'subdomain' => $data['subdomain'],
-                'company_email' => $data['company_email'],
-                'website' => $data['website'] ?? null,
-                'license_number' => $data['license_number'] ?? null,
-                'address' => $data['address'] ?? null,
-                'country' => $data['country'] ?? null,
-                'state' => $data['state'] ?? null,
-                'city' => $data['city'] ?? null,
-                'password' => $data['password'],
-                'status' => $isAdminCreation ? 'active' : 'inactive',
-                'email_verified_at' => $isAdminCreation ? now() : null,
+        try {
+            return DB::transaction(function () use ($data, $isAdminCreation) {
+                $company = Company::create([
+                    'company_name'      => $data['company_name'],
+                    'subdomain'         => $data['subdomain'],
+                    'company_email'     => $data['company_email'],
+                    'website'           => $data['website'],
+                    'license_number'    => $data['license_number'],
+                    'address'           => $data['address'],
+                    'country'           => $data['country'],
+                    'state'             => $data['state'],
+                    'city'              => $data['city'],
+                    'password'          => Hash::make($data['password']),
+                    'status'            => $isAdminCreation ? 'active' : 'inactive',
+                    'email_verified_at' => $isAdminCreation ? now() : null,
+                ]);
+
+                $company->assignRole('Company');
+
+                if ($isAdminCreation) {
+                    DB::afterCommit(function () use ($company) {
+                        CreateCompanyDatabase::dispatch($company);
+                    });
+                } else {
+                    $company->sendEmailVerificationNotification();
+                }
+
+                return $company;
+            });
+        } catch (\Exception $e) {
+            Log::error('CompanyService::createCompany', [
+                'company_email' => $data['company_email'] ?? null,
+                'error'         => $e->getMessage(),
             ]);
-
-            $company->assignRole('Company');
-
-            if ($isAdminCreation) {
-                DB::afterCommit(function () use ($company) {
-                    CreateCompanyDatabase::dispatch($company);
-                });
-            } else {
-                $company->sendEmailVerificationNotification();
-            }
-
-            return $company;
-        });
+            throw new \Exception('Failed to create company. Please try again.');
+        }
     }
 
     /**
-     * Update a company record and sync the change into its tenant database.
+     * Update company details and sync to tenant database
      *
-     * @throws Throwable
+     * @param Company $company
+     * @param array $data
+     * @return void
      */
     public function updateCompany(Company $company, array $data): void
     {
-        DB::transaction(function () use ($company, $data) {
-            $company->update($data);
+        try {
+            DB::transaction(function () use ($company, $data) {
+                $company->update($data);
 
-            if ($company->database?->db_name) {
-                Config::set('database.connections.tenant.database', $company->database->db_name);
-                DB::purge('tenant');
+                if ($company->database?->db_name) {
+                    Config::set('database.connections.tenant.database', $company->database->db_name);
+                    DB::purge('tenant');
 
-                DB::connection('tenant')->table('companies')
-                    ->where('master_company_id', $company->id)
-                    ->update($data);
-            }
-        });
+                    DB::connection('tenant')->table('companies')
+                        ->where('master_company_id', $company->id)
+                        ->update($data);
+                }
+            });
+        } catch (\Exception $e) {
+            Log::error('CompanyService::updateCompany', [
+                'company_id' => $company->id,
+                'error'      => $e->getMessage(),
+            ]);
+            throw new \Exception('Failed to update company details.');
+        }
     }
 
     /**
-     * Drop the tenant database (if it exists) and delete the central company record.
+     * Delete company record and drop its tenant database
      *
-     * @throws Exception
+     * @param Company $company
+     * @return void
      */
     public function deleteCompany(Company $company): void
     {
-        $dbName = $company->database?->db_name;
+        try {
+            $dbName = $company->database?->db_name;
 
-        if ($dbName) {
-            DB::statement("DROP DATABASE IF EXISTS `{$dbName}`");
+            if ($dbName) {
+                DB::statement("DROP DATABASE IF EXISTS `{$dbName}`");
+            }
+
+            $company->delete();
+        } catch (\Exception $e) {
+            Log::error('CompanyService::deleteCompany', [
+                'company_id' => $company->id,
+                'error'      => $e->getMessage(),
+            ]);
+            throw new \Exception('Failed to delete company and its database.');
         }
-
-        $company->delete();
     }
 
     /**
-     * Bulk-delete companies by ID; returns the count of successfully deleted records.
+     * Bulk delete companies and their tenant databases
+     *
+     * @param array $ids
+     * @return int
      */
     public function bulkDeleteCompanies(array $ids): int
     {
-        $companies   = Company::whereIn('id', $ids)->with('database')->get();
-        $deletedCount = 0;
+        try {
+            $companies    = Company::whereIn('id', $ids)->with('database')->get();
+            $deletedCount = 0;
 
-        foreach ($companies as $company) {
-            try {
-                $this->deleteCompany($company);
-                $deletedCount++;
-            } catch (Exception $e) {
-                activity()
-                    ->withProperties(['error' => $e->getMessage(), 'company_id' => $company->id])
-                    ->log('Bulk delete failed for company');
+            foreach ($companies as $company) {
+                try {
+                    $this->deleteCompany($company);
+                    $deletedCount++;
+                } catch (\Exception $e) {
+                    activity()
+                        ->withProperties(['error' => $e->getMessage(), 'company_id' => $company->id])
+                        ->log('Bulk delete failed for company');
+                }
             }
-        }
 
-        return $deletedCount;
+            return $deletedCount;
+        } catch (\Exception $e) {
+            Log::error('CompanyService::bulkDeleteCompanies', [
+                'ids'   => $ids,
+                'error' => $e->getMessage(),
+            ]);
+            throw new \Exception('Failed to bulk delete companies.');
+        }
     }
 
     /**
-     * Search companies by name or email; returns up to 5 matches.
+     * Search companies by name or email
+     *
+     * @param string $query
+     * @return Collection
      */
     public function searchCompanies(string $query): Collection
     {
-        return Company::where('company_name', 'LIKE', "%{$query}%")
-            ->orWhere('company_email', 'LIKE', "%{$query}%")
-            ->limit(5)
-            ->get(['id', 'company_name', 'company_email']);
-    }
+        try {
+            if (empty($query)) {
+                return collect();
+            }
 
-    /**
-     * Mark a company email as verified, activate the account, and dispatch database provisioning.
-     */
-    public function verifyEmail(Company $company): void
-    {
-        if (! $company->hasVerifiedEmail()) {
-            $company->markEmailAsVerified();
-            $company->update(['status' => 'active']);
-            CreateCompanyDatabase::dispatch($company);
+            return Company::where('company_name', 'LIKE', "%{$query}%")
+                ->orWhere('company_email', 'LIKE', "%{$query}%")
+                ->limit(5)
+                ->get(['id', 'company_name', 'company_email']);
+        } catch (\Exception $e) {
+            Log::error('CompanyService::searchCompanies', [
+                'query' => $query,
+                'error' => $e->getMessage(),
+            ]);
+            throw new \Exception('Failed to search companies.');
         }
     }
 
     /**
-     * Re-send the email verification notification.
+     * Verify company email, activate account and dispatch database provisioning
+     *
+     * @param int $id
+     * @return string
      */
-    public function resendVerificationEmail(Company $company): void
+    public function verifyEmail(int $id): string
     {
-        $company->sendEmailVerificationNotification();
+        try {
+            $company = Company::findOrFail($id);
+
+            if (! $company->hasVerifiedEmail()) {
+                $company->markEmailAsVerified();
+                $company->update(['status' => 'active']);
+                CreateCompanyDatabase::dispatch($company);
+            }
+
+            $baseHost = parse_url(config('app.url'), PHP_URL_HOST);
+
+            return 'http://' . $company->subdomain . '.' . $baseHost;
+        } catch (\Exception $e) {
+            Log::error('CompanyService::verifyEmail', [
+                'id'    => $id,
+                'error' => $e->getMessage(),
+            ]);
+            throw new \Exception('Unable to verify company email. Please try again.');
+        }
     }
 
     /**
-     * Dispatch database provisioning for an eligible company.
+     * Resend email verification notification to company
      *
-     * @throws InvalidArgumentException  when the company is not eligible.
-     * @throws Exception                 when the job dispatch fails.
+     * @param int $id
+     * @return void
+     */
+    public function resendVerificationEmail(int $id): void
+    {
+        try {
+            $company = Company::findOrFail($id);
+
+            if ($company->hasVerifiedEmail()) {
+                throw new \Exception('Company account is already active.');
+            }
+
+            $company->sendEmailVerificationNotification();
+        } catch (\Exception $e) {
+            Log::error('CompanyService::resendVerificationEmail', [
+                'id'    => $id,
+                'error' => $e->getMessage(),
+            ]);
+            throw new \Exception($e->getMessage());
+        }
+    }
+
+    /**
+     * Fetch a company that has not yet verified its email
+     *
+     * @param int $id
+     * @return Company
+     */
+    public function getUnverifiedCompany(int $id): Company
+    {
+        try {
+            $company = Company::findOrFail($id);
+
+            if ($company->hasVerifiedEmail()) {
+                throw new \Exception('Company account is already active.');
+            }
+
+            return $company;
+        } catch (\Exception $e) {
+            Log::error('CompanyService::getUnverifiedCompany', [
+                'id'    => $id,
+                'error' => $e->getMessage(),
+            ]);
+            throw new \Exception($e->getMessage());
+        }
+    }
+
+    /**
+     * Dispatch tenant database provisioning job for an eligible company
+     *
+     * @param Company $company
+     * @return void
      */
     public function provisionDatabase(Company $company): void
     {
-        if (! $company->email_verified_at || $company->database()->exists()) {
-            throw new InvalidArgumentException('This company is not eligible for database provisioning.');
-        }
+        try {
+            if (! $company->email_verified_at || $company->database()->exists()) {
+                throw new \Exception('This company is not eligible for database provisioning.');
+            }
 
-        CreateCompanyDatabase::dispatch($company);
+            CreateCompanyDatabase::dispatch($company);
+        } catch (\Exception $e) {
+            Log::error('CompanyService::provisionDatabase', [
+                'company_id' => $company->id,
+                'error'      => $e->getMessage(),
+            ]);
+            throw new \Exception($e->getMessage());
+        }
     }
 }
