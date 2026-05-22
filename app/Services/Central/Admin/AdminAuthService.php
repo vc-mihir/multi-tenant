@@ -17,9 +17,14 @@ class AdminAuthService
      */
     public function attemptLogin(array $credentials, Request $request): void
     {
-        if (Auth::attempt($credentials) && Auth::user()->hasRole('SuperAdmin')) {
-            $request->session()->regenerate();
-            return;
+        try {
+            if (Auth::attempt($credentials) && Auth::user()->hasRole('SuperAdmin')) {
+                $request->session()->regenerate();
+                return;
+            }
+        } catch (\Exception $e) {
+            Log::error('AdminAuthService::attemptLogin', ['error' => $e->getMessage()]);
+            throw new \Exception('Failed to login. Please try again.');
         }
 
         Auth::logout();
