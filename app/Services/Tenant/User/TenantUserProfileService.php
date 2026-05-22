@@ -5,6 +5,7 @@ namespace App\Services\Tenant\User;
 use App\Models\Tenant\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class TenantUserProfileService
 {
@@ -17,30 +18,37 @@ class TenantUserProfileService
      */
     public function update(User $user, array $data): bool
     {
-        $emailChanged = $user->email !== $data['email'];
+        try {
+            $emailChanged = $user->email !== $data['email'];
 
-        $user->name  = $data['name'];
-        $user->email = $data['email'];
+            $user->name  = $data['name'];
+            $user->email = $data['email'];
 
-        if ($emailChanged) {
-            $user->email_verified_at = null;
+            if ($emailChanged) {
+                $user->email_verified_at = null;
+            }
+
+            if (!empty($data['password'])) {
+                $user->password = Hash::make($data['password']);
+            }
+
+            $user->save();
+
+            Auth::guard('tenant_user')->login($user);
+
+            if ($emailChanged) {
+                $user->sendEmailChangedVerificationNotification();
+                return true;
+            }
+
+            return false;
+        } catch (\Exception $e) {
+            Log::error('TenantUserProfileService::update', [
+                'user_id' => $user->id,
+                'error'   => $e->getMessage(),
+            ]);
+            throw new \Exception('Failed to update profile. Please try again.');
         }
-
-        if (!empty($data['password'])) {
-            $user->password = Hash::make($data['password']);
-        }
-
-        $user->save();
-
-        // Re-authenticate to keep the session alive after an email/password change
-        Auth::guard('tenant_user')->login($user);
-
-        if ($emailChanged) {
-            $user->sendEmailChangedVerificationNotification();
-            return true;
-        }
-
-        return false;
     }
 
     /**
@@ -51,6 +59,18 @@ class TenantUserProfileService
      */
     public function deleteAccount(User $user): void
     {
-        $user->delete();
+        try {
+            $user->delete();
+        } catch (\Exception $e) {
+            Log::error('TenantUserProfileService::deleteAccount', [
+                'user_id' => $user->id,
+                'error'   => $e->getMessage(),
+            ]);
+            throw new \Exception('Failed to delete account. Please try again.');
+        }
+
+        Auth::guard('tenant_user')->logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
     }
 }

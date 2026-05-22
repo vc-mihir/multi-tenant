@@ -6,6 +6,7 @@ use App\Models\Tenant\User;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class UserService
 {
@@ -17,12 +18,20 @@ class UserService
      */
     public function createUser(array $data): User
     {
-        return User::create([
-            'name'              => $data['name'],
-            'email'             => $data['email'],
-            'password'          => Hash::make($data['password']),
-            'email_verified_at' => now(),
-        ]);
+        try {
+            return User::create([
+                'name'              => $data['name'],
+                'email'             => $data['email'],
+                'password'          => Hash::make($data['password']),
+                'email_verified_at' => now(),
+            ]);
+        } catch (Exception $e) {
+            Log::error('UserService::createUser', [
+                'email' => $data['email'],
+                'error' => $e->getMessage(),
+            ]);
+            throw new Exception('Failed to create user. Please try again.');
+        }
     }
 
     /**
@@ -43,7 +52,15 @@ class UserService
             $update['password'] = Hash::make($data['password']);
         }
 
-        $user->update($update);
+        try {
+            $user->update($update);
+        } catch (Exception $e) {
+            Log::error('UserService::updateUser', [
+                'user_id' => $user->id,
+                'error'   => $e->getMessage(),
+            ]);
+            throw new Exception('Failed to update user. Please try again.');
+        }
     }
 
     /**
@@ -59,7 +76,15 @@ class UserService
             throw new Exception('Security Error: Attempted deletion on central database blocked.');
         }
 
-        $user->delete();
+        try {
+            $user->delete();
+        } catch (Exception $e) {
+            Log::error('UserService::deleteUser', [
+                'user_id' => $user->id,
+                'error'   => $e->getMessage(),
+            ]);
+            throw new Exception('Failed to delete user. Please try again.');
+        }
     }
 
     /**
@@ -75,6 +100,14 @@ class UserService
             throw new Exception('Security Error: Attempted deletion on central database blocked.');
         }
 
-        return User::whereIn('id', $ids)->delete();
+        try {
+            return User::whereIn('id', $ids)->delete();
+        } catch (Exception $e) {
+            Log::error('UserService::bulkDeleteUsers', [
+                'ids'   => $ids,
+                'error' => $e->getMessage(),
+            ]);
+            throw new Exception('Failed to bulk delete users. Please try again.');
+        }
     }
 }
