@@ -20,6 +20,13 @@ class AdminAuthService
         try {
             if (Auth::attempt($credentials) && Auth::user()->hasRole('SuperAdmin')) {
                 $request->session()->regenerate();
+
+                activity()
+                    ->causedBy(Auth::user())
+                    ->performedOn(Auth::user())
+                    ->event('login')
+                    ->log('SuperAdmin logged in');
+
                 return;
             }
         } catch (\Exception $e) {
@@ -43,9 +50,17 @@ class AdminAuthService
     public function logout(Request $request): void
     {
         try {
+            $user = Auth::user();
+
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
+
+            activity()
+                ->causedBy($user)
+                ->performedOn($user)
+                ->event('logout')
+                ->log('SuperAdmin logged out');
         } catch (\Exception $e) {
             Log::error('AdminAuthService::logout', ['error' => $e->getMessage()]);
             throw new \Exception('Failed to logout. Please try again.');

@@ -22,6 +22,12 @@ class TenantAdminAuthService
         try {
             $request->authenticate();
             $request->session()->regenerate();
+
+            activity()
+                ->causedBy(Auth::guard('company')->user())
+                ->performedOn(Auth::guard('company')->user())
+                ->event('login')
+                ->log('Tenant admin logged in');
         } catch (ValidationException $e) {
             throw $e;
         } catch (\Exception $e) {
@@ -39,9 +45,17 @@ class TenantAdminAuthService
     public function logout(Request $request): void
     {
         try {
+            $user = Auth::guard('company')->user();
+
             Auth::guard('company')->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
+
+            activity()
+                ->causedBy($user)
+                ->performedOn($user)
+                ->event('logout')
+                ->log('Tenant admin logged out');
         } catch (\Exception $e) {
             Log::error('TenantAdminAuthService::logout', ['error' => $e->getMessage()]);
             throw new \Exception('Failed to logout. Please try again.');
