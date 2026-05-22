@@ -7,6 +7,7 @@ use App\Models\Central\Company;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 
@@ -103,6 +104,13 @@ class CompanyService
 
             if ($dbName) {
                 DB::statement("DROP DATABASE IF EXISTS `{$dbName}`");
+
+                activity()
+                    ->causedBy(Auth::user())
+                    ->performedOn($company)
+                    ->event('deleted')
+                    ->withProperties(['company_id' => $company->id, 'db_name' => $dbName])
+                    ->log('Tenant database dropped');
             }
 
             $company->delete();
@@ -133,6 +141,9 @@ class CompanyService
                     $deletedCount++;
                 } catch (\Exception $e) {
                     activity()
+                        ->causedBy(Auth::user())
+                        ->performedOn($company)
+                        ->event('delete_failed')
                         ->withProperties(['error' => $e->getMessage(), 'company_id' => $company->id])
                         ->log('Bulk delete failed for company');
                 }

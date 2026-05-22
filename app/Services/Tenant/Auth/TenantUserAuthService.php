@@ -24,6 +24,12 @@ class TenantUserAuthService
         try {
             $request->authenticate();
             $request->session()->regenerate();
+
+            activity()
+                ->causedBy(Auth::guard('tenant_user')->user())
+                ->performedOn(Auth::guard('tenant_user')->user())
+                ->event('login')
+                ->log('Tenant user logged in');
         } catch (ValidationException $e) {
             throw $e;
         } catch (\Exception $e) {
@@ -51,6 +57,12 @@ class TenantUserAuthService
 
             Auth::guard('tenant_user')->login($user);
 
+            activity()
+                ->causedBy($user)
+                ->performedOn($user)
+                ->event('registered')
+                ->log('Tenant user registered and logged in');
+
             return $user;
         } catch (\Exception $e) {
             Log::error('TenantUserAuthService::register', [
@@ -70,9 +82,17 @@ class TenantUserAuthService
     public function logout(Request $request): void
     {
         try {
+            $user = Auth::guard('tenant_user')->user();
+
             Auth::guard('tenant_user')->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
+
+            activity()
+                ->causedBy($user)
+                ->performedOn($user)
+                ->event('logout')
+                ->log('Tenant user logged out');
         } catch (\Exception $e) {
             Log::error('TenantUserAuthService::logout', ['error' => $e->getMessage()]);
             throw new \Exception('Failed to logout. Please try again.');

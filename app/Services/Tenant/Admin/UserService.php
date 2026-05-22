@@ -4,6 +4,7 @@ namespace App\Services\Tenant\Admin;
 
 use App\Models\Tenant\User;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -101,7 +102,15 @@ class UserService
         }
 
         try {
-            return User::whereIn('id', $ids)->delete();
+            $deleted = User::whereIn('id', $ids)->delete();
+
+            activity()
+                ->causedBy(Auth::guard('company')->user())
+                ->event('deleted')
+                ->withProperties(['deleted_ids' => $ids])
+                ->log('Bulk users deleted');
+
+            return $deleted;
         } catch (Exception $e) {
             Log::error('UserService::bulkDeleteUsers', [
                 'ids'   => $ids,
