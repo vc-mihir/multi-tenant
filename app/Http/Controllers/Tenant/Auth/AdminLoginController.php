@@ -36,9 +36,7 @@ class AdminLoginController extends Controller
      */
     public function store(CompanyLoginRequest $request): RedirectResponse
     {
-        $request->authenticate();
-
-        $request->session()->regenerate();
+        $this->authService->login($request);
 
         return redirect()->route('tenant.admin.dashboard');
     }

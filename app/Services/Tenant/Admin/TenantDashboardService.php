@@ -3,6 +3,7 @@
 namespace App\Services\Tenant\Admin;
 
 use App\Models\Tenant\User;
+use Illuminate\Support\Facades\Log;
 
 class TenantDashboardService
 {
@@ -13,9 +14,14 @@ class TenantDashboardService
      */
     public function getStats(): array
     {
-        return [
-            'usersCount'           => User::count(),
-            'unverifiedUsersCount' => User::whereNull('email_verified_at')->count(),
-        ];
+        try {
+            return [
+                'usersCount'           => User::count(),
+                'unverifiedUsersCount' => User::whereNull('email_verified_at')->count(),
+            ];
+        } catch (\Exception $e) {
+            Log::error('TenantDashboardService::getStats', ['error' => $e->getMessage()]);
+            throw new \Exception('Failed to load dashboard statistics. Please try again.');
+        }
     }
 }

@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Tenant\StoreUserRequest;
 use App\Services\Tenant\Auth\TenantUserAuthService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class RegisterController extends Controller
@@ -36,9 +35,7 @@ class RegisterController extends Controller
      */
     public function store(StoreUserRequest $request): RedirectResponse
     {
-        $user = $this->authService->register($request->validated());
-
-        Auth::guard('tenant_user')->login($user);
+        $this->authService->register($request->validated());
 
         return redirect()->route('verification.notice');
     }

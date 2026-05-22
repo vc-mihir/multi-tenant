@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Tenant\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Tenant\Auth\ForgotPasswordRequest;
 use App\Services\Tenant\Auth\TenantPasswordService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class PasswordResetLinkController extends Controller
@@ -32,17 +31,12 @@ class PasswordResetLinkController extends Controller
     /**
      * Handle an incoming password reset link request.
      *
-     * @param Request $request
+     * @param ForgotPasswordRequest $request
      * @return RedirectResponse
-     * @throws ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(ForgotPasswordRequest $request): RedirectResponse
     {
-        $request->validate([
-            'email' => ['required', 'email'],
-        ]);
-
-        $status = $this->passwordService->sendResetLink($request->email);
+        $status = $this->passwordService->sendResetLink($request->validated()['email']);
 
         return $status == Password::RESET_LINK_SENT
             ? back()->with('status', __($status))

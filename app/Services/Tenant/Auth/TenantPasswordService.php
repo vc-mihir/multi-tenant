@@ -7,6 +7,7 @@ use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -22,9 +23,17 @@ class TenantPasswordService
      */
     public function updatePassword(User $user, string $password): void
     {
-        $user->update([
-            'password' => Hash::make($password),
-        ]);
+        try {
+            $user->update([
+                'password' => Hash::make($password),
+            ]);
+        } catch (\Exception $e) {
+            Log::error('TenantPasswordService::updatePassword', [
+                'user_id' => $user->id,
+                'error'   => $e->getMessage(),
+            ]);
+            throw new \Exception('Failed to update password. Please try again.');
+        }
     }
 
     /**
@@ -36,16 +45,23 @@ class TenantPasswordService
      */
     public function confirmPassword(Request $request): void
     {
-        if (! Auth::guard('web')->validate([
-            'email'    => $request->user()->email,
-            'password' => $request->password,
-        ])) {
-            throw ValidationException::withMessages([
-                'password' => __('auth.password'),
-            ]);
-        }
+        try {
+            if (! Auth::guard('web')->validate([
+                'email'    => $request->user()->email,
+                'password' => $request->password,
+            ])) {
+                throw ValidationException::withMessages([
+                    'password' => __('auth.password'),
+                ]);
+            }
 
-        $request->session()->put('auth.password_confirmed_at', time());
+            $request->session()->put('auth.password_confirmed_at', time());
+        } catch (ValidationException $e) {
+            throw $e;
+        } catch (\Exception $e) {
+            Log::error('TenantPasswordService::confirmPassword', ['error' => $e->getMessage()]);
+            throw new \Exception('Failed to confirm password. Please try again.');
+        }
     }
 
     /**
@@ -56,7 +72,15 @@ class TenantPasswordService
      */
     public function sendResetLink(string $email): string
     {
-        return Password::broker('tenant_users')->sendResetLink(['email' => $email]);
+        try {
+            return Password::broker('tenant_users')->sendResetLink(['email' => $email]);
+        } catch (\Exception $e) {
+            Log::error('TenantPasswordService::sendResetLink', [
+                'email' => $email,
+                'error' => $e->getMessage(),
+            ]);
+            throw new \Exception('Failed to send password reset link. Please try again.');
+        }
     }
 
     /**
@@ -67,16 +91,21 @@ class TenantPasswordService
      */
     public function resetPassword(array $data): string
     {
-        return Password::broker('tenant_users')->reset(
-            $data,
-            function (User $user) use ($data) {
-                $user->forceFill([
-                    'password'       => Hash::make($data['password']),
-                    'remember_token' => Str::random(60),
-                ])->save();
+        try {
+            return Password::broker('tenant_users')->reset(
+                $data,
+                function (User $user) use ($data) {
+                    $user->forceFill([
+                        'password'       => Hash::make($data['password']),
+                        'remember_token' => Str::random(60),
+                    ])->save();
 
-                event(new PasswordReset($user));
-            }
-        );
+                    event(new PasswordReset($user));
+                }
+            );
+        } catch (\Exception $e) {
+            Log::error('TenantPasswordService::resetPassword', ['error' => $e->getMessage()]);
+            throw new \Exception('Failed to reset password. Please try again.');
+        }
     }
 }

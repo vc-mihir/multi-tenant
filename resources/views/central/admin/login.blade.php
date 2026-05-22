@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
@@ -39,22 +40,10 @@
                         Use your elevated credentials to continue to the administrative dashboard.
                     </p>
 
+                    @include('components.toast-alert')
+
                     <form class="mt-8 space-y-5" method="POST" action="{{ route('admin.login.post') }}">
                         @csrf
-
-                        @if (session('success'))
-                            <div
-                                class="p-4 rounded-2xl bg-teal-50 border border-teal-100 flex items-start space-x-3 animate-in fade-in slide-in-from-top-4 duration-300">
-                                <svg class="w-5 h-5 text-teal-600 shrink-0 mt-0.5" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <div class="flex-1 text-sm font-bold text-teal-900 leading-tight">
-                                    {{ session('success') }}
-                                </div>
-                            </div>
-                        @endif
 
                         @if (session('error') || $errors->any())
                             <div
