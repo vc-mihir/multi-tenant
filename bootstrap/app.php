@@ -2,6 +2,12 @@
 
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Foundation\Configuration\Middleware;
 use Spatie\Permission\Middleware\RoleMiddleware;
 use Spatie\Permission\Middleware\PermissionMiddleware;
@@ -12,8 +18,8 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web: __DIR__.'/../routes/web.php',
-        commands: __DIR__.'/../routes/console.php',
+        web: __DIR__ . '/../routes/web.php',
+        commands: __DIR__ . '/../routes/console.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
@@ -65,5 +71,21 @@ return Application::configure(basePath: dirname(__DIR__))
         });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->renderable(function (Exception $e, Request $request) {
+            if (
+                $e instanceof HttpExceptionInterface ||
+                $e instanceof ModelNotFoundException ||
+                $e instanceof AuthenticationException ||
+                $e instanceof AuthorizationException ||
+                $e instanceof ValidationException
+            ) {
+                return null;
+            }
+
+            if ($request->expectsJson()) {
+                return response()->json(['message' => $e->getMessage()], 500);
+            }
+
+            return redirect()->back()->with('error', $e->getMessage());
+        });
     })->create();
