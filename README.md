@@ -47,6 +47,12 @@ Tenant provisioning is heavy (creating databases, running migrations). To keep t
 
 ---
 
+## 📋 Activity Logging
+
+Key operations (login, logout, registration, delete) are tracked using **Spatie Laravel Activity Log (v5)**. Each entry records the causer, the affected model (`subject_type` / `subject_id`), and the event name. Logs are written to the `activity_log` table in whichever database is active — central or tenant.
+
+---
+
 ## 🛠 Project Structure Overview
 
 The codebase is strictly organized to separate Central logic from Tenant logic:
@@ -197,3 +203,4 @@ Click on the thumbnail below to watch the full application flow in action:
 - **Encrypted Credentials**: Tenant database credentials are encrypted in the central database using Laravel's `Crypt` facade.
 - **Strict Guarding**: Middleware explicitly blocks central users from logging into tenant subdomains and vice-versa, ensuring complete data boundary integrity.
 - **Database Isolation**: By using a separate database per tenant, the risk of data leaking between tenants due to missing `where('tenant_id', ...)` clauses is completely eliminated.
+- **Audit Trail**: All key operations are recorded via Spatie Activity Log in the `activity_log` table of the active database (central or tenant).
