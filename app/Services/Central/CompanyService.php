@@ -39,8 +39,6 @@ class CompanyService
                     'email_verified_at' => $isAdminCreation ? now() : null,
                 ]);
 
-                $company->assignRole('Company');
-
                 if ($isAdminCreation) {
                     DB::afterCommit(function () use ($company) {
                         CreateCompanyDatabase::dispatch($company);

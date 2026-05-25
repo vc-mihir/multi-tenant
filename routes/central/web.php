@@ -20,7 +20,7 @@ Route::middleware('central')->group(function () {
     Route::get('/refresh-csrf', [CsrfTokenController::class, 'refresh'])->name('csrf.refresh');
 
     // ── Admin Panel (SuperAdmin only) ─────────────────────────────────────────
-    Route::middleware(['auth', 'role:SuperAdmin'])->group(function () {
+    Route::middleware(['auth:admin', 'role:SuperAdmin'])->group(function () {
         Route::get('/admin/dashboard', [AdminAuthController::class, 'index'])->name('admin.dashboard');
         Route::get('/admin/companies', [CompanyController::class, 'index'])->name('admin.companies.index');
         Route::get('/admin/companies/create', [CompanyController::class, 'create'])->name('admin.companies.create');
