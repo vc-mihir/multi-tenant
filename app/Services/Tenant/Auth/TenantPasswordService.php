@@ -4,66 +4,13 @@ namespace App\Services\Tenant\Auth;
 
 use App\Models\Tenant\User;
 use Illuminate\Auth\Events\PasswordReset;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 
 class TenantPasswordService
 {
-    /**
-     * Update the authenticated tenant user's password.
-     *
-     * @param User $user
-     * @param string $password
-     * @return void
-     */
-    public function updatePassword(User $user, string $password): void
-    {
-        try {
-            $user->update([
-                'password' => Hash::make($password),
-            ]);
-        } catch (\Exception $e) {
-            Log::error('TenantPasswordService::updatePassword', [
-                'user_id' => $user->id,
-                'error'   => $e->getMessage(),
-            ]);
-            throw new \Exception('Failed to update password. Please try again.');
-        }
-    }
-
-    /**
-     * Validate the current password for the confirmation flow.
-     *
-     * @param Request $request
-     * @return void
-     * @throws ValidationException
-     */
-    public function confirmPassword(Request $request): void
-    {
-        try {
-            if (! Auth::guard('web')->validate([
-                'email'    => $request->user()->email,
-                'password' => $request->password,
-            ])) {
-                throw ValidationException::withMessages([
-                    'password' => __('auth.password'),
-                ]);
-            }
-
-            $request->session()->put('auth.password_confirmed_at', time());
-        } catch (ValidationException $e) {
-            throw $e;
-        } catch (\Exception $e) {
-            Log::error('TenantPasswordService::confirmPassword', ['error' => $e->getMessage()]);
-            throw new \Exception('Failed to confirm password. Please try again.');
-        }
-    }
-
     /**
      * Send a password reset link to the given email.
      *
