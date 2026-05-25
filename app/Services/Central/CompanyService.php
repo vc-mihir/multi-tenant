@@ -177,10 +177,10 @@ class CompanyService
     /**
      * Verify company email, activate account and dispatch database provisioning
      *
-     * @param int $id
+     * @param string $id
      * @return string
      */
-    public function verifyEmail(int $id): string
+    public function verifyEmail(string $id): string
     {
         try {
             $company = Company::findOrFail($id);
@@ -206,10 +206,10 @@ class CompanyService
     /**
      * Resend email verification notification to company
      *
-     * @param int $id
+     * @param string $id
      * @return void
      */
-    public function resendVerificationEmail(int $id): void
+    public function resendVerificationEmail(string $id): void
     {
         try {
             $company = Company::findOrFail($id);
@@ -231,10 +231,10 @@ class CompanyService
     /**
      * Fetch a company that has not yet verified its email
      *
-     * @param int $id
+     * @param string $id
      * @return Company
      */
-    public function getUnverifiedCompany(int $id): Company
+    public function getUnverifiedCompany(string $id): Company
     {
         try {
             $company = Company::findOrFail($id);

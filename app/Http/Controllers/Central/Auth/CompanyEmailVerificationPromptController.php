@@ -18,10 +18,10 @@ class CompanyEmailVerificationPromptController extends Controller
     /**
      * Display company email verification prompt
      *
-     * @param int $id
+     * @param string $id
      * @return View
      */
-    public function __invoke(int $id): View
+    public function __invoke(string $id): View
     {
         $company = $this->companyService->getUnverifiedCompany($id);
 

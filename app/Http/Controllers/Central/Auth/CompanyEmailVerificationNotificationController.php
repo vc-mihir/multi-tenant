@@ -18,10 +18,10 @@ class CompanyEmailVerificationNotificationController extends Controller
     /**
      * Resend company email verification notification
      *
-     * @param int $id
+     * @param string $id
      * @return RedirectResponse
      */
-    public function store(int $id): RedirectResponse
+    public function store(string $id): RedirectResponse
     {
         $this->companyService->resendVerificationEmail($id);
 

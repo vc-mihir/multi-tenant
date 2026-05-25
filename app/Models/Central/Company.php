@@ -5,6 +5,7 @@ namespace App\Models\Central;
 use App\Notifications\VerifyCompanyEmail;
 use Illuminate\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
@@ -14,7 +15,7 @@ use Spatie\Activitylog\Support\LogOptions;
 
 class Company extends Authenticatable implements MustVerifyEmailContract
 {
-    use HasFactory, MustVerifyEmail, Notifiable, HasRoles, LogsActivity;
+    use HasFactory, HasUuids, MustVerifyEmail, Notifiable, HasRoles, LogsActivity;
 
     /**
      * Force the model to always use the central connection.

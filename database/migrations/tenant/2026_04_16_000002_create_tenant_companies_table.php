@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('companies', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->unsignedBigInteger('master_company_id')->unique();
+            $table->uuid('master_company_id')->unique();
             $table->string('company_name', 100)->index();
             $table->string('subdomain', 63)->unique();
             $table->string('company_email', 150)->unique();
