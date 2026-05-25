@@ -44,7 +44,7 @@ class UpdateCompanyRequest extends FormRequest
                 Rule::unique('companies', 'company_email')->ignore($this->route('company')),
             ],
             'website' => ['required', 'url', 'max:255'],
-            'license_number' => ['required', 'string', 'max:50'],
+            'license_number' => ['required', 'string', 'max:50', Rule::unique('companies', 'license_number')->ignore($this->route('company'))],
             'address' => ['required', 'string', 'max:500'],
             'country' => ['required', 'string', 'max:100'],
             'state' => ['required', 'string', 'max:100'],

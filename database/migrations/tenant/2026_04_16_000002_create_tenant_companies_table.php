@@ -12,19 +12,19 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('companies', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('master_company_id')->unique();
-            $table->string('company_name', 100);
-            $table->string('subdomain')->unique();
-            $table->string('company_email', 100)->unique();
-            $table->string('website')->nullable();
-            $table->string('license_number', 50)->nullable();
-            $table->string('address', 500)->nullable();
-            $table->string('country', 100)->nullable();
-            $table->string('state', 100)->nullable();
-            $table->string('city', 100)->nullable();
-            $table->string('password');
-            $table->string('status', 20)->default('inactive');
+            $table->uuid('id')->primary();
+            $table->uuid('master_company_id')->unique();
+            $table->string('company_name', 100)->index();
+            $table->string('subdomain', 63)->unique();
+            $table->string('company_email', 150)->unique();
+            $table->string('website', 255);
+            $table->string('license_number', 50)->unique();
+            $table->text('address');
+            $table->string('country', 100);
+            $table->string('state', 100);
+            $table->string('city', 100);
+            $table->string('password', 60);
+            $table->enum('status', ['active', 'inactive', 'suspended', 'pending'])->default('inactive')->index();
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamps();
         });

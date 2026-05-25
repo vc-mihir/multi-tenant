@@ -15,7 +15,7 @@ class BulkDeleteCompaniesRequest extends FormRequest
     {
         return [
             'ids'   => ['required', 'array', 'min:1'],
-            'ids.*' => ['integer', 'exists:companies,id'],
+            'ids.*' => ['string', 'uuid', 'exists:companies,id'],
         ];
     }
 
