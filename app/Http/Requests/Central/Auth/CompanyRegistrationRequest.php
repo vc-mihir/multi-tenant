@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Central\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 class CompanyRegistrationRequest extends FormRequest
@@ -20,7 +21,7 @@ class CompanyRegistrationRequest extends FormRequest
             'company_email' => ['required', 'email', 'lowercase', 'max:100', 'unique:companies,company_email'],
             'password' => ['required', 'confirmed', Password::min(8)->max(16)->mixedCase()->symbols()],
             'website' => ['required', 'url'],
-            'license_number' => ['required', 'string', 'max:50'],
+            'license_number' => ['required', 'string', 'max:50', Rule::unique('companies', 'license_number')],
             'address' => ['required', 'string', 'max:500'],
             'country' => ['required', 'string', 'max:100'],
             'state' => ['required', 'string', 'max:100'],
