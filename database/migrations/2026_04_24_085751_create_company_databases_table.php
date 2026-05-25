@@ -12,11 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('company_databases', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('company_id')->constrained()->onDelete('cascade');
-            $table->string('db_name');
-            $table->string('db_host');
-            $table->string('db_port');
+            $table->uuid('id')->primary();
+            $table->foreignUuid('company_id')->constrained()->onDelete('cascade');
+            $table->string('db_name', 64)->unique();
+            $table->string('db_host', 253);
+            $table->unsignedSmallInteger('db_port');
             $table->text('db_username');
             $table->text('db_password');
             $table->timestamps();

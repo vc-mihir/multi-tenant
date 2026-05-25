@@ -9,15 +9,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('activity_log', function (Blueprint $table) {
-            $table->id();
-            $table->string('log_name')->nullable()->index();
+            $table->uuid('id')->primary();
+            $table->string('log_name', 50)->nullable()->index();
             $table->text('description');
-            $table->nullableMorphs('subject', 'subject');
-            $table->string('event')->nullable();
-            $table->nullableMorphs('causer', 'causer');
+            $table->nullableUuidMorphs('subject', 'subject');
+            $table->string('event', 50)->nullable();
+            $table->nullableUuidMorphs('causer', 'causer');
             $table->json('attribute_changes')->nullable();
             $table->json('properties')->nullable();
             $table->timestamps();
+
+            $table->index('created_at');
         });
     }
 

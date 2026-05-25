@@ -18,10 +18,10 @@ class CompanyVerifyEmailController extends Controller
     /**
      * Verify company email and activate account
      *
-     * @param int $id
+     * @param string $id
      * @return RedirectResponse
      */
-    public function __invoke(int $id): RedirectResponse
+    public function __invoke(string $id): RedirectResponse
     {
         $tenantUrl = $this->companyService->verifyEmail($id);
 
