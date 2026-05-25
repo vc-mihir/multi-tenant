@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('activity_log', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->id();
             $table->string('log_name', 50)->nullable()->index();
             $table->text('description');
             $table->nullableUuidMorphs('subject', 'subject');
