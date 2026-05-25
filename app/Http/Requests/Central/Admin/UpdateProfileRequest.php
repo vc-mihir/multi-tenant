@@ -14,7 +14,7 @@ class UpdateProfileRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Auth::check() && Auth::user()->hasRole('SuperAdmin');
+        return Auth::guard('admin')->check() && Auth::guard('admin')->user()->hasRole('SuperAdmin');
     }
 
     /**

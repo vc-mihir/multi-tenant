@@ -46,7 +46,9 @@
                     </div>
 
                     <div class="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        @yield('content')
+                        @role('SuperAdmin', 'admin')
+                            @yield('content')
+                        @endrole
                     </div>
                 </div>
             </main>

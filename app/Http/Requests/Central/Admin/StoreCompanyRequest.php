@@ -13,7 +13,7 @@ class StoreCompanyRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->hasRole('SuperAdmin');
+        return $this->user('admin')->hasRole('SuperAdmin');
     }
 
     /**

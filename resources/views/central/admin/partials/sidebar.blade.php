@@ -8,6 +8,7 @@
         </div>
 
         <nav class="flex-1 px-4 py-8 space-y-1 overflow-y-auto custom-scrollbar">
+        @role('SuperAdmin', 'admin')
             <a href="{{ route('admin.dashboard') }}"
                 class="flex items-center px-4 py-3 text-sm font-medium transition-all duration-200 rounded-xl group {{ request()->routeIs('admin.dashboard') ? 'bg-teal-600 text-white shadow-lg shadow-teal-600/30' : 'text-teal-300 hover:bg-teal-800/50 hover:text-white' }}">
                 <svg class="w-5 h-5 mr-3 transition-colors duration-200" fill="none" stroke="currentColor"
@@ -52,6 +53,7 @@
                 </svg>
                 General Settings
             </a>
+        @endrole
         </nav>
 
         <div class="p-4 border-t border-teal-800/50 bg-teal-950/20">
@@ -59,11 +61,11 @@
                 <div class="flex-shrink-0">
                     <div
                         class="flex items-center justify-center w-8 h-8 rounded-lg bg-teal-600 text-xs font-bold text-white uppercase shadow-inner">
-                        {{ substr(auth()->user()->name, 0, 2) }}
+                        {{ substr(auth('admin')->user()->name, 0, 2) }}
                     </div>
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-sm font-semibold truncate">{{ auth()->user()->name }}</p>
+                    <p class="text-sm font-semibold truncate">{{ auth('admin')->user()->name }}</p>
                     <span class="text-[10px] text-teal-400 uppercase tracking-tighter">Super Admin</span>
                 </div>
             </div>

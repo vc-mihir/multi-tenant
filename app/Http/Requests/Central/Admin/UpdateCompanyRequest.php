@@ -12,7 +12,7 @@ class UpdateCompanyRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->user()->hasRole('SuperAdmin');
+        return auth('admin')->user()->hasRole('SuperAdmin');
     }
 
     /**
