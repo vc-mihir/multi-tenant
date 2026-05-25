@@ -3,7 +3,7 @@
 @section('title', 'Dashboard')
 @section('page-id', 'central-admin-dashboard')
 @section('page-title', 'System Overview')
-@section('page-subtitle', 'Welcome back, ' . auth()->user()->name)
+@section('page-subtitle', 'Welcome back, ' . auth('admin')->user()->name)
 
 @section('content')
     <div class="grid gap-6 mb-8 md:grid-cols-2 xl:grid-cols-4">

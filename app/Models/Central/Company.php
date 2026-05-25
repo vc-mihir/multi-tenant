@@ -8,14 +8,13 @@ use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
 class Company extends Authenticatable implements MustVerifyEmailContract
 {
-    use HasFactory, HasUuids, MustVerifyEmail, Notifiable, HasRoles, LogsActivity;
+    use HasFactory, HasUuids, MustVerifyEmail, Notifiable, LogsActivity;
 
     /**
      * Force the model to always use the central connection.
@@ -30,8 +29,6 @@ class Company extends Authenticatable implements MustVerifyEmailContract
      * @var string
      */
     protected $table = 'companies';
-
-    protected string $guard_name = 'web';
 
     /**
      * The attributes that are mass assignable.

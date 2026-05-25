@@ -8,7 +8,7 @@ use App\Http\Controllers\Central\Auth\CompanyVerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
 // ─── SuperAdmin login (guest only) ──────────────────────────────────────────────
-Route::middleware('guest:web')->group(function () {
+Route::middleware('guest:admin')->group(function () {
     Route::get('admin/login', [AdminAuthController::class, 'create'])
         ->name('admin.login');
 

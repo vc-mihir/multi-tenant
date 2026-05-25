@@ -1,5 +1,6 @@
 <header
     class="sticky top-0 z-40 flex items-center justify-between h-20 px-6 bg-white/80 border-b border-teal-100 backdrop-blur-md">
+@role('SuperAdmin', 'admin')
     <div class="flex flex-1">
         <form action="#" method="GET" class="w-full max-w-sm ml-0 lg:ml-4 relative" id="search-form"
             data-search-url="{{ route('admin.companies.search') }}">
@@ -42,4 +43,5 @@
             </button>
         </form>
     </div>
+@endrole
 </header>

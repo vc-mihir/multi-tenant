@@ -18,12 +18,14 @@ class AdminAuthService
     public function attemptLogin(array $credentials, Request $request): void
     {
         try {
-            if (Auth::attempt($credentials) && Auth::user()->hasRole('SuperAdmin')) {
+            $guard = Auth::guard('admin');
+
+            if ($guard->attempt($credentials) && $guard->user()->hasRole('SuperAdmin')) {
                 $request->session()->regenerate();
 
                 activity()
-                    ->causedBy(Auth::user())
-                    ->performedOn(Auth::user())
+                    ->causedBy($guard->user())
+                    ->performedOn($guard->user())
                     ->event('login')
                     ->log('SuperAdmin logged in');
 
@@ -34,7 +36,7 @@ class AdminAuthService
             throw new \Exception('Failed to login. Please try again.');
         }
 
-        Auth::logout();
+        Auth::guard('admin')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
@@ -50,9 +52,9 @@ class AdminAuthService
     public function logout(Request $request): void
     {
         try {
-            $user = Auth::user();
+            $user = Auth::guard('admin')->user();
 
-            Auth::logout();
+            Auth::guard('admin')->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
