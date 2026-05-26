@@ -24,7 +24,13 @@ class CompanyDataTableService
                 $query->where('status', $statusFilter);
             }
 
+            $baseHost = parse_url(config('app.url'), PHP_URL_HOST);
+
             return DataTables::of($query)
+                ->editColumn('subdomain', function ($company) use ($baseHost) {
+                    $full = $company->subdomain . '.' . $baseHost;
+                    return '<a href="http://' . $full . '" target="_blank" class="text-teal-600 hover:underline">' . $full . '</a>';
+                })
                 ->addColumn('database_name', function ($company) {
                     if ($company->database) {
                         return '<code class="px-2 py-1 bg-teal-50 text-teal-700 rounded text-xs font-mono border border-teal-100">' . $company->database->db_name . '</code>';
@@ -62,7 +68,7 @@ class CompanyDataTableService
                 ->editColumn('updated_at', function ($company) {
                     return '<span class="font-medium text-slate-700">' . $company->updated_at->format('M d, Y') . '</span><br><span class="text-[10px] text-slate-400 uppercase">' . $company->updated_at->format('H:i') . '</span>';
                 })
-                ->rawColumns(['status', 'email_verified_at', 'created_at', 'updated_at', 'database_name'])
+                ->rawColumns(['subdomain', 'status', 'email_verified_at', 'created_at', 'updated_at', 'database_name'])
                 ->addIndexColumn()
                 ->toJson();
         } catch (\Exception $e) {
