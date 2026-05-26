@@ -45,7 +45,7 @@
         </script>
     @endif
 
-    <form method="POST" action="{{ route('register') }}" id="registration-form">
+    <form method="POST" action="{{ route('register.store') }}" id="registration-form">
         @csrf
 
         <div id="phase-1" class="space-y-5 transition-all duration-500">
