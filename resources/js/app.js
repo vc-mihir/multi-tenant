@@ -1,3 +1,9 @@
+import $ from 'jquery';
+window.$ = window.jQuery = $;
+import 'jquery-validation';
+import Swal from 'sweetalert2';
+window.Swal = Swal;
+
 import "./bootstrap";
 import "./validation/common-validation";
 import "./central/admin/layout/search";

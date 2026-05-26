@@ -1,4 +1,5 @@
 import '../../../../css/central/admin/companies/index.css';
+import 'datatables.net-dt';
 
 $(function() {
     const tableElement = $('#companies-table');
