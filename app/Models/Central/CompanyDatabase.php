@@ -2,13 +2,14 @@
 
 namespace App\Models\Central;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
 class CompanyDatabase extends Model
 {
-    use LogsActivity;
+    use HasUuids, LogsActivity;
 
     /**
      * Force the model to always use the central connection.

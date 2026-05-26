@@ -22,7 +22,8 @@ Route::middleware('guest:admin')->group(function () {
 Route::get('company-register', [CompanyRegistrationController::class, 'create'])
     ->name('register');
 
-Route::post('company-register', [CompanyRegistrationController::class, 'store']);
+Route::post('company-register', [CompanyRegistrationController::class, 'store'])
+    ->name('register.store');
 
 // ─── Company email verification (signed URLs, no auth required) ────────────────
 
