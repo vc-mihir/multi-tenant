@@ -54,25 +54,32 @@ class CreateCompanyDatabase implements ShouldQueue
             ]);
 
             // 3. Seed Tenant Data
-            DB::connection('tenant')->table('companies')->updateOrInsert(
-                ['master_company_id' => $this->company->id],
-                [
-                    'company_name' => $this->company->company_name,
-                    'subdomain' => $this->company->subdomain,
-                    'company_email' => $this->company->company_email,
-                    'website' => $this->company->website,
-                    'license_number' => $this->company->license_number,
-                    'address' => $this->company->address,
-                    'country' => $this->company->country,
-                    'state' => $this->company->state,
-                    'city' => $this->company->city,
-                    'password' => $this->company->password,
-                    'status' => $this->company->status,
-                    'email_verified_at' => $this->company->email_verified_at,
-                    'created_at' => $this->company->created_at ?? now(),
-                    'updated_at' => now(),
-                ],
-            );
+            $tenantCompanies = DB::connection('tenant')->table('companies');
+            $tenantData = [
+                'company_name'      => $this->company->company_name,
+                'subdomain'         => $this->company->subdomain,
+                'company_email'     => $this->company->company_email,
+                'website'           => $this->company->website,
+                'license_number'    => $this->company->license_number,
+                'address'           => $this->company->address,
+                'country'           => $this->company->country,
+                'state'             => $this->company->state,
+                'city'              => $this->company->city,
+                'password'          => $this->company->password,
+                'status'            => $this->company->status,
+                'email_verified_at' => $this->company->email_verified_at,
+                'updated_at'        => now(),
+            ];
+
+            if ($tenantCompanies->where('master_company_id', $this->company->id)->exists()) {
+                $tenantCompanies->where('master_company_id', $this->company->id)->update($tenantData);
+            } else {
+                $tenantCompanies->insert(array_merge($tenantData, [
+                    'id'                => (string) Str::uuid(),
+                    'master_company_id' => $this->company->id,
+                    'created_at'        => $this->company->created_at ?? now(),
+                ]));
+            }
 
 
             // 4. Update Master Database with Connection Info
