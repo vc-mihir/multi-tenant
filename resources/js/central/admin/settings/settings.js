@@ -5,9 +5,7 @@ $(document).ready(function() {
     const form = $('#settings-form');
 
     form.validate({
-        onfocusout: function(element) {
-            $(element).valid();
-        },
+        onfocusout: false,
         errorElement: "span",
         rules: {
             name: {

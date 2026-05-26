@@ -23,9 +23,7 @@ $(document).ready(function() {
     }, "Use 8-16 chars with Upper, Lower & Symbol.");
 
     const validator = form.validate({
-        onfocusout: function(element) {
-            $(element).valid();
-        },
+        onfocusout: false,
         errorElement: "span",
         errorPlacement: function(error, element) {
             const wrapper = element.parent('.relative');

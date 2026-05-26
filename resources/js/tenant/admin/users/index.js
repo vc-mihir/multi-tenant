@@ -1,3 +1,5 @@
+import 'datatables.net-dt';
+
 /**
  * Tenant Admin - Users Index
  */

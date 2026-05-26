@@ -4,14 +4,6 @@
 @section('page-title', 'Users Management')
 @section('page-subtitle', 'Manage all users for this tenant')
 
-@push('styles')
-    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.min.css">
-@endpush
-
-@push('scripts')
-    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
-@endpush
-
 @section('page-id', 'tenant-admin-users-index')
 
 @section('content')

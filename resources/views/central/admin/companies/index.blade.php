@@ -5,9 +5,6 @@
 @section('page-title', 'Companies')
 @section('page-subtitle', 'Manage all registered tenant companies')
 
-@push('styles')
-    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.min.css">
-@endpush
 
 @section('content')
     <div class="rounded-3xl border border-teal-100 bg-white p-6 shadow-sm ring-1 ring-slate-900/5">
@@ -74,6 +71,3 @@
     </div>
 @endsection
 
-@push('scripts')
-    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
-@endpush
