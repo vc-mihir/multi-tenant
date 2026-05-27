@@ -26,6 +26,6 @@ class VerifyEmailController extends Controller
     {
         $this->verificationService->verify($request->user());
 
-        return redirect(route('tenant.dashboard', absolute: false).'?verified=1');
+        return redirect()->route('tenant.dashboard')->with('success', 'Registration successful. Welcome!');
     }
 }

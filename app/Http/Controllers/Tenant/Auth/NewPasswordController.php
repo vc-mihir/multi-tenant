@@ -41,7 +41,7 @@ class NewPasswordController extends Controller
         $status = $this->passwordService->resetPassword($request->validated());
 
         return $status == Password::PASSWORD_RESET
-            ? redirect()->route('tenant.login')->with('status', __($status))
+            ? redirect()->route('tenant.login')->with('success', __($status))
             : back()->withInput($request->only('email'))->withErrors(['email' => __($status)]);
     }
 }

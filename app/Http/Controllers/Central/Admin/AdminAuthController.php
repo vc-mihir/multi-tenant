@@ -40,7 +40,7 @@ class AdminAuthController extends Controller
      */
     public function create(): View
     {
-        return view('central.admin.login');
+        return view('central.auth.login');
     }
 
     /**

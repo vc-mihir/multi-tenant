@@ -79,7 +79,6 @@ class TenantAdminProfileService
         }
 
         Auth::guard('company')->logout();
-        request()->session()->invalidate();
-        request()->session()->regenerateToken();
+        request()->session()->regenerate();
     }
 }

@@ -37,12 +37,6 @@
                     <h1 class="text-3xl font-black text-[#1c2e30]">Login to Account</h1>
                 </div>
 
-                @if (session('status'))
-                    <div class="mb-8 p-4 rounded-2xl bg-green-50 text-sm font-bold text-green-700 text-center">
-                        {{ session('status') }}
-                    </div>
-                @endif
-
                 <form method="POST" action="{{ route('tenant.admin.login.post') }}" class="space-y-6">
                     @csrf
 
@@ -97,6 +91,7 @@
             </div>
         </div>
     </div>
+    <x-toast-alert />
 </body>
 
 </html>
