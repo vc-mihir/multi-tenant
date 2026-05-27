@@ -38,7 +38,7 @@ class AdminLoginController extends Controller
     {
         $this->authService->login($request);
 
-        return redirect()->route('tenant.admin.dashboard');
+        return redirect()->route('tenant.admin.dashboard')->with('success', 'Login successfully.');
     }
 
     /**
@@ -51,6 +51,6 @@ class AdminLoginController extends Controller
     {
         $this->authService->logout($request);
 
-        return redirect()->route('tenant.admin.login')->with('status', 'Logout successfully');
+        return redirect()->route('tenant.admin.login')->with('success', 'Logout successfully.');
     }
 }
