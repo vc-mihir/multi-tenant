@@ -1,3 +1,4 @@
+import '../../../../css/tenant/admin/users/index.css';
 import 'datatables.net-dt';
 
 /**
