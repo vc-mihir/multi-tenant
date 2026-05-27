@@ -70,7 +70,6 @@ class TenantUserProfileService
         }
 
         Auth::guard('tenant_user')->logout();
-        request()->session()->invalidate();
-        request()->session()->regenerateToken();
+        request()->session()->regenerate();
     }
 }
