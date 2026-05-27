@@ -85,8 +85,7 @@ class TenantUserAuthService
             $user = Auth::guard('tenant_user')->user();
 
             Auth::guard('tenant_user')->logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
+            $request->session()->regenerate();
 
             activity()
                 ->causedBy($user)

@@ -44,7 +44,7 @@ class ProfileController extends Controller
 
         if ($needsVerification) {
             return redirect()->route('verification.notice')
-                ->with('status', 'verification-link-sent')
+                ->with('success', 'Email updated. Please verify your new email address.')
                 ->with('email_changed', true);
         }
 

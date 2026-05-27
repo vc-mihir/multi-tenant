@@ -1,4 +1,4 @@
-<x-layouts.user.tenant-user-header page-id="tenant-user-profile">
+<x-tenant.user.header page-id="tenant-user-profile">
     <x-slot:title>My Profile | {{ config('app.name') }}</x-slot:title>
 
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -166,4 +166,4 @@
 
     </div>
     </div>
-</x-layouts.user.tenant-user-header>
+</x-tenant.user.header>

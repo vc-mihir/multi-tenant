@@ -28,6 +28,6 @@ class EmailVerificationNotificationController extends Controller
             return redirect()->intended(route('tenant.index', absolute: false));
         }
 
-        return back()->with('status', 'verification-link-sent');
+        return back()->with('success', 'A new verification link has been sent to your email address.');
     }
 }

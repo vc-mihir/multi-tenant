@@ -38,7 +38,7 @@ class AuthenticatedSessionController extends Controller
     {
         $this->authService->login($request);
 
-        return redirect()->route('tenant.dashboard');
+        return redirect()->route('tenant.dashboard')->with('success', 'Login successfully.');
     }
 
     /**
@@ -51,6 +51,6 @@ class AuthenticatedSessionController extends Controller
     {
         $this->authService->logout($request);
 
-        return redirect()->route('tenant.login')->with('status', 'You have been logged out successfully.');
+        return redirect()->route('tenant.login')->with('success', 'Logout successfully.');
     }
 }

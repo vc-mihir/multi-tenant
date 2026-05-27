@@ -16,19 +16,6 @@
         </p>
     </div>
 
-    @if (session('status') == 'verification-link-sent')
-        <div class="mb-4 p-3 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center gap-3">
-            <div class="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center flex-shrink-0">
-                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" />
-                </svg>
-            </div>
-            <p class="text-sm font-bold text-emerald-800">
-                A new verification link has been sent to your email address.
-            </p>
-        </div>
-    @endif
-
     <div class="space-y-4">
         <form method="POST" action="{{ route('verification.send') }}">
             @csrf
