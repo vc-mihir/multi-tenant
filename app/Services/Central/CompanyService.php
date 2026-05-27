@@ -90,12 +90,64 @@ class CompanyService
     }
 
     /**
-     * Delete company record and drop its tenant database
+     * Soft-delete a company record (tenant database is preserved for potential restoration)
      *
      * @param Company $company
      * @return void
      */
     public function deleteCompany(Company $company): void
+    {
+        try {
+            $company->delete();
+
+            activity()
+                ->causedBy(Auth::user())
+                ->performedOn($company)
+                ->event('deleted')
+                ->withProperties(['company_id' => $company->id])
+                ->log('Company soft-deleted');
+        } catch (\Exception $e) {
+            Log::error('CompanyService::deleteCompany', [
+                'company_id' => $company->id,
+                'error'      => $e->getMessage(),
+            ]);
+            throw new \Exception('Failed to delete company.');
+        }
+    }
+
+    /**
+     * Restore a soft-deleted company record
+     *
+     * @param Company $company
+     * @return void
+     */
+    public function restoreCompany(Company $company): void
+    {
+        try {
+            $company->restore();
+
+            activity()
+                ->causedBy(Auth::user())
+                ->performedOn($company)
+                ->event('restored')
+                ->withProperties(['company_id' => $company->id])
+                ->log('Company restored from archive');
+        } catch (\Exception $e) {
+            Log::error('CompanyService::restoreCompany', [
+                'company_id' => $company->id,
+                'error'      => $e->getMessage(),
+            ]);
+            throw new \Exception('Failed to restore company.');
+        }
+    }
+
+    /**
+     * Permanently delete a soft-deleted company and drop its tenant database
+     *
+     * @param Company $company
+     * @return void
+     */
+    public function forceDeleteCompany(Company $company): void
     {
         try {
             $dbName = $company->database?->db_name;
@@ -106,18 +158,18 @@ class CompanyService
                 activity()
                     ->causedBy(Auth::user())
                     ->performedOn($company)
-                    ->event('deleted')
+                    ->event('force_deleted')
                     ->withProperties(['company_id' => $company->id, 'db_name' => $dbName])
-                    ->log('Tenant database dropped');
+                    ->log('Tenant database dropped on permanent deletion');
             }
 
-            $company->delete();
+            $company->forceDelete();
         } catch (\Exception $e) {
-            Log::error('CompanyService::deleteCompany', [
+            Log::error('CompanyService::forceDeleteCompany', [
                 'company_id' => $company->id,
                 'error'      => $e->getMessage(),
             ]);
-            throw new \Exception('Failed to delete company and its database.');
+            throw new \Exception('Failed to permanently delete company.');
         }
     }
 

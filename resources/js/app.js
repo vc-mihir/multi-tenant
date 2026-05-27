@@ -82,6 +82,9 @@ document.addEventListener("DOMContentLoaded", () => {
         case "central-admin-companies-index":
             import("./central/admin/companies/index.js");
             break;
+        case "central-admin-companies-archived":
+            import("./central/admin/companies/archived.js");
+            break;
         case "central-admin-companies-create":
             import("./central/admin/companies/create.js");
             break;

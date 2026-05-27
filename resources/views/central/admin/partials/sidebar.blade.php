@@ -24,12 +24,21 @@
             </div>
 
             <a href="{{ route('admin.companies.index') }}"
-                class="flex items-center px-4 py-3 text-sm font-medium transition-all duration-200 rounded-xl group {{ request()->routeIs('admin.companies.*') ? 'bg-teal-600 text-white shadow-lg shadow-teal-600/30' : 'text-teal-300 hover:bg-teal-800/50 hover:text-white' }}">
+                class="flex items-center px-4 py-3 text-sm font-medium transition-all duration-200 rounded-xl group {{ request()->routeIs('admin.companies.index') || (request()->routeIs('admin.companies.*') && !request()->routeIs('admin.companies.archived')) ? 'bg-teal-600 text-white shadow-lg shadow-teal-600/30' : 'text-teal-300 hover:bg-teal-800/50 hover:text-white' }}">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
                 Companies
+            </a>
+
+            <a href="{{ route('admin.companies.archived') }}"
+                class="flex items-center px-4 py-3 text-sm font-medium transition-all duration-200 rounded-xl group {{ request()->routeIs('admin.companies.archived') ? 'bg-teal-600 text-white shadow-lg shadow-teal-600/30' : 'text-teal-300 hover:bg-teal-800/50 hover:text-white' }}">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                </svg>
+                Archived Companies
             </a>
 
             {{-- <a href="#" class="flex items-center px-4 py-3 text-sm font-medium text-teal-300 transition-all duration-200 rounded-xl group hover:bg-teal-800/50 hover:text-white">

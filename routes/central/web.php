@@ -26,10 +26,14 @@ Route::middleware('central')->group(function () {
         Route::get('/admin/companies/create', [CompanyController::class, 'create'])->name('admin.companies.create');
         Route::post('/admin/companies', [CompanyController::class, 'store'])->name('admin.companies.store');
         Route::get('/admin/companies/data', [CompanyController::class, 'data'])->name('admin.companies.data');
+        Route::get('/admin/companies/archived', [CompanyController::class, 'archived'])->name('admin.companies.archived');
+        Route::get('/admin/companies/archived/data', [CompanyController::class, 'archivedData'])->name('admin.companies.archived.data');
         Route::get('/admin/companies/{company}/edit', [CompanyController::class, 'edit'])->name('admin.companies.edit');
         Route::put('/admin/companies/{company}', [CompanyController::class, 'update'])->name('admin.companies.update');
         Route::delete('/admin/companies/bulk-delete', [CompanyController::class, 'bulkDelete'])->name('admin.companies.bulk-delete');
         Route::delete('/admin/companies/{company}', [CompanyController::class, 'destroy'])->name('admin.companies.destroy');
+        Route::patch('/admin/companies/{company}/restore', [CompanyController::class, 'restore'])->name('admin.companies.restore')->withTrashed();
+        Route::delete('/admin/companies/{company}/force-delete', [CompanyController::class, 'forceDelete'])->name('admin.companies.force-delete')->withTrashed();
 
         // Recovery: re-provision a tenant DB
         Route::post('/admin/recovery/provision/{company}', [TenantRecoveryController::class, 'provision'])->name('admin.recovery.provision');

@@ -10,6 +10,55 @@ use Yajra\DataTables\Facades\DataTables;
 class CompanyDataTableService
 {
     /**
+     * Get DataTables response for archived (soft-deleted) companies
+     *
+     * @return JsonResponse
+     */
+    public function getArchivedData(): JsonResponse
+    {
+        try {
+            $query = Company::onlyTrashed()->with('database');
+
+            $baseHost = parse_url(config('app.url'), PHP_URL_HOST);
+
+            return DataTables::of($query)
+                ->editColumn('subdomain', function ($company) use ($baseHost) {
+                    $full = $company->subdomain . '.' . $baseHost;
+                    return '<code class="px-2 py-1 bg-slate-50 text-slate-600 rounded text-xs font-mono border border-slate-100">' . $full . '</code>';
+                })
+                ->addColumn('database_name', function ($company) {
+                    if ($company->database) {
+                        return '<code class="px-2 py-1 bg-teal-50 text-teal-700 rounded text-xs font-mono border border-teal-100">' . $company->database->db_name . '</code>';
+                    }
+                    return '<span class="px-2 py-1 rounded-lg bg-slate-50 text-slate-400 border border-slate-100 text-[10px] font-bold uppercase italic">No Database</span>';
+                })
+                ->editColumn('status', function ($company) {
+                    $class = match ($company->status) {
+                        'active'    => 'bg-emerald-50 text-emerald-700 border-emerald-200/50',
+                        'pending'   => 'bg-amber-50 text-amber-700 border-amber-200/50',
+                        'suspended' => 'bg-red-50 text-red-700 border-red-200/50',
+                        default     => 'bg-slate-50 text-slate-700 border-slate-200/50',
+                    };
+                    return '<span class="inline-flex items-center rounded-lg border px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider ' . $class . '">' . $company->status . '</span>';
+                })
+                ->editColumn('deleted_at', function ($company) {
+                    return '<span class="font-medium text-rose-600">' . $company->deleted_at->format('M d, Y') . '</span><br><span class="text-[10px] text-slate-400 uppercase">' . $company->deleted_at->format('h:i A') . '</span>';
+                })
+                ->editColumn('created_at', function ($company) {
+                    return '<span class="font-medium text-slate-700">' . $company->created_at->format('M d, Y') . '</span><br><span class="text-[10px] text-slate-400 uppercase">' . $company->created_at->format('h:i A') . '</span>';
+                })
+                ->rawColumns(['subdomain', 'status', 'deleted_at', 'created_at', 'database_name'])
+                ->addIndexColumn()
+                ->toJson();
+        } catch (\Exception $e) {
+            Log::error('CompanyDataTableService::getArchivedData', [
+                'error' => $e->getMessage(),
+            ]);
+            throw new \Exception('Failed to load archived companies data.');
+        }
+    }
+
+    /**
      * Get DataTables response for companies
      *
      * @param string|null $statusFilter
@@ -59,14 +108,14 @@ class CompanyDataTableService
                 })
                 ->editColumn('email_verified_at', function ($company) {
                     return $company->email_verified_at
-                        ? $company->email_verified_at->format('M d, Y H:i')
+                        ? $company->email_verified_at->format('M d, Y h:i A')
                         : '<span class="text-slate-400 italic text-xs">Not Verified</span>';
                 })
                 ->editColumn('created_at', function ($company) {
-                    return '<span class="font-medium text-slate-700">' . $company->created_at->format('M d, Y') . '</span><br><span class="text-[10px] text-slate-400 uppercase">' . $company->created_at->format('H:i') . '</span>';
+                    return '<span class="font-medium text-slate-700">' . $company->created_at->format('M d, Y') . '</span><br><span class="text-[10px] text-slate-400 uppercase">' . $company->created_at->format('h:i A') . '</span>';
                 })
                 ->editColumn('updated_at', function ($company) {
-                    return '<span class="font-medium text-slate-700">' . $company->updated_at->format('M d, Y') . '</span><br><span class="text-[10px] text-slate-400 uppercase">' . $company->updated_at->format('H:i') . '</span>';
+                    return '<span class="font-medium text-slate-700">' . $company->updated_at->format('M d, Y') . '</span><br><span class="text-[10px] text-slate-400 uppercase">' . $company->updated_at->format('h:i A') . '</span>';
                 })
                 ->rawColumns(['subdomain', 'status', 'email_verified_at', 'created_at', 'updated_at', 'database_name'])
                 ->addIndexColumn()

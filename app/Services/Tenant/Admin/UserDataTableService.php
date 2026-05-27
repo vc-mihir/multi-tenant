@@ -24,14 +24,14 @@ class UserDataTableService
                 ->addIndexColumn()
                 ->editColumn('email_verified_at', function ($user) {
                     return $user->email_verified_at
-                        ? '<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-600 border border-emerald-100">' . $user->email_verified_at->format('Y-m-d H:i') . '</span>'
+                        ? '<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-600 border border-emerald-100">' . $user->email_verified_at->format('Y-m-d h:i A') . '</span>'
                         : '<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-50 text-rose-600 border border-rose-100">Not Verified</span>';
                 })
                 ->editColumn('created_at', function ($user) {
-                    return $user->created_at->format('Y-m-d H:i:s');
+                    return $user->created_at->format('Y-m-d h:i:s A');
                 })
                 ->editColumn('updated_at', function ($user) {
-                    return $user->updated_at->format('Y-m-d H:i:s');
+                    return $user->updated_at->format('Y-m-d h:i:s A');
                 })
                 ->addColumn('actions', function ($user) use ($tenant) {
                     $editUrl = route('tenant.admin.users.edit', ['tenant' => $tenant, 'user' => $user->id]);
