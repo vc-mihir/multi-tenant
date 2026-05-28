@@ -6,6 +6,19 @@ This is a robust, custom-built multi-tenant web application developed on Laravel
 
 ---
 
+## 🧰 Tech Stack
+
+| Layer | Technology |
+|---|---|
+| **Backend** | Laravel 13, PHP 8.3 |
+| **Frontend** | TailwindCSS v3, Alpine.js v3, Vite v8 |
+| **Database** | MySQL |
+| **Queue** | Laravel Jobs (database driver) |
+| **Auth** | Laravel Guards (`web`, `company`, `tenant_user`) |
+| **Packages** | Spatie Activity Log v5, Spatie Permission v7, Yajra DataTables v13 |
+
+---
+
 ## 🏗 Architecture & Flow
 
 ### Central Domain vs Tenant Subdomain
@@ -61,16 +74,43 @@ Key operations (login, logout, registration, delete) are tracked using **Spatie 
 
 ## 🛠 Project Structure Overview
 
-The codebase is strictly organized to separate Central logic from Tenant logic:
-
-- `app/Models/Central` & `app/Models/Tenant`
-- `app/Http/Controllers/Central`, `app/Http/Controllers/Tenant` & `app/Http/Controllers/Shared`
-- `app/Http/Middleware` — `IdentifyTenant` & `CentralDomainOnly`
-- `app/Jobs` — Background tenant provisioning
-- `app/Services` — Business logic services (e.g., `CompanyService`)
-- `app/Notifications` — Email verification notifications
-- `routes/central/` & `routes/tenant/`
-- `database/migrations/` (Central) & `database/migrations/tenant/` (Tenant-specific)
+```
+app/
+├── Http/
+│   ├── Controllers/
+│   │   ├── Central/        ← central admin controllers
+│   │   ├── Tenant/         ← tenant controllers
+│   │   └── Shared/         ← shared controllers (e.g. CSRF refresh)
+│   ├── Middleware/         ← IdentifyTenant, CentralDomainOnly
+│   └── Requests/           ← form request validation classes
+├── Jobs/                   ← background tenant provisioning
+├── Models/
+│   ├── Central/            ← central DB models
+│   └── Tenant/             ← tenant DB models
+├── Notifications/          ← email verification notifications
+└── Services/               ← business logic services
+routes/
+├── central/                ← central domain routes
+└── tenant/                 ← tenant subdomain routes
+database/
+├── migrations/             ← central migrations
+└── migrations/tenant/      ← tenant-specific migrations
+resources/
+├── css/
+│   ├── central/            ← central area styles
+│   └── tenant/             ← tenant area styles
+├── js/
+│   ├── central/            ← central area scripts
+│   ├── tenant/             ← tenant area scripts
+│   ├── shared/             ← shared scripts
+│   └── validation/         ← client-side validation scripts
+└── views/
+    ├── central/            ← central Blade views
+    ├── tenant/             ← tenant Blade views
+    ├── components/         ← reusable Blade components
+    ├── layouts/            ← layout templates
+    └── errors/             ← error pages
+```
 
 ---
 
@@ -177,6 +217,26 @@ _(Without the queue worker, new tenant databases will **never** be created when 
 1. **Register a Tenant**: Go to `http://multi-tenant.test:8000/company-register` (or your configured URL) and create a new company (e.g., "Company 1" with subdomain "company1").
 2. **Watch the Queue**: Look at Terminal 3. You should see the `CreateCompanyDatabase` job process successfully.
 3. **Login to Tenant**: Navigate to `http://company1.multi-tenant.test:8000` to access the isolated tenant environment and log in with the credentials you just created.
+
+---
+
+## ⚡ Useful Commands
+
+```bash
+# Fresh migration with seed (central DB)
+php artisan migrate:fresh --seed
+
+# Run queue worker
+php artisan queue:work
+
+# Run tests
+php artisan test
+
+# Tenant database operations
+php artisan tenants:migrate        # run pending migrations on all tenant DBs
+php artisan tenants:rollback       # rollback last migration on all tenant DBs
+php artisan tenants:migrate:reset  # rollback all migrations on all tenant DBs
+```
 
 ---
 
