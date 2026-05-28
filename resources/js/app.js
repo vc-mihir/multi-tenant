@@ -82,6 +82,9 @@ document.addEventListener("DOMContentLoaded", () => {
         case "central-admin-companies-index":
             import("./central/admin/companies/index.js");
             break;
+        case "central-admin-companies-archived":
+            import("./central/admin/companies/archived.js");
+            break;
         case "central-admin-companies-create":
             import("./central/admin/companies/create.js");
             break;
@@ -122,6 +125,9 @@ document.addEventListener("DOMContentLoaded", () => {
         case "tenant-admin-users-index":
             import("../css/tenant/admin/users/index.css");
             import("./tenant/admin/users/index.js");
+            break;
+        case "tenant-admin-users-archived":
+            import("./tenant/admin/users/archived.js");
             break;
         case "tenant-admin-dashboard":
             import("../css/tenant/admin/dashboard.css");

@@ -94,12 +94,15 @@
 
 /* ── Table headers & cells ── */
 #users-table th,
-#users-table td {
+#users-table td,
+#archived-users-table th,
+#archived-users-table td {
     padding: 0.875rem 1.25rem !important;
     vertical-align: middle;
 }
 
-#users-table thead th {
+#users-table thead th,
+#archived-users-table thead th {
     white-space: nowrap;
     background: #f8fafc;
     color: #64748b;
@@ -110,13 +113,18 @@
     border-bottom: 1px solid #f1f5f9;
 }
 
-#users-table tbody tr {
+#users-table tbody tr,
+#archived-users-table tbody tr {
     border-bottom: 1px solid #f8fafc;
     transition: background 0.15s;
 }
 
 #users-table tbody tr:hover {
     background: #f8fafc;
+}
+
+#archived-users-table tbody tr:hover {
+    background: #fff7f7;
 }
 
 /* ── Bottom controls row (info + pagination) ── */

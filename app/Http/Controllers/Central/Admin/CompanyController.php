@@ -38,6 +38,26 @@ class CompanyController extends Controller
     }
 
     /**
+     * Load archived companies view
+     *
+     * @return View
+     */
+    public function archived(): View
+    {
+        return view('central.admin.companies.archived');
+    }
+
+    /**
+     * Return DataTables JSON for archived (soft-deleted) companies
+     *
+     * @return JsonResponse
+     */
+    public function archivedData(): JsonResponse
+    {
+        return $this->dataTableService->getArchivedData();
+    }
+
+    /**
      * Load company creation view
      *
      * @return View
@@ -99,6 +119,32 @@ class CompanyController extends Controller
     }
 
     /**
+     * Restore a soft-deleted company
+     *
+     * @param Company $company
+     * @return JsonResponse
+     */
+    public function restore(Company $company): JsonResponse
+    {
+        $this->companyService->restoreCompany($company);
+
+        return response()->json(['success' => true, 'message' => 'Company has been restored successfully.']);
+    }
+
+    /**
+     * Permanently delete a soft-deleted company and drop its tenant database
+     *
+     * @param Company $company
+     * @return JsonResponse
+     */
+    public function forceDelete(Company $company): JsonResponse
+    {
+        $this->companyService->forceDeleteCompany($company);
+
+        return response()->json(['success' => true, 'message' => 'Company permanently deleted and database dropped.']);
+    }
+
+    /**
      * Delete company and its database
      *
      * @param Company $company
@@ -108,7 +154,7 @@ class CompanyController extends Controller
     {
         $this->companyService->deleteCompany($company);
 
-        return response()->json(['success' => true, 'message' => 'Company and database successfully purged.']);
+        return response()->json(['success' => true, 'message' => 'Company archived successfully.']);
     }
 
     /**
@@ -123,7 +169,7 @@ class CompanyController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => "Successfully deleted {$deletedCount} companies and their databases.",
+            'message' => "Successfully archived {$deletedCount} companies.",
         ]);
     }
 

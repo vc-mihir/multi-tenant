@@ -49,10 +49,14 @@ Route::middleware('auth:company')->group(function () {
     Route::get('/admin/users/data', [UserController::class, 'data'])->name('tenant.admin.users.data');
     Route::get('/admin/users/create', [UserController::class, 'create'])->name('tenant.admin.users.create');
     Route::post('/admin/users', [UserController::class, 'store'])->name('tenant.admin.users.store');
+    Route::get('/admin/users/archived', [UserController::class, 'archived'])->name('tenant.admin.users.archived');
+    Route::get('/admin/users/archived/data', [UserController::class, 'archivedData'])->name('tenant.admin.users.archived.data');
     Route::delete('/admin/users/bulk-delete', [UserController::class, 'bulkDestroy'])->name('tenant.admin.users.bulk-delete');
     Route::get('/admin/users/{user}/edit', [UserController::class, 'edit'])->name('tenant.admin.users.edit');
     Route::put('/admin/users/{user}', [UserController::class, 'update'])->name('tenant.admin.users.update');
     Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('tenant.admin.users.destroy');
+    Route::patch('/admin/users/{user}/restore', [UserController::class, 'restore'])->name('tenant.admin.users.restore')->withTrashed();
+    Route::delete('/admin/users/{user}/force-delete', [UserController::class, 'forceDelete'])->name('tenant.admin.users.force-delete')->withTrashed();
 });
 
 require __DIR__.'/auth.php';

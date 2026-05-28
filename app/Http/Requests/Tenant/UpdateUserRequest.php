@@ -30,7 +30,7 @@ class UpdateUserRequest extends FormRequest
                 'string', 
                 'email', 
                 'max:255', 
-                Rule::unique('tenant.users')->ignore($this->route('user'))
+                Rule::unique('tenant.users')->ignore($this->route('user'))->whereNull('deleted_at')
             ],
             'password' => ['nullable', 'confirmed', Password::min(8)->max(16)->letters()->mixedCase()->numbers()->symbols()],
         ];

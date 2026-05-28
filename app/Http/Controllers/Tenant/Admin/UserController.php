@@ -93,6 +93,28 @@ class UserController extends Controller
     }
 
     /**
+     * Display the archived (soft-deleted) users listing view.
+     *
+     * @param string $tenant
+     * @return View
+     */
+    public function archived(string $tenant): View
+    {
+        return view('tenant.admin.users.archived');
+    }
+
+    /**
+     * Return DataTables JSON for archived (soft-deleted) users.
+     *
+     * @param string $tenant
+     * @return JsonResponse
+     */
+    public function archivedData(string $tenant): JsonResponse
+    {
+        return $this->dataTableService->getArchivedData();
+    }
+
+    /**
      * Process datatables ajax request.
      *
      * @param string $tenant
@@ -105,7 +127,35 @@ class UserController extends Controller
     }
 
     /**
-     * Bulk delete multiple users by IDs.
+     * Restore a soft-deleted user.
+     *
+     * @param string $tenant
+     * @param User $user
+     * @return JsonResponse
+     */
+    public function restore(string $tenant, User $user): JsonResponse
+    {
+        $this->userService->restoreUser($user);
+
+        return response()->json(['success' => true, 'message' => 'User has been restored successfully.']);
+    }
+
+    /**
+     * Permanently delete a soft-deleted user.
+     *
+     * @param string $tenant
+     * @param User $user
+     * @return JsonResponse
+     */
+    public function forceDelete(string $tenant, User $user): JsonResponse
+    {
+        $this->userService->forceDeleteUser($user);
+
+        return response()->json(['success' => true, 'message' => 'User permanently deleted.']);
+    }
+
+    /**
+     * Bulk soft-delete multiple users by IDs.
      *
      * @param string $tenant
      * @param BulkDeleteUsersRequest $request
@@ -117,12 +167,12 @@ class UserController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => "{$count} user(s) deleted successfully.",
+            'message' => "{$count} user(s) archived successfully.",
         ]);
     }
 
     /**
-     * Remove the specified user.
+     * Soft-delete the specified user (moves to archive).
      *
      * @param string $tenant
      * @param User $user
@@ -134,7 +184,7 @@ class UserController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'User deleted successfully.',
+            'message' => 'User archived successfully.',
         ]);
     }
 }
