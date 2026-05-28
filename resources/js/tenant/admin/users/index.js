@@ -68,7 +68,7 @@ $(function () {
                 name: "actions",
                 orderable: false,
                 searchable: false,
-                className: "text-right px-6",
+                className: "text-right",
             },
         ],
     });
@@ -108,19 +108,19 @@ $(function () {
             .get();
 
         Swal.fire({
-            title: "Are you sure?",
-            text: `You are about to delete ${selectedIds.length} user(s). This action cannot be undone!`,
+            title: "Archive Users?",
+            text: `${selectedIds.length} user(s) will be archived. They can be restored from the Archived Users page.`,
             icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: "#ef4444",
+            confirmButtonColor: "#be123c",
             cancelButtonColor: "#64748b",
-            confirmButtonText: "Yes, Delete All!",
+            confirmButtonText: "Yes, Archive All",
             cancelButtonText: "Cancel",
             borderRadius: "1.25rem",
         }).then((result) => {
             if (result.isConfirmed) {
                 Swal.fire({
-                    title: "Deleting...",
+                    title: "Archiving...",
                     allowOutsideClick: false,
                     didOpen: () => Swal.showLoading(),
                 });
@@ -135,7 +135,7 @@ $(function () {
                     success: function (response) {
                         if (response.success) {
                             Swal.fire({
-                                title: "Deleted!",
+                                title: "Archived!",
                                 text: response.message,
                                 icon: "success",
                                 confirmButtonColor: "#6366f1",
@@ -154,22 +154,28 @@ $(function () {
         });
     });
 
-    // Single delete
+    // Single archive
     $(document).on("click", ".delete-user", function () {
         const userId = $(this).data("id");
 
         Swal.fire({
-            title: "Are you sure?",
-            text: "You are about to delete this user from the tenant database. This action cannot be undone!",
+            title: "Archive User?",
+            text: "This user will be archived. They can be restored from the Archived Users page.",
             icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: "#ef4444",
+            confirmButtonColor: "#be123c",
             cancelButtonColor: "#64748b",
-            confirmButtonText: "Yes, delete it!",
+            confirmButtonText: "Yes, Archive",
             cancelButtonText: "Cancel",
             borderRadius: "1.25rem",
         }).then((result) => {
             if (result.isConfirmed) {
+                Swal.fire({
+                    title: "Archiving...",
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading(),
+                });
+
                 $.ajax({
                     url: `/admin/users/${userId}`,
                     type: "DELETE",
@@ -179,7 +185,7 @@ $(function () {
                     success: function (response) {
                         if (response.success) {
                             Swal.fire({
-                                title: "Deleted!",
+                                title: "Archived!",
                                 text: response.message,
                                 icon: "success",
                                 confirmButtonColor: "#6366f1",

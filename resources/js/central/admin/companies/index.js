@@ -220,13 +220,13 @@ $(function() {
         }).get();
 
         Swal.fire({
-            title: 'Are you sure?',
-            text: `You are about to delete ${selectedIds.length} companies and their databases. This action is IRREVERSIBLE!`,
+            title: 'Archive Companies?',
+            text: `${selectedIds.length} companies will be archived. Their tenant databases will be preserved and can be restored later.`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#be123c',
             cancelButtonColor: '#64748b',
-            confirmButtonText: 'Yes, Delete Everything!',
+            confirmButtonText: 'Yes, Archive All',
             borderRadius: '1.5rem'
         }).then((result) => {
             if (result.isConfirmed) {
@@ -276,23 +276,21 @@ $(function() {
         const companyId = $(this).data('id');
 
         Swal.fire({
-            title: 'CRITICAL ACTION!',
-            text: "You are about to PERMANENTLY DELETE this company and DROP their entire tenant database. This will destroy all users, records, and settings. THIS CANNOT BE UNDONE!",
-            icon: 'error',
+            title: 'Archive Company?',
+            text: "This company will be archived. Their tenant database will be preserved and the company can be restored from the Archived Companies page.",
+            icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#be123c',
             cancelButtonColor: '#64748b',
-            confirmButtonText: 'Yes, Destroy Everything!',
+            confirmButtonText: 'Yes, Archive',
             cancelButtonText: 'Cancel',
             padding: '2rem',
             borderRadius: '1.5rem',
-            backdrop: `rgba(158, 89, 89, 0.05)`,
             allowOutsideClick: false
         }).then((result) => {
             if (result.isConfirmed) {
                 Swal.fire({
-                    title: 'Purging Data...',
-                    text: 'Destroying tenant database and records',
+                    title: 'Archiving...',
                     allowOutsideClick: false,
                     didOpen: () => {
                         Swal.showLoading();

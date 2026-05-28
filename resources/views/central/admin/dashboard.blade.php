@@ -161,7 +161,7 @@
                                     <p class="text-sm font-bold text-slate-800 truncate">{{ $company->company_name }}</p>
                                     <span class="w-1 h-1 bg-slate-300 rounded-full"></span>
                                     <span class="text-[10px] text-slate-400 font-semibold uppercase">Verified:
-                                        {{ $company->email_verified_at->format('M d, Y H:i') }}</span>
+                                        {{ $company->email_verified_at->format('M d, Y h:i A') }}</span>
                                 </div>
                                 <p class="text-xs text-slate-500 truncate mt-0.5">{{ $company->company_email }}</p>
                             </div>

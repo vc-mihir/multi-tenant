@@ -65,7 +65,7 @@ class UserService
     }
 
     /**
-     * Delete a tenant user with a safety check to prevent central DB deletion.
+     * Soft-delete a tenant user (archived; can be restored later).
      *
      * @param User $user
      * @return void
@@ -84,15 +84,66 @@ class UserService
                 'user_id' => $user->id,
                 'error'   => $e->getMessage(),
             ]);
-            throw new Exception('Failed to delete user. Please try again.');
+            throw new Exception('Failed to archive user. Please try again.');
         }
     }
 
     /**
-     * Bulk delete tenant users by IDs.
+     * Restore a soft-deleted tenant user.
+     *
+     * @param User $user
+     * @return void
+     */
+    public function restoreUser(User $user): void
+    {
+        try {
+            $user->restore();
+
+            activity()
+                ->causedBy(Auth::guard('company')->user())
+                ->performedOn($user)
+                ->event('restored')
+                ->withProperties(['user_id' => $user->id])
+                ->log('User restored from archive');
+        } catch (Exception $e) {
+            Log::error('UserService::restoreUser', [
+                'user_id' => $user->id,
+                'error'   => $e->getMessage(),
+            ]);
+            throw new Exception('Failed to restore user. Please try again.');
+        }
+    }
+
+    /**
+     * Permanently delete a soft-deleted tenant user.
+     *
+     * @param User $user
+     * @return void
+     */
+    public function forceDeleteUser(User $user): void
+    {
+        try {
+            $user->forceDelete();
+
+            activity()
+                ->causedBy(Auth::guard('company')->user())
+                ->event('force_deleted')
+                ->withProperties(['user_id' => $user->id])
+                ->log('User permanently deleted');
+        } catch (Exception $e) {
+            Log::error('UserService::forceDeleteUser', [
+                'user_id' => $user->id,
+                'error'   => $e->getMessage(),
+            ]);
+            throw new Exception('Failed to permanently delete user. Please try again.');
+        }
+    }
+
+    /**
+     * Bulk soft-delete tenant users by IDs.
      *
      * @param array $ids
-     * @return int  number of deleted records
+     * @return int  number of archived records
      * @throws Exception  when the active connection is the central database.
      */
     public function bulkDeleteUsers(array $ids): int
@@ -107,8 +158,8 @@ class UserService
             activity()
                 ->causedBy(Auth::guard('company')->user())
                 ->event('deleted')
-                ->withProperties(['deleted_ids' => $ids])
-                ->log('Bulk users deleted');
+                ->withProperties(['archived_ids' => $ids])
+                ->log('Bulk users archived');
 
             return $deleted;
         } catch (Exception $e) {
@@ -116,7 +167,7 @@ class UserService
                 'ids'   => $ids,
                 'error' => $e->getMessage(),
             ]);
-            throw new Exception('Failed to bulk delete users. Please try again.');
+            throw new Exception('Failed to bulk archive users. Please try again.');
         }
     }
 }
