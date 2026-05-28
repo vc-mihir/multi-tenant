@@ -94,12 +94,15 @@
 
 /* ── Table headers & cells ── */
 #companies-table th,
-#companies-table td {
+#companies-table td,
+#archived-companies-table th,
+#archived-companies-table td {
     padding: 0.875rem 1.25rem !important;
     vertical-align: middle;
 }
 
-#companies-table thead th {
+#companies-table thead th,
+#archived-companies-table thead th {
     white-space: nowrap;
     background: #f8fafc;
     color: #64748b;
@@ -110,13 +113,18 @@
     border-bottom: 1px solid #f1f5f9;
 }
 
-#companies-table tbody tr {
+#companies-table tbody tr,
+#archived-companies-table tbody tr {
     border-bottom: 1px solid #f8fafc;
     transition: background 0.15s;
 }
 
 #companies-table tbody tr:hover {
     background: #f8fafc;
+}
+
+#archived-companies-table tbody tr:hover {
+    background: #fff7f7;
 }
 
 /* ── Bottom controls row (info + pagination) ── */

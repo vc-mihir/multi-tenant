@@ -5,6 +5,7 @@ namespace App\Models\Tenant;
 use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
@@ -12,7 +13,7 @@ use Spatie\Activitylog\Support\LogOptions;
 
 class User extends Authenticatable implements MustVerifyEmailContract
 {
-    use HasFactory, HasUuids, Notifiable, LogsActivity;
+    use HasFactory, HasUuids, SoftDeletes, Notifiable, LogsActivity;
 
     /**
      * The database connection that should be used by the model.

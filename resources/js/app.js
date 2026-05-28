@@ -126,6 +126,9 @@ document.addEventListener("DOMContentLoaded", () => {
             import("../css/tenant/admin/users/index.css");
             import("./tenant/admin/users/index.js");
             break;
+        case "tenant-admin-users-archived":
+            import("./tenant/admin/users/archived.js");
+            break;
         case "tenant-admin-dashboard":
             import("../css/tenant/admin/dashboard.css");
             break;

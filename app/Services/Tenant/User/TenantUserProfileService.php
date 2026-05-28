@@ -52,7 +52,7 @@ class TenantUserProfileService
     }
 
     /**
-     * Permanently delete the tenant user's account.
+     * Soft-delete the tenant user's own account and log them out.
      *
      * @param User $user
      * @return void

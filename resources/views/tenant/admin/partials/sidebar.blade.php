@@ -28,12 +28,21 @@
         </a>
 
         <a href="{{ route('tenant.admin.users.index') }}"
-            class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-all {{ request()->routeIs('tenant.admin.users.*') ? 'font-bold text-emerald-400 bg-slate-800' : 'font-medium text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+            class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-all {{ request()->routeIs('tenant.admin.users.index') || request()->routeIs('tenant.admin.users.create') || request()->routeIs('tenant.admin.users.edit') ? 'font-bold text-emerald-400 bg-slate-800' : 'font-medium text-slate-400 hover:bg-slate-800 hover:text-white' }}">
             <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
             Users
+        </a>
+
+        <a href="{{ route('tenant.admin.users.archived') }}"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-all {{ request()->routeIs('tenant.admin.users.archived') ? 'font-bold text-emerald-400 bg-slate-800' : 'font-medium text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8l1 12a2 2 0 002 2h8a2 2 0 002-2L19 8M10 12v4m4-4v4" />
+            </svg>
+            Archived Users
         </a>
 
         <a href="{{ route('tenant.admin.profile') }}"

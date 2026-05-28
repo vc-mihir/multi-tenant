@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Tenant\Auth;
 
+use App\Models\Tenant\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -45,6 +46,17 @@ class LoginRequest extends FormRequest
 
         if (! Auth::guard('tenant_user')->attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
+
+            $isArchived = User::withTrashed()
+                ->where('email', $this->string('email'))
+                ->whereNotNull('deleted_at')
+                ->exists();
+
+            if ($isArchived) {
+                throw ValidationException::withMessages([
+                    'email' => 'Your account has been deleted. Please contact the administrator.',
+                ]);
+            }
 
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),

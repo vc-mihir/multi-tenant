@@ -10,6 +10,39 @@ use Yajra\DataTables\Facades\DataTables;
 class UserDataTableService
 {
     /**
+     * Get DataTables response for archived (soft-deleted) tenant users.
+     *
+     * @return JsonResponse
+     */
+    public function getArchivedData(): JsonResponse
+    {
+        try {
+            $query = User::onlyTrashed();
+
+            return DataTables::of($query)
+                ->addIndexColumn()
+                ->editColumn('email_verified_at', function ($user) {
+                    return $user->email_verified_at
+                        ? '<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-600 border border-emerald-100">' . $user->email_verified_at->format('Y-m-d h:i A') . '</span>'
+                        : '<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-50 text-rose-600 border border-rose-100">Not Verified</span>';
+                })
+                ->editColumn('created_at', function ($user) {
+                    return '<span class="font-medium text-slate-700">' . $user->created_at->format('M d, Y') . '</span><br><span class="text-[10px] text-slate-400 uppercase">' . $user->created_at->format('h:i A') . '</span>';
+                })
+                ->editColumn('deleted_at', function ($user) {
+                    return '<span class="font-medium text-rose-600">' . $user->deleted_at->format('M d, Y') . '</span><br><span class="text-[10px] text-slate-400 uppercase">' . $user->deleted_at->format('h:i A') . '</span>';
+                })
+                ->rawColumns(['email_verified_at', 'created_at', 'deleted_at'])
+                ->toJson();
+        } catch (\Exception $e) {
+            Log::error('UserDataTableService::getArchivedData', [
+                'error' => $e->getMessage(),
+            ]);
+            throw new \Exception('Failed to load archived users data. Please try again.');
+        }
+    }
+
+    /**
      * Get DataTables response for tenant users.
      *
      * @param string $tenant
@@ -36,7 +69,7 @@ class UserDataTableService
                 ->addColumn('actions', function ($user) use ($tenant) {
                     $editUrl = route('tenant.admin.users.edit', ['tenant' => $tenant, 'user' => $user->id]);
                     return '
-                        <div class="flex items-center justify-start gap-2">
+                        <div class="flex items-center justify-end gap-2 w-full">
                             <a href="' . $editUrl . '" class="p-2 text-slate-400 hover:text-teal-600 transition-colors">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                             </a>
