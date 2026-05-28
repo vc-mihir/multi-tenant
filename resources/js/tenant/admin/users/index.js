@@ -54,6 +54,11 @@ $(function () {
                 className: "whitespace-nowrap",
             },
             {
+                data: "is_active",
+                name: "is_active",
+                className: "whitespace-nowrap",
+            },
+            {
                 data: "created_at",
                 name: "created_at",
                 className: "whitespace-nowrap text-slate-500",
