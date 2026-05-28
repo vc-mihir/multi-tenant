@@ -2,7 +2,7 @@
 
 ## 🚀 Overview
 
-This is a robust, custom-built multi-tenant web application developed on Laravel 12. It implements a strict **Database-per-Tenant** architecture with domain-based isolation. The project cleanly separates the central administrative platform from isolated tenant environments, ensuring data security, performance scalability, and clean code separation.
+This is a robust, custom-built multi-tenant web application developed on Laravel 13. It implements a strict **Database-per-Tenant** architecture with domain-based isolation. The project cleanly separates the central administrative platform from isolated tenant environments, ensuring data security, performance scalability, and clean code separation.
 
 ---
 
@@ -26,9 +26,15 @@ The application uses a **Database-per-Tenant** approach:
 
 To prevent cross-domain session hijacking and ensure strict access control, the project uses multiple authentication guards:
 
-- **`web` Guard (Central)**: Authenticates Central Admins using the `User` model strictly on the central domain.
+- **`web` Guard (Central)**: Authenticates Central Admins using the `User` model strictly on the central domain. Login requires the `SuperAdmin` role (enforced via **Spatie Laravel Permission**).
 - **`company` Guard (Tenant Admin)**: Authenticates the Company Owner using the `Company` model on their specific tenant subdomain.
 - **`tenant_user` Guard (Tenant User)**: Authenticates regular users/employees using the `TenantUser` model within a specific tenant's environment.
+
+### Role & Permission System
+
+The central layer uses **Spatie Laravel Permission (v7)** for role-based access control. The `User` model carries the `HasRoles` trait. The seeder assigns the `SuperAdmin` role to the initial admin user — login is rejected for any central user who does not hold this role.
+
+Permission tables (`roles`, `permissions`, `model_has_roles`, etc.) live only in the central database; tenant databases do not use the permission system.
 
 ---
 
@@ -74,7 +80,7 @@ Follow these instructions meticulously to set up the project locally.
 
 ### Prerequisites
 
-- PHP >= 8.2
+- PHP >= 8.3
 - Composer
 - Node.js & NPM
 - MySQL/MariaDB (Your database user MUST have privileges to create new databases)
