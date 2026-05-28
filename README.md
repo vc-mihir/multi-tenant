@@ -220,6 +220,26 @@ _(Without the queue worker, new tenant databases will **never** be created when 
 
 ---
 
+## ⚡ Useful Commands
+
+```bash
+# Fresh migration with seed (central DB)
+php artisan migrate:fresh --seed
+
+# Run queue worker
+php artisan queue:work
+
+# Run tests
+php artisan test
+
+# Tenant database operations
+php artisan tenants:migrate        # run pending migrations on all tenant DBs
+php artisan tenants:rollback       # rollback last migration on all tenant DBs
+php artisan tenants:migrate:reset  # rollback all migrations on all tenant DBs
+```
+
+---
+
 ## 📺 Video Demonstration
 
 Click on the thumbnail below to watch the full application flow in action:
