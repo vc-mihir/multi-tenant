@@ -49,6 +49,7 @@ class TenantAdminAuthService
 
             Auth::guard('company')->logout();
             $request->session()->regenerate();
+            $request->session()->regenerateToken();
 
             activity()
                 ->causedBy($user)
