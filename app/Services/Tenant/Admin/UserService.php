@@ -25,6 +25,7 @@ class UserService
                 'email'             => $data['email'],
                 'password'          => Hash::make($data['password']),
                 'email_verified_at' => now(),
+                'is_active'         => (bool) ($data['is_active'] ?? true),
             ]);
         } catch (Exception $e) {
             Log::error('UserService::createUser', [
@@ -45,8 +46,9 @@ class UserService
     public function updateUser(User $user, array $data): void
     {
         $update = [
-            'name'  => $data['name'],
-            'email' => $data['email'],
+            'name'      => $data['name'],
+            'email'     => $data['email'],
+            'is_active' => (bool) ($data['is_active'] ?? false),
         ];
 
         if (!empty($data['password'])) {

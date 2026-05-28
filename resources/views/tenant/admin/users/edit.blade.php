@@ -35,6 +35,19 @@
                     @enderror
                 </div>
 
+                {{-- Is Active --}}
+                <div>
+                    <label for="is_active" class="block text-sm font-bold text-slate-700 mb-2">Status</label>
+                    <select name="is_active" id="is_active"
+                        class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all outline-none @error('is_active') border-rose-500 @enderror">
+                        <option value="1" {{ old('is_active', $user->is_active) == '1' ? 'selected' : '' }}>Active</option>
+                        <option value="0" {{ old('is_active', $user->is_active) == '0' ? 'selected' : '' }}>Inactive</option>
+                    </select>
+                    @error('is_active')
+                        <p class="mt-1.5 text-xs font-medium" style="color: #ef4444;">{{ $message }}</p>
+                    @enderror
+                </div>
+
                 <div class="p-4 rounded-xl bg-amber-50 border border-amber-100 mb-6">
                     <div class="flex items-center gap-3">
                         <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

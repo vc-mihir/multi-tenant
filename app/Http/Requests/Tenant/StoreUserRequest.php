@@ -36,6 +36,7 @@ class StoreUserRequest extends FormRequest
                     ->numbers()
                     ->symbols()
             ],
+            'is_active' => ['nullable', 'boolean'],
         ];
     }
 }

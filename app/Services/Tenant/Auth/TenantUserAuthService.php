@@ -48,9 +48,10 @@ class TenantUserAuthService
     {
         try {
             $user = User::create([
-                'name'     => $data['name'],
-                'email'    => $data['email'],
-                'password' => $data['password'],
+                'name'      => $data['name'],
+                'email'     => $data['email'],
+                'password'  => $data['password'],
+                'is_active' => true,
             ]);
 
             event(new Registered($user));
