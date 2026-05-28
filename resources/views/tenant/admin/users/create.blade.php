@@ -34,6 +34,19 @@
                     @enderror
                 </div>
 
+                {{-- Is Active --}}
+                <div>
+                    <label for="is_active" class="block text-sm font-bold text-slate-700 mb-2">Status</label>
+                    <select name="is_active" id="is_active"
+                        class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all outline-none @error('is_active') border-rose-500 @enderror">
+                        <option value="1" {{ old('is_active', '1') == '1' ? 'selected' : '' }}>Active</option>
+                        <option value="0" {{ old('is_active', '1') == '0' ? 'selected' : '' }}>Inactive</option>
+                    </select>
+                    @error('is_active')
+                        <p class="mt-1.5 text-xs font-medium" style="color: #ef4444;">{{ $message }}</p>
+                    @enderror
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {{-- Password --}}
                     <div>

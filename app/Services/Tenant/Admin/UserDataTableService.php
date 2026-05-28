@@ -60,6 +60,11 @@ class UserDataTableService
                         ? '<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-600 border border-emerald-100">' . $user->email_verified_at->format('Y-m-d h:i A') . '</span>'
                         : '<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-50 text-rose-600 border border-rose-100">Not Verified</span>';
                 })
+                ->editColumn('is_active', function ($user) {
+                    return $user->is_active
+                        ? '<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-600 border border-emerald-100">Active</span>'
+                        : '<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-50 text-rose-600 border border-rose-100">Inactive</span>';
+                })
                 ->editColumn('created_at', function ($user) {
                     return $user->created_at->format('Y-m-d h:i:s A');
                 })
@@ -78,7 +83,7 @@ class UserDataTableService
                             </button>
                         </div>';
                 })
-                ->rawColumns(['actions', 'email_verified_at'])
+                ->rawColumns(['actions', 'email_verified_at', 'is_active'])
                 ->make(true);
         } catch (\Exception $e) {
             Log::error('UserDataTableService::getData', [

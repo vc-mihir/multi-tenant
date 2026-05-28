@@ -63,6 +63,15 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        if (! Auth::guard('tenant_user')->user()->is_active) {
+            Auth::guard('tenant_user')->logout();
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'email' => 'Your account is inactive. Please contact the administrator.',
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 

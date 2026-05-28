@@ -38,6 +38,7 @@
                         <th>Name</th>
                         <th>Email</th>
                         <th class="whitespace-nowrap">Verified At</th>
+                        <th class="whitespace-nowrap">Status</th>
                         <th class="whitespace-nowrap">Created At</th>
                         <th class="whitespace-nowrap">Updated At</th>
                         <th class="text-right">Actions</th>
