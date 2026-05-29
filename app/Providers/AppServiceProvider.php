@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Auth\Middleware\Authenticate;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
