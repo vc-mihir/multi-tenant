@@ -7,9 +7,9 @@ use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
 
 class LoginRequest extends FormRequest
@@ -35,6 +35,7 @@ class LoginRequest extends FormRequest
         ];
     }
 
+
     /**
      * Attempt to authenticate the request's credentials.
      *
@@ -44,11 +45,15 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::guard('tenant_user')->attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        $emailHash = hash('sha256', strtolower($this->string('email')));
+
+        $user = User::where('email_hash', $emailHash)->first();
+
+        if (! $user || ! Hash::check($this->string('password'), $user->password)) {
             RateLimiter::hit($this->throttleKey());
 
             $isArchived = User::withTrashed()
-                ->where('email', $this->string('email'))
+                ->where('email_hash', $emailHash)
                 ->whereNotNull('deleted_at')
                 ->exists();
 
@@ -63,14 +68,15 @@ class LoginRequest extends FormRequest
             ]);
         }
 
-        if (! Auth::guard('tenant_user')->user()->is_active) {
-            Auth::guard('tenant_user')->logout();
+        if (! $user->is_active) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
                 'email' => 'Your account is inactive. Please contact the administrator.',
             ]);
         }
+
+        Auth::guard('tenant_user')->login($user, $this->boolean('remember'));
 
         RateLimiter::clear($this->throttleKey());
     }
@@ -103,6 +109,6 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+        return Str::transliterate(Str::lower($this->string('email')) . '|' . $this->ip());
     }
 }

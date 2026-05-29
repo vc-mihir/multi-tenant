@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests\Tenant\User;
 
+use App\Models\Tenant\User;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rules\Password;
 
 class ProfileUpdateRequest extends FormRequest
 {
@@ -27,7 +28,15 @@ class ProfileUpdateRequest extends FormRequest
 
         return [
             'name'     => ['required', 'string', 'max:255'],
-            'email'    => ['required', 'string', 'email', 'max:255', 'unique:tenant.users,email,' . $user->id],
+            'email'    => ['required', 'string', 'email', 'max:255', function ($attribute, $value, $fail) use ($user) {
+                $taken = User::whereNull('deleted_at')
+                    ->where('email_hash', hash('sha256', strtolower($value)))
+                    ->where('id', '!=', $user->id)
+                    ->exists();
+                if ($taken) {
+                    $fail('The email address is already taken.');
+                }
+            }],
             'password' => ['nullable', 'confirmed', Password::defaults()],
         ];
     }
