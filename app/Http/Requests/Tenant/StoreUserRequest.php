@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Tenant;
 
+use App\Models\Tenant\User;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 class StoreUserRequest extends FormRequest
@@ -25,7 +25,14 @@ class StoreUserRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('tenant.users')->whereNull('deleted_at')],
+            'email' => ['required', 'string', 'email', 'max:255', function ($attribute, $value, $fail) {
+                $taken = User::whereNull('deleted_at')
+                    ->where('email_hash', hash('sha256', strtolower($value)))
+                    ->exists();
+                if ($taken) {
+                    $fail('The email address is already taken.');
+                }
+            }],
             'password' => [
                 'required',
                 'confirmed',

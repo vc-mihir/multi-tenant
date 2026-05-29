@@ -88,7 +88,7 @@ return [
 
         'tenant_users' => [
             'driver' => 'eloquent',
-            'model' => TenantUser::class,
+            'model'  => TenantUser::class,
         ],
     ],
 

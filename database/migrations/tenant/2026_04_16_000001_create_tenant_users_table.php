@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('name', 100)->index();
-            $table->string('email', 150)->unique();
+            $table->text('name');
+            $table->string('name_hash', 64)->index();
+            $table->text('email');
+            $table->string('email_hash', 64)->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password', 60);
             $table->boolean('is_active')->default(false)->index();
@@ -23,7 +25,7 @@ return new class extends Migration
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
-            $table->string('email', 150)->primary();
+            $table->string('email_hash', 64)->primary();
             $table->string('token', 64);
             $table->timestamp('created_at')->nullable()->index();
         });
