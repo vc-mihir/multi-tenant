@@ -47,7 +47,7 @@ class TenantAdminProfileService
     }
 
     /**
-     * Delete the company central record and drop the tenant database.
+     * Soft-delete the company central record (tenant database is preserved for potential restoration).
      *
      * @param Company $tenantUser
      * @return void
@@ -59,16 +59,8 @@ class TenantAdminProfileService
             ->first();
 
         if ($centralCompany) {
-            $dbName = $centralCompany->database->db_name ?? null;
-
             try {
-                DB::transaction(function () use ($centralCompany) {
-                    $centralCompany->delete();
-                });
-
-                if ($dbName) {
-                    DB::connection('mysql')->statement("DROP DATABASE IF EXISTS `{$dbName}`");
-                }
+                $centralCompany->delete();
             } catch (Exception $e) {
                 Log::error('TenantAdminProfileService::deleteAccount', [
                     'subdomain' => $tenantUser->subdomain,
