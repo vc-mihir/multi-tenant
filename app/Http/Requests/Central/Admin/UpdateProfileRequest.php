@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests\Central\Admin;
 
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 class UpdateProfileRequest extends FormRequest
@@ -30,7 +30,14 @@ class UpdateProfileRequest extends FormRequest
                 'lowercase',
                 'email',
                 'max:255',
-                Rule::unique('users', 'email')->ignore(Auth::id()),
+                function ($attribute, $value, $fail) {
+                    $exists = User::where('email_hash', hash('sha256', strtolower($value)))
+                        ->where('id', '!=', Auth::id())
+                        ->exists();
+                    if ($exists) {
+                        $fail('The email has already been taken.');
+                    }
+                },
             ],
             'password' => [
                 'nullable', 

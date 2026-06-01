@@ -2,14 +2,16 @@
 
 namespace App\Services\Central\Admin;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
 class AdminAuthService
 {
     /**
-     * Attempt SuperAdmin login
+     * Attempt SuperAdmin login using hash-based email lookup so encrypted email is queryable.
      *
      * @param array $credentials
      * @param Request $request
@@ -18,14 +20,17 @@ class AdminAuthService
     public function attemptLogin(array $credentials, Request $request): void
     {
         try {
-            $guard = Auth::guard('admin');
+            $emailHash = hash('sha256', strtolower($credentials['email']));
 
-            if ($guard->attempt($credentials) && $guard->user()->hasRole('SuperAdmin')) {
+            $user = User::where('email_hash', $emailHash)->first();
+
+            if ($user && Hash::check($credentials['password'], $user->password) && $user->hasRole('SuperAdmin')) {
+                Auth::guard('admin')->login($user);
                 $request->session()->regenerate();
 
                 activity()
-                    ->causedBy($guard->user())
-                    ->performedOn($guard->user())
+                    ->causedBy($user)
+                    ->performedOn($user)
                     ->event('login')
                     ->log('SuperAdmin logged in');
 
