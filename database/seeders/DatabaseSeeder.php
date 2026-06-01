@@ -27,5 +27,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $admin->assignRole($adminRole);
+
+        $this->call(CompanySeeder::class);
     }
 }
