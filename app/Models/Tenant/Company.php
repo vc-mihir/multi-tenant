@@ -29,6 +29,7 @@ class Company extends Authenticatable implements MustVerifyEmailContract
      * @var list<string>
      */
     protected $fillable = [
+        'master_company_id',
         'company_name',
         'subdomain',
         'company_email',
