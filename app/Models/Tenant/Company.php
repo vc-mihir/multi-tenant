@@ -51,6 +51,8 @@ class Company extends Authenticatable implements MustVerifyEmailContract
      */
     protected $hidden = [
         'password',
+        'company_email_hash',
+        'license_number_hash',
     ];
 
     /**
@@ -64,6 +66,52 @@ class Company extends Authenticatable implements MustVerifyEmailContract
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Decrypt and return the stored company email.
+     *
+     * @param string|null $value
+     * @return string|null
+     */
+    public function getCompanyEmailAttribute(?string $value): ?string
+    {
+        return $value ? decrypt($value) : null;
+    }
+
+    /**
+     * Encrypt the company email and keep company_email_hash in sync for DB lookups.
+     *
+     * @param string $value
+     * @return void
+     */
+    public function setCompanyEmailAttribute(string $value): void
+    {
+        $this->attributes['company_email']      = encrypt($value);
+        $this->attributes['company_email_hash'] = hash('sha256', strtolower($value));
+    }
+
+    /**
+     * Decrypt and return the stored license number.
+     *
+     * @param string|null $value
+     * @return string|null
+     */
+    public function getLicenseNumberAttribute(?string $value): ?string
+    {
+        return $value ? decrypt($value) : null;
+    }
+
+    /**
+     * Encrypt the license number and keep license_number_hash in sync for DB lookups.
+     *
+     * @param string $value
+     * @return void
+     */
+    public function setLicenseNumberAttribute(string $value): void
+    {
+        $this->attributes['license_number']      = encrypt($value);
+        $this->attributes['license_number_hash'] = hash('sha256', strtolower($value));
     }
 
     /**
