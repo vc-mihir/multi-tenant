@@ -70,9 +70,9 @@ class CompanyLoginRequest extends FormRequest
         }
 
         return [
-            'company_email' => $this->email,
-            'password' => $this->password,
-            'subdomain' => $subdomain,
+            'company_email_hash' => hash('sha256', strtolower($this->email)),
+            'password'           => $this->password,
+            'subdomain'          => $subdomain,
         ];
     }
 
