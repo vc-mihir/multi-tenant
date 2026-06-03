@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Central\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class UpdateCompanyRequest extends FormRequest
@@ -37,14 +38,34 @@ class UpdateCompanyRequest extends FormRequest
                 Rule::unique('companies', 'subdomain')->ignore($this->route('company')),
             ],
             'company_email' => [
-                'required',
-                'email',
-                'lowercase',
-                'max:100',
-                Rule::unique('companies', 'company_email')->ignore($this->route('company')),
+                'required', 'email', 'lowercase', 'max:100',
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    $hash      = hash('sha256', strtolower((string) $value));
+                    $companyId = $this->route('company')?->id;
+                    $query     = DB::table('companies')->where('company_email_hash', $hash);
+                    if ($companyId) {
+                        $query->where('id', '!=', $companyId);
+                    }
+                    if ($query->exists()) {
+                        $fail('The company email has already been taken.');
+                    }
+                },
             ],
             'website' => ['required', 'url', 'max:255'],
-            'license_number' => ['required', 'string', 'max:50', Rule::unique('companies', 'license_number')->ignore($this->route('company'))],
+            'license_number' => [
+                'required', 'string', 'max:50',
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    $hash      = hash('sha256', strtolower((string) $value));
+                    $companyId = $this->route('company')?->id;
+                    $query     = DB::table('companies')->where('license_number_hash', $hash);
+                    if ($companyId) {
+                        $query->where('id', '!=', $companyId);
+                    }
+                    if ($query->exists()) {
+                        $fail('The license number has already been taken.');
+                    }
+                },
+            ],
             'address' => ['required', 'string', 'max:500'],
             'country' => ['required', 'string', 'max:100'],
             'state' => ['required', 'string', 'max:100'],
