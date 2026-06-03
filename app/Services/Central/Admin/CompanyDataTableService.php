@@ -47,6 +47,12 @@ class CompanyDataTableService
                 ->editColumn('created_at', function ($company) {
                     return '<span class="font-medium text-slate-700">' . $company->created_at->format('M d, Y') . '</span><br><span class="text-[10px] text-slate-400 uppercase">' . $company->created_at->format('h:i A') . '</span>';
                 })
+                ->filterColumn('company_email', function ($query, $keyword) {
+                    $query->where('company_email_hash', hash('sha256', strtolower($keyword)));
+                })
+                ->filterColumn('license_number', function ($query, $keyword) {
+                    $query->where('license_number_hash', hash('sha256', strtolower($keyword)));
+                })
                 ->rawColumns(['subdomain', 'status', 'deleted_at', 'created_at', 'database_name'])
                 ->addIndexColumn()
                 ->toJson();
@@ -116,6 +122,12 @@ class CompanyDataTableService
                 })
                 ->editColumn('updated_at', function ($company) {
                     return '<span class="font-medium text-slate-700">' . $company->updated_at->format('M d, Y') . '</span><br><span class="text-[10px] text-slate-400 uppercase">' . $company->updated_at->format('h:i A') . '</span>';
+                })
+                ->filterColumn('company_email', function ($query, $keyword) {
+                    $query->where('company_email_hash', hash('sha256', strtolower($keyword)));
+                })
+                ->filterColumn('license_number', function ($query, $keyword) {
+                    $query->where('license_number_hash', hash('sha256', strtolower($keyword)));
                 })
                 ->rawColumns(['subdomain', 'status', 'email_verified_at', 'created_at', 'updated_at', 'database_name'])
                 ->addIndexColumn()
