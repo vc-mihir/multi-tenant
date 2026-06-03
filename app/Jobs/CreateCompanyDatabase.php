@@ -26,9 +26,7 @@ class CreateCompanyDatabase implements ShouldQueue
      *
      * @param Company $company
      */
-    public function __construct(public Company $company)
-    {
-    }
+    public function __construct(public Company $company) {}
 
     /**
      * Handle the job.
@@ -45,7 +43,7 @@ class CreateCompanyDatabase implements ShouldQueue
 
             config(['database.connections.tenant.database' => $dbName]);
             DB::purge('tenant');
-            
+
             // 2. Run Migrations
             Artisan::call('migrate', [
                 '--database' => 'tenant',
@@ -55,20 +53,24 @@ class CreateCompanyDatabase implements ShouldQueue
 
             // 3. Seed Tenant Data
             $tenantCompanies = DB::connection('tenant')->table('companies');
+            $plainEmail   = $this->company->company_email;
+            $plainLicense = $this->company->license_number;
             $tenantData = [
-                'company_name'      => $this->company->company_name,
-                'subdomain'         => $this->company->subdomain,
-                'company_email'     => $this->company->company_email,
-                'website'           => $this->company->website,
-                'license_number'    => $this->company->license_number,
-                'address'           => $this->company->address,
-                'country'           => $this->company->country,
-                'state'             => $this->company->state,
-                'city'              => $this->company->city,
-                'password'          => $this->company->password,
-                'status'            => $this->company->status,
-                'email_verified_at' => $this->company->email_verified_at,
-                'updated_at'        => now(),
+                'company_name'          => $this->company->company_name,
+                'subdomain'             => $this->company->subdomain,
+                'company_email'         => encrypt($plainEmail),
+                'company_email_hash'    => hash('sha256', strtolower($plainEmail)),
+                'website'               => $this->company->website,
+                'license_number'        => encrypt($plainLicense),
+                'license_number_hash'   => hash('sha256', strtolower($plainLicense)),
+                'address'               => $this->company->address,
+                'country'               => $this->company->country,
+                'state'                 => $this->company->state,
+                'city'                  => $this->company->city,
+                'password'              => $this->company->password,
+                'status'                => $this->company->status,
+                'email_verified_at'     => $this->company->email_verified_at,
+                'updated_at'            => now(),
             ];
 
             if ($tenantCompanies->where('master_company_id', $this->company->id)->exists()) {
@@ -85,7 +87,7 @@ class CreateCompanyDatabase implements ShouldQueue
             // 4. Update Master Database with Connection Info
             $defaultConnection = config('database.default');
             CompanyDatabase::updateOrCreate(
-                ['company_id' => $this->company->id],   
+                ['company_id' => $this->company->id],
                 [
                     'db_name' => $dbName,
                     'db_host' => config("database.connections.{$defaultConnection}.host"),
