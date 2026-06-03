@@ -31,9 +31,13 @@ class TenantAdminProfileService
             DB::transaction(function () use ($tenantUser, $data) {
                 $tenantUser->update($data);
 
-                CentralCompany::on('mysql')
+                $centralCompany = CentralCompany::on('mysql')
                     ->where('subdomain', $tenantUser->subdomain)
-                    ->update($data);
+                    ->first();
+
+                if ($centralCompany) {
+                    $centralCompany->update($data);
+                }
             });
 
             Auth::guard('company')->login($tenantUser);

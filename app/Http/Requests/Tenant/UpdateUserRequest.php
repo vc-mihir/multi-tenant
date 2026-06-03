@@ -28,7 +28,7 @@ class UpdateUserRequest extends FormRequest
             'email' => ['required', 'string', 'email', 'max:255', function ($attribute, $value, $fail) {
                 $taken = User::whereNull('deleted_at')
                     ->where('email_hash', hash('sha256', strtolower($value)))
-                    ->where('id', '!=', $this->route('user'))
+                    ->where('id', '!=', $this->route('user')->getKey())
                     ->exists();
                 if ($taken) {
                     $fail('The email address is already taken.');
