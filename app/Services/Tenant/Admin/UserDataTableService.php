@@ -32,6 +32,12 @@ class UserDataTableService
                 ->editColumn('deleted_at', function ($user) {
                     return '<span class="font-medium text-rose-600">' . $user->deleted_at->format('M d, Y') . '</span><br><span class="text-[10px] text-slate-400 uppercase">' . $user->deleted_at->format('h:i A') . '</span>';
                 })
+                ->filterColumn('name', function ($query, $keyword) {
+                    $query->where('name_hash', hash('sha256', strtolower($keyword)));
+                })
+                ->filterColumn('email', function ($query, $keyword) {
+                    $query->where('email_hash', hash('sha256', strtolower($keyword)));
+                })
                 ->rawColumns(['email_verified_at', 'created_at', 'deleted_at'])
                 ->toJson();
         } catch (\Exception $e) {
@@ -82,6 +88,12 @@ class UserDataTableService
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                             </button>
                         </div>';
+                })
+                ->filterColumn('name', function ($query, $keyword) {
+                    $query->where('name_hash', hash('sha256', strtolower($keyword)));
+                })
+                ->filterColumn('email', function ($query, $keyword) {
+                    $query->where('email_hash', hash('sha256', strtolower($keyword)));
                 })
                 ->rawColumns(['actions', 'email_verified_at', 'is_active'])
                 ->make(true);
