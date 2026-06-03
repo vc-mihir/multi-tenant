@@ -28,6 +28,8 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'name_hash',
+        'email_hash',
     ];
 
     /**
@@ -41,6 +43,52 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Decrypt and return the stored name.
+     *
+     * @param string|null $value
+     * @return string|null
+     */
+    public function getNameAttribute(?string $value): ?string
+    {
+        return $value ? decrypt($value) : null;
+    }
+
+    /**
+     * Encrypt the name and keep name_hash in sync for DB indexing.
+     *
+     * @param string $value
+     * @return void
+     */
+    public function setNameAttribute(string $value): void
+    {
+        $this->attributes['name']      = encrypt($value);
+        $this->attributes['name_hash'] = hash('sha256', strtolower($value));
+    }
+
+    /**
+     * Decrypt and return the stored email.
+     *
+     * @param string|null $value
+     * @return string|null
+     */
+    public function getEmailAttribute(?string $value): ?string
+    {
+        return $value ? decrypt($value) : null;
+    }
+
+    /**
+     * Encrypt the email and keep email_hash in sync for DB lookups.
+     *
+     * @param string $value
+     * @return void
+     */
+    public function setEmailAttribute(string $value): void
+    {
+        $this->attributes['email']      = encrypt($value);
+        $this->attributes['email_hash'] = hash('sha256', strtolower($value));
     }
 
     /**

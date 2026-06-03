@@ -222,8 +222,10 @@ class CompanyService
                 return collect();
             }
 
+            $emailHash = hash('sha256', strtolower($query));
+
             return Company::where('company_name', 'LIKE', "%{$query}%")
-                ->orWhere('company_email', 'LIKE', "%{$query}%")
+                ->orWhere('company_email_hash', $emailHash)
                 ->limit(5)
                 ->get(['id', 'company_name', 'company_email']);
         } catch (\Exception $e) {
