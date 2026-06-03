@@ -25,7 +25,7 @@ class CompanySeeder extends Seeder
     public function run(): void
     {
         $company = Company::firstOrCreate(
-            ['company_email' => 'mihir@test.com'],
+            ['company_email_hash' => hash('sha256', strtolower('mihir@test.com'))],
             [
                 'company_name'      => 'Mihir',
                 'subdomain'         => 'mihir',
