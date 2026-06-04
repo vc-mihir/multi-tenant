@@ -29,6 +29,7 @@ class CompanySeeder extends Seeder
             [
                 'company_name'      => 'Mihir',
                 'subdomain'         => 'mihir',
+                'company_email'     => 'mihir@test.com',
                 'website'           => 'https://mihir.test',
                 'license_number'    => 'LIC-2026-001',
                 'address'           => '123 Main Street',
