@@ -29,16 +29,20 @@ class TenantUserSeeder extends Seeder
         foreach ($users as $userData) {
             $emailHash = hash('sha256', strtolower($userData['email']));
 
-            User::firstOrCreate(
-                ['email_hash' => $emailHash],
-                [
-                    'name' => $userData['name'],
-                    'email' => $userData['email'],
-                    'password' => Hash::make('Hello@123'),
-                    'is_active' => true,
-                    'email_verified_at' => now(),
-                ]
-            );
+            if (User::where('email_hash', $emailHash)->exists()) {
+                $this->command->warn("Already exists: {$userData['email']}");
+                continue;
+            }
+
+            User::create([
+                'name'              => $userData['name'],
+                'email'             => $userData['email'],
+                'password'          => Hash::make('Hello@123'),
+                'is_active'         => true,
+                'email_verified_at' => now(),
+            ]);
+
+            $this->command->info("Created: {$userData['email']}");
         }
     }
 }
