@@ -2,6 +2,7 @@
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,6 +52,16 @@ function setTenantDomain(string $subdomain): void
 {
     $host = $subdomain . '.' . parse_url(config('app.url'), PHP_URL_HOST);
     test()->withServerVariables(['HTTP_HOST' => $host, 'SERVER_NAME' => $host]);
+}
+
+/**
+ * Fetch the seeded SuperAdmin user by its known email hash.
+ *
+ * @return User
+ */
+function seededAdmin(): User
+{
+    return User::where('email_hash', hash('sha256', 'admin@system.com'))->firstOrFail();
 }
 
 /*

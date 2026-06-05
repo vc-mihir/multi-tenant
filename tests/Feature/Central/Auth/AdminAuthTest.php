@@ -8,15 +8,6 @@ beforeEach(function (): void {
     $this->seed(AdminUserSeeder::class);
 });
 
-/**
- * Fetch the seeded SuperAdmin user by its known email hash.
- *
- * @return User
- */
-function seededAdmin(): User
-{
-    return User::where('email_hash', hash('sha256', 'admin@system.com'))->firstOrFail();
-}
 
 // ─── Group 1: Login Page ──────────────────────────────────────────────────────
 
