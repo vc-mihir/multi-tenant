@@ -1,8 +1,9 @@
 <?php
 
+use App\Models\Central\Company;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -62,6 +63,30 @@ function setTenantDomain(string $subdomain): void
 function seededAdmin(): User
 {
     return User::where('email_hash', hash('sha256', 'admin@system.com'))->firstOrFail();
+}
+
+/**
+ * Creates and returns a verified, active Company with optional field overrides.
+ *
+ * @param array $overrides
+ * @return Company
+ */
+function seedCompany(array $overrides = []): Company
+{
+    return Company::create(array_merge([
+        'company_name'      => 'Acme Corp',
+        'subdomain'         => 'acme',
+        'company_email'     => 'info@acme.com',
+        'website'           => 'https://acme.com',
+        'license_number'    => 'LIC-001',
+        'address'           => '123 Main Street',
+        'country'           => 'India',
+        'state'             => 'Gujarat',
+        'city'              => 'Ahmedabad',
+        'password'          => 'Hello@123',
+        'status'            => 'active',
+        'email_verified_at' => now(),
+    ], $overrides));
 }
 
 /*

@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Central\Company;
 use Database\Seeders\AdminUserSeeder;
 use Illuminate\Support\Facades\DB;
 
@@ -8,30 +7,6 @@ beforeEach(function (): void {
     setCentralDomain();
     $this->seed(AdminUserSeeder::class);
 });
-
-/**
- * Creates and returns a verified, active company for edit/update tests.
- *
- * @param array $overrides
- * @return Company
- */
-function editableCompany(array $overrides = []): Company
-{
-    return Company::create(array_merge([
-        'company_name'      => 'Acme Corp',
-        'subdomain'         => 'acme',
-        'company_email'     => 'info@acme.com',
-        'password'          => 'Hello@123',
-        'website'           => 'https://acme.com',
-        'license_number'    => 'LIC-001',
-        'address'           => '123 Main St',
-        'country'           => 'India',
-        'state'             => 'Gujarat',
-        'city'              => 'Ahmedabad',
-        'status'            => 'active',
-        'email_verified_at' => now(),
-    ], $overrides));
-}
 
 /**
  * Returns a valid company update payload with optional field overrides.
@@ -59,7 +34,7 @@ function updateCompanyPayload(array $overrides = []): array
 
 describe('edit page', function (): void {
     test('renders for authenticated SuperAdmin', function (): void {
-        $company = editableCompany();
+        $company = seedCompany();
 
         $this->actingAs(seededAdmin(), 'admin')
             ->get(route('admin.companies.edit', $company))
@@ -67,7 +42,7 @@ describe('edit page', function (): void {
     });
 
     test('guest is redirected to login', function (): void {
-        $company = editableCompany();
+        $company = seedCompany();
 
         $this->get(route('admin.companies.edit', $company))
             ->assertRedirect(route('admin.login'));
@@ -78,7 +53,7 @@ describe('edit page', function (): void {
 
 describe('successful update', function (): void {
     test('redirects to companies index with success flash', function (): void {
-        $company = editableCompany();
+        $company = seedCompany();
 
         $this->actingAs(seededAdmin(), 'admin')
             ->put(route('admin.companies.update', $company), updateCompanyPayload())
@@ -88,7 +63,7 @@ describe('successful update', function (): void {
     });
 
     test('updated email is re-encrypted and its hash is stored correctly', function (): void {
-        $company = editableCompany();
+        $company = seedCompany();
 
         $this->actingAs(seededAdmin(), 'admin')
             ->put(route('admin.companies.update', $company), updateCompanyPayload([
@@ -102,7 +77,7 @@ describe('successful update', function (): void {
     });
 
     test('updated license number is re-encrypted and its hash is stored correctly', function (): void {
-        $company = editableCompany();
+        $company = seedCompany();
 
         $this->actingAs(seededAdmin(), 'admin')
             ->put(route('admin.companies.update', $company), updateCompanyPayload([
@@ -120,7 +95,7 @@ describe('successful update', function (): void {
 
 describe('self-exclusion on unique fields', function (): void {
     test('resubmitting own name and subdomain does not trigger a uniqueness error', function (): void {
-        $company = editableCompany();
+        $company = seedCompany();
 
         $this->actingAs(seededAdmin(), 'admin')
             ->put(route('admin.companies.update', $company), updateCompanyPayload([
@@ -131,7 +106,7 @@ describe('self-exclusion on unique fields', function (): void {
     });
 
     test('resubmitting own email and license does not trigger a uniqueness error', function (): void {
-        $company = editableCompany();
+        $company = seedCompany();
 
         $this->actingAs(seededAdmin(), 'admin')
             ->put(route('admin.companies.update', $company), updateCompanyPayload([
@@ -146,14 +121,14 @@ describe('self-exclusion on unique fields', function (): void {
 
 describe('uniqueness validation against other companies', function (): void {
     test('duplicate company name from another company is rejected', function (): void {
-        editableCompany([
+        seedCompany([
             'company_name'   => 'Taken Corp',
             'subdomain'      => 'taken',
             'company_email'  => 'taken@test.com',
             'license_number' => 'LIC-T01',
         ]);
 
-        $company = editableCompany([
+        $company = seedCompany([
             'company_name'   => 'My Corp',
             'subdomain'      => 'my',
             'company_email'  => 'my@test.com',
@@ -169,14 +144,14 @@ describe('uniqueness validation against other companies', function (): void {
     });
 
     test('duplicate email from another company is rejected via hash lookup', function (): void {
-        editableCompany([
+        seedCompany([
             'company_name'   => 'Other Corp',
             'subdomain'      => 'other',
             'company_email'  => 'taken@test.com',
             'license_number' => 'LIC-T01',
         ]);
 
-        $company = editableCompany([
+        $company = seedCompany([
             'company_name'   => 'My Corp',
             'subdomain'      => 'my',
             'company_email'  => 'my@test.com',
@@ -192,14 +167,14 @@ describe('uniqueness validation against other companies', function (): void {
     });
 
     test('duplicate license number from another company is rejected via hash lookup', function (): void {
-        editableCompany([
+        seedCompany([
             'company_name'   => 'Other Corp',
             'subdomain'      => 'other',
             'company_email'  => 'other@test.com',
             'license_number' => 'LIC-TAKEN',
         ]);
 
-        $company = editableCompany([
+        $company = seedCompany([
             'company_name'   => 'My Corp',
             'subdomain'      => 'my',
             'company_email'  => 'my@test.com',
