@@ -1,13 +1,5 @@
 <?php
 
-use App\Models\Tenant\Company as TenantCompany;
-
-/*
-|--------------------------------------------------------------------------
-| Testing Strategy
-|--------------------------------------------------------------------------
-*/
-
 beforeEach(function (): void {
     seedCompany([
         'company_email' => 'admin@acme.com',
@@ -15,42 +7,6 @@ beforeEach(function (): void {
     ]);
     setTenantDomain('acme');
 });
-
-/**
- * Fetch the seeded tenant company by its known email hash.
- *
- * @return TenantCompany
- */
-function seededTenantCompany(): TenantCompany
-{
-    return TenantCompany::where('company_email_hash', hash('sha256', 'admin@acme.com'))->firstOrFail();
-}
-
-/**
- * Build a full URL on the acme tenant subdomain.
- * Required because Symfony overwrites HTTP_HOST from the URI host; a bare
- * path would always resolve to the central domain.
- *
- * @param string $path
- * @return string
- */
-function tenantUrl(string $path): string
-{
-    $host = 'acme.' . parse_url(config('app.url'), PHP_URL_HOST);
-    return 'http://' . $host . '/' . ltrim($path, '/');
-}
-
-/**
- * Generate a route URL with the tenant subdomain injected.
- *
- * @param string $name
- * @param array  $params
- * @return string
- */
-function tenantRoute(string $name, array $params = []): string
-{
-    return route($name, array_merge(['tenant' => 'acme'], $params));
-}
 
 /**
  * Returns a valid tenant admin login payload with optional field overrides.

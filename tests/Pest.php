@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Central\Company;
+use App\Models\Tenant\Company as TenantCompany;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -53,6 +54,41 @@ function setTenantDomain(string $subdomain): void
 {
     $host = $subdomain . '.' . parse_url(config('app.url'), PHP_URL_HOST);
     test()->withServerVariables(['HTTP_HOST' => $host, 'SERVER_NAME' => $host]);
+}
+
+/**
+ * Fetch the seeded tenant company by its known email hash.
+ *
+ * @return TenantCompany
+ */
+function seededTenantCompany(): TenantCompany
+{
+    return TenantCompany::where('company_email_hash', hash('sha256', 'admin@acme.com'))->firstOrFail();
+}
+
+/**
+ * Build a full URL on the acme tenant subdomain.
+ * Required because Symfony overwrites HTTP_HOST from the URI host; a bare
+ * path would always resolve to the central domain.
+ *
+ * @param string $path
+ * @return string
+ */
+function tenantUrl(string $path): string
+{
+    $host = 'acme.' . parse_url(config('app.url'), PHP_URL_HOST);
+    return 'http://' . $host . '/' . ltrim($path, '/');
+}
+
+/**
+ * Generate a route URL with the tenant subdomain injected.
+ *
+ * @param string $name
+ * @return string
+ */
+function tenantRoute(string $name): string
+{
+    return route($name, ['tenant' => 'acme']);
 }
 
 /**
