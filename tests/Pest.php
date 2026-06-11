@@ -63,7 +63,7 @@ function setTenantDomain(string $subdomain): void
  */
 function seededTenantCompany(): TenantCompany
 {
-    return TenantCompany::where('company_email_hash', hash('sha256', 'admin@acme.com'))->firstOrFail();
+    return TenantCompany::on('mysql')->where('company_email_hash', hash('sha256', 'admin@acme.com'))->firstOrFail();
 }
 
 /**
