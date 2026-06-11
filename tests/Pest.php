@@ -2,8 +2,12 @@
 
 use App\Models\Central\Company;
 use App\Models\Tenant\Company as TenantCompany;
+use App\Models\Tenant\User as TenantUser;
 use App\Models\User;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 /*
@@ -122,6 +126,64 @@ function seedCompany(array $overrides = []): Company
         'password'          => 'Hello@123',
         'status'            => 'active',
         'email_verified_at' => now(),
+    ], $overrides));
+}
+
+/*
+|--------------------------------------------------------------------------
+| Tenant Database Helpers
+|--------------------------------------------------------------------------
+*/
+
+/**
+ * Point the tenant connection to an in-memory SQLite database and create
+ * the tables needed by Tenant\User. Also switches the default connection to
+ * 'tenant' so the UserService security guard does not block operations.
+ *
+ * @return void
+ */
+function setUpTenantDb(): void
+{
+    config([
+        'database.connections.tenant' => [
+            'driver'   => 'sqlite',
+            'database' => ':memory:',
+        ],
+    ]);
+
+    DB::purge('tenant');
+
+    Schema::connection('tenant')->create('users', function (Blueprint $table): void {
+        $table->uuid('id')->primary();
+        $table->text('name');
+        $table->string('name_hash', 64)->index();
+        $table->text('email');
+        $table->string('email_hash', 64)->unique();
+        $table->timestamp('email_verified_at')->nullable();
+        $table->string('password', 60);
+        $table->boolean('is_active')->default(false)->index();
+        $table->rememberToken();
+        $table->softDeletes();
+        $table->timestamps();
+    });
+
+    DB::setDefaultConnection('tenant');
+}
+
+/**
+ * Create a verified, active tenant user with optional overrides.
+ *
+ * @param array $overrides
+ * @return TenantUser
+ */
+function makeTenantUser(array $overrides = []): TenantUser
+{
+    return TenantUser::create(array_merge([
+        'name'              => 'John Doe',
+        'email'             => 'john@acme.com',
+        'password'          => 'User@1234',
+        'email_verified_at' => now(),
+        'is_active'         => true,
     ], $overrides));
 }
 
