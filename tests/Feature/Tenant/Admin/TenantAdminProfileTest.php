@@ -5,11 +5,17 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 beforeEach(function (): void {
+    setUpTenantDb();
     seedCompany([
         'company_email' => 'admin@acme.com',
         'password'      => 'Admin@123',
     ]);
     setTenantDomain('acme');
+});
+
+afterEach(function (): void {
+    DB::setDefaultConnection('mysql');
+    DB::purge('tenant');
 });
 
 /**

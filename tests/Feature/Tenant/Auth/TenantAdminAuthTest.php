@@ -1,11 +1,19 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
+
 beforeEach(function (): void {
+    setUpTenantDb();
     seedCompany([
         'company_email' => 'admin@acme.com',
         'password'      => 'Admin@123',
     ]);
     setTenantDomain('acme');
+});
+
+afterEach(function (): void {
+    DB::setDefaultConnection('mysql');
+    DB::purge('tenant');
 });
 
 /**

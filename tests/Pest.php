@@ -67,7 +67,7 @@ function setTenantDomain(string $subdomain): void
  */
 function seededTenantCompany(): TenantCompany
 {
-    return TenantCompany::on('mysql')->where('company_email_hash', hash('sha256', 'admin@acme.com'))->firstOrFail();
+    return TenantCompany::where('company_email_hash', hash('sha256', 'admin@acme.com'))->firstOrFail();
 }
 
 /**
@@ -113,7 +113,7 @@ function seededAdmin(): User
  */
 function seedCompany(array $overrides = []): Company
 {
-    return Company::create(array_merge([
+    $attributes = array_merge([
         'company_name'      => 'Acme Corp',
         'subdomain'         => 'acme',
         'company_email'     => 'info@acme.com',
@@ -126,7 +126,23 @@ function seedCompany(array $overrides = []): Company
         'password'          => 'Hello@123',
         'status'            => 'active',
         'email_verified_at' => now(),
-    ], $overrides));
+    ], $overrides);
+
+    $company = Company::create($attributes);
+
+    // Mirror the company into the tenant database when one is set up, matching
+    // the runtime flow where the company row exists in both central and tenant
+    // databases. The shared id keeps the two records linkable (the service
+    // syncs them by subdomain; tests look the central record up by id).
+    if (config('database.connections.tenant.driver') === 'sqlite'
+        && Schema::connection('tenant')->hasTable('companies')) {
+        $tenantCompany = new TenantCompany($attributes);
+        $tenantCompany->id = $company->id;
+        $tenantCompany->master_company_id = $company->id;
+        $tenantCompany->save();
+    }
+
+    return $company;
 }
 
 /*
@@ -152,6 +168,26 @@ function setUpTenantDb(): void
     ]);
 
     DB::purge('tenant');
+
+    Schema::connection('tenant')->create('companies', function (Blueprint $table): void {
+        $table->uuid('id')->primary();
+        $table->uuid('master_company_id')->unique();
+        $table->string('company_name', 100)->index();
+        $table->string('subdomain', 63)->unique();
+        $table->text('company_email')->nullable();
+        $table->string('company_email_hash', 64)->nullable()->unique();
+        $table->string('website', 255);
+        $table->text('license_number')->nullable();
+        $table->string('license_number_hash', 64)->nullable()->unique();
+        $table->text('address');
+        $table->string('country', 100);
+        $table->string('state', 100);
+        $table->string('city', 100);
+        $table->string('password', 60);
+        $table->enum('status', ['active', 'inactive', 'suspended', 'pending'])->default('inactive')->index();
+        $table->timestamp('email_verified_at')->nullable();
+        $table->timestamps();
+    });
 
     Schema::connection('tenant')->create('users', function (Blueprint $table): void {
         $table->uuid('id')->primary();
