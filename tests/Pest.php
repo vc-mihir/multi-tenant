@@ -203,6 +203,12 @@ function setUpTenantDb(): void
         $table->timestamps();
     });
 
+    Schema::connection('tenant')->create('password_reset_tokens', function (Blueprint $table): void {
+        $table->string('email_hash', 64)->primary();
+        $table->string('token', 64);
+        $table->timestamp('created_at')->nullable()->index();
+    });
+
     DB::setDefaultConnection('tenant');
 }
 
