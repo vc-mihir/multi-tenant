@@ -72,6 +72,23 @@ Key operations (login, logout, registration, delete) are tracked using **Spatie 
 
 ---
 
+## 🧪 Testing
+
+The suite runs on **Pest PHP** and mirrors the app's central/tenant split across two databases:
+
+- **Central** — a real MySQL test database (`multi_tenant_testing`), managed by the `RefreshDatabase` trait, for central models (companies, super admins).
+- **Tenant** — a disposable SQLite `:memory:` database set up per test via the `setUpTenantDb()` helper, standing in for the per-company MySQL database provisioned at runtime.
+
+Shared helpers (`setUpTenantDb()`, `seedCompany()`, `makeTenantUser()`, `tenantUrl()`, etc.) live in `tests/Pest.php`. Test files are organized by feature area under `tests/Feature/` and `tests/Unit/`.
+
+```bash
+composer test                            # run the full suite
+php artisan test --filter "ClassName"    # run a specific test class
+php artisan test --filter "test name"    # run a single test
+```
+
+---
+
 ## 🛠 Project Structure Overview
 
 ```
