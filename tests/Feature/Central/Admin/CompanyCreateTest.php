@@ -124,7 +124,7 @@ describe('validation', function (): void {
     });
 
     test('duplicate company name is rejected', function (): void {
-        Company::create(adminCompanyPayload(['status' => 'active', 'email_verified_at' => now()]));
+        seedCompany();
 
         $this->actingAs(seededAdmin(), 'admin')
             ->post(route('admin.companies.store'), adminCompanyPayload([
@@ -136,7 +136,7 @@ describe('validation', function (): void {
     });
 
     test('duplicate subdomain is rejected', function (): void {
-        Company::create(adminCompanyPayload(['status' => 'active', 'email_verified_at' => now()]));
+        seedCompany();
 
         $this->actingAs(seededAdmin(), 'admin')
             ->post(route('admin.companies.store'), adminCompanyPayload([
@@ -148,7 +148,7 @@ describe('validation', function (): void {
     });
 
     test('duplicate company email is rejected via hash-based lookup', function (): void {
-        Company::create(adminCompanyPayload(['status' => 'active', 'email_verified_at' => now()]));
+        seedCompany();
 
         $this->actingAs(seededAdmin(), 'admin')
             ->post(route('admin.companies.store'), adminCompanyPayload([
@@ -160,7 +160,7 @@ describe('validation', function (): void {
     });
 
     test('duplicate license number is rejected via hash-based lookup', function (): void {
-        Company::create(adminCompanyPayload(['status' => 'active', 'email_verified_at' => now()]));
+        seedCompany();
 
         $this->actingAs(seededAdmin(), 'admin')
             ->post(route('admin.companies.store'), adminCompanyPayload([

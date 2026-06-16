@@ -1,36 +1,11 @@
 <?php
 
-use App\Models\Central\Company;
 use Database\Seeders\AdminUserSeeder;
 
 beforeEach(function (): void {
     setCentralDomain();
     $this->seed(AdminUserSeeder::class);
 });
-
-/**
- * Creates and returns a verified, active company with optional field overrides.
- *
- * @param array $overrides
- * @return Company
- */
-function activeCompany(array $overrides = []): Company
-{
-    return Company::create(array_merge([
-        'company_name'      => 'Acme Corp',
-        'subdomain'         => 'acme',
-        'company_email'     => 'info@acme.com',
-        'password'          => 'Hello@123',
-        'website'           => 'https://acme.com',
-        'license_number'    => 'LIC-001',
-        'address'           => '123 Main St',
-        'country'           => 'India',
-        'state'             => 'Gujarat',
-        'city'              => 'Ahmedabad',
-        'status'            => 'active',
-        'email_verified_at' => now(),
-    ], $overrides));
-}
 
 // ─── Group 1: Index Page ──────────────────────────────────────────────────────
 
@@ -71,7 +46,7 @@ describe('companies data endpoint', function (): void {
     });
 
     test('returns DataTables JSON for authenticated admin', function (): void {
-        activeCompany();
+        seedCompany();
 
         $this->actingAs(seededAdmin(), 'admin')
             ->getJson(route('admin.companies.data'))
@@ -80,8 +55,8 @@ describe('companies data endpoint', function (): void {
     });
 
     test('status filter narrows results to matching companies only', function (): void {
-        activeCompany(['status' => 'active']);
-        activeCompany([
+        seedCompany(['status' => 'active']);
+        seedCompany([
             'company_name'   => 'Suspended Corp',
             'subdomain'      => 'suspended',
             'company_email'  => 'info@suspended.com',
@@ -107,9 +82,9 @@ describe('archived data endpoint', function (): void {
     });
 
     test('returns only soft-deleted companies', function (): void {
-        activeCompany();
+        seedCompany();
 
-        $archived = activeCompany([
+        $archived = seedCompany([
             'company_name'   => 'Archived Corp',
             'subdomain'      => 'archived',
             'company_email'  => 'info@archived.com',
@@ -135,7 +110,7 @@ describe('search endpoint', function (): void {
     });
 
     test('matches companies by name substring', function (): void {
-        activeCompany(['company_name' => 'Acme Corp']);
+        seedCompany(['company_name' => 'Acme Corp']);
 
         $this->actingAs(seededAdmin(), 'admin')
             ->getJson(route('admin.companies.search', ['q' => 'Acme']))
@@ -145,7 +120,7 @@ describe('search endpoint', function (): void {
     });
 
     test('matches company by exact email via hash lookup', function (): void {
-        activeCompany(['company_email' => 'info@acme.com']);
+        seedCompany(['company_email' => 'info@acme.com']);
 
         $this->actingAs(seededAdmin(), 'admin')
             ->getJson(route('admin.companies.search', ['q' => 'info@acme.com']))

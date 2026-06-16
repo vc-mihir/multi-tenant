@@ -8,42 +8,18 @@ beforeEach(function (): void {
     $this->seed(AdminUserSeeder::class);
 });
 
-/**
- * Creates and returns a verified, active company for delete/restore tests.
- *
- * @param array $overrides
- * @return Company
- */
-function deletableCompany(array $overrides = []): Company
-{
-    return Company::create(array_merge([
-        'company_name'      => 'Acme Corp',
-        'subdomain'         => 'acme',
-        'company_email'     => 'info@acme.com',
-        'password'          => 'Hello@123',
-        'website'           => 'https://acme.com',
-        'license_number'    => 'LIC-001',
-        'address'           => '123 Main St',
-        'country'           => 'India',
-        'state'             => 'Gujarat',
-        'city'              => 'Ahmedabad',
-        'status'            => 'active',
-        'email_verified_at' => now(),
-    ], $overrides));
-}
-
 // ─── Group 1: Destroy (soft delete / archive) ─────────────────────────────────
 
 describe('destroy', function (): void {
     test('guest is redirected to login', function (): void {
-        $company = deletableCompany();
+        $company = seedCompany();
 
         $this->delete(route('admin.companies.destroy', $company))
             ->assertRedirect(route('admin.login'));
     });
 
     test('company is soft-deleted and returns JSON success', function (): void {
-        $company = deletableCompany();
+        $company = seedCompany();
 
         $this->actingAs(seededAdmin(), 'admin')
             ->deleteJson(route('admin.companies.destroy', $company))
@@ -58,20 +34,20 @@ describe('destroy', function (): void {
 
 describe('bulk delete', function (): void {
     test('guest is redirected to login', function (): void {
-        $company = deletableCompany();
+        $company = seedCompany();
 
         $this->delete(route('admin.companies.bulk-delete'), ['ids' => [$company->id]])
             ->assertRedirect(route('admin.login'));
     });
 
     test('all selected companies are soft-deleted and count is returned', function (): void {
-        $one = deletableCompany([
+        $one = seedCompany([
             'company_name'   => 'Corp One',
             'subdomain'      => 'corpone',
             'company_email'  => 'one@test.com',
             'license_number' => 'LIC-001',
         ]);
-        $two = deletableCompany([
+        $two = seedCompany([
             'company_name'   => 'Corp Two',
             'subdomain'      => 'corptwo',
             'company_email'  => 'two@test.com',
@@ -99,7 +75,7 @@ describe('bulk delete', function (): void {
 
 describe('restore', function (): void {
     test('guest is redirected to login', function (): void {
-        $company = deletableCompany();
+        $company = seedCompany();
         $company->delete();
 
         $this->patch(route('admin.companies.restore', $company))
@@ -107,7 +83,7 @@ describe('restore', function (): void {
     });
 
     test('soft-deleted company is restored and returns JSON success', function (): void {
-        $company = deletableCompany();
+        $company = seedCompany();
         $company->delete();
 
         $this->actingAs(seededAdmin(), 'admin')
@@ -123,7 +99,7 @@ describe('restore', function (): void {
 
 describe('force delete', function (): void {
     test('guest is redirected to login', function (): void {
-        $company = deletableCompany();
+        $company = seedCompany();
         $company->delete();
 
         $this->delete(route('admin.companies.force-delete', $company))
@@ -131,7 +107,7 @@ describe('force delete', function (): void {
     });
 
     test('soft-deleted company is permanently removed and returns JSON success', function (): void {
-        $company = deletableCompany();
+        $company = seedCompany();
         $company->delete();
 
         $this->actingAs(seededAdmin(), 'admin')
