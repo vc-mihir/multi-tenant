@@ -63,8 +63,7 @@
                                 x-transition:leave="transition ease-in duration-75"
                                 x-transition:leave-start="opacity-100 scale-100"
                                 x-transition:leave-end="opacity-0 scale-95"
-                                class="absolute right-0 mt-2 bg-white rounded-[1.5rem] shadow-2xl shadow-emerald-900/10 border border-emerald-50 py-2 z-50"
-                                style="width: 400px;">
+                                class="absolute right-0 mt-2 w-[calc(100vw-1.5rem)] sm:w-[400px] bg-white rounded-[1.5rem] shadow-2xl shadow-emerald-900/10 border border-emerald-50 py-2 z-50">
 
                                 <div class="px-4 py-3 border-b border-emerald-50">
                                     <p class="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-1">Signed

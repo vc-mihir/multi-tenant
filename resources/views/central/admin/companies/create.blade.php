@@ -18,7 +18,7 @@
 
 @section('content')
     <div class="max-w-4xl mx-auto">
-        <div class="rounded-3xl border border-slate-100 bg-white p-8 shadow-sm ring-1 ring-slate-900/5">
+        <div class="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm ring-1 ring-slate-900/5 sm:p-8">
             <form action="{{ route('admin.companies.store') }}" method="POST" id="create-company-form">
                 @csrf
 

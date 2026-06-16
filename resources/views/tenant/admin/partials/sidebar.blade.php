@@ -1,18 +1,28 @@
-<aside class="w-64 flex flex-col shrink-0" style="background-color: #0f172a; border-right: 1px solid #1e293b;">
+<aside id="admin-sidebar"
+    class="fixed inset-y-0 left-0 z-50 flex w-64 shrink-0 flex-col -translate-x-full transition-transform duration-300 ease-in-out lg:static lg:translate-x-0"
+    style="background-color: #0f172a; border-right: 1px solid #1e293b;">
 
     {{-- Brand --}}
-    <div class="flex items-center gap-3 px-6 py-8">
-        <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-lg"
-            style="background-color: #10b981; shadow-color: rgba(16, 185, 129, 0.4);">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10" />
+    <div class="flex items-center justify-between gap-3 px-6 py-8">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-lg"
+                style="background-color: #10b981; shadow-color: rgba(16, 185, 129, 0.4);">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10" />
+                </svg>
+            </div>
+            <div>
+                <p class="text-lg font-bold text-white leading-none tracking-tight">TenantHub</p>
+                <p class="text-[10px] text-emerald-400 uppercase tracking-widest mt-1 font-bold">Admin Panel</p>
+            </div>
+        </div>
+        <button type="button" id="sidebar-close" aria-label="Close menu"
+            class="-mr-1 flex-shrink-0 rounded-lg p-2 text-slate-300 transition-colors hover:bg-slate-800 hover:text-white lg:hidden">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
-        </div>
-        <div>
-            <p class="text-lg font-bold text-white leading-none tracking-tight">TenantHub</p>
-            <p class="text-[10px] text-emerald-400 uppercase tracking-widest mt-1 font-bold">Admin Panel</p>
-        </div>
+        </button>
     </div>
 
     {{-- Navigation --}}

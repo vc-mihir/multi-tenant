@@ -18,7 +18,7 @@
 
 @section('content')
     <div class="max-w-4xl mx-auto">
-        <div class="rounded-3xl border border-slate-100 bg-white p-8 shadow-sm ring-1 ring-slate-900/5">
+        <div class="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm ring-1 ring-slate-900/5 sm:p-8">
             <form action="{{ route('admin.companies.update', $company) }}" method="POST" id="edit-company-form">
                 @csrf
                 @method('PUT')
@@ -93,23 +93,58 @@
                             @enderror
                         </div>
 
-                        <div class="space-y-1.5">
-                            <label for="status"
-                                class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Status</label>
-                            <select id="status" name="status"
-                                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 focus:outline-none focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 transition-all duration-300 appearance-none">
-                                <option value="active" {{ old('status', $company->status) == 'active' ? 'selected' : '' }}>
-                                    Active</option>
-                                <option value="inactive"
-                                    {{ old('status', $company->status) == 'inactive' ? 'selected' : '' }}>
-                                    Inactive</option>
-                                <option value="suspended"
-                                    {{ old('status', $company->status) == 'suspended' ? 'selected' : '' }}>Suspended
-                                </option>
-                                <option value="pending"
-                                    {{ old('status', $company->status) == 'pending' ? 'selected' : '' }}>
-                                    Pending</option>
-                            </select>
+                        <div class="space-y-1.5"
+                            x-data="{
+                                open: false,
+                                selected: '{{ old('status', $company->status) }}',
+                                options: [
+                                    { value: 'active', label: 'Active', dot: 'bg-emerald-500' },
+                                    { value: 'inactive', label: 'Inactive', dot: 'bg-slate-400' },
+                                    { value: 'suspended', label: 'Suspended', dot: 'bg-rose-500' },
+                                    { value: 'pending', label: 'Pending', dot: 'bg-amber-500' },
+                                ],
+                                get current() { return this.options.find(o => o.value === this.selected) || this.options[0]; },
+                            }"
+                            x-on:keydown.escape.window="open = false">
+                            <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Status</label>
+
+                            <input type="hidden" name="status" :value="selected">
+
+                            <div class="relative" x-on:click.outside="open = false">
+                                <button type="button" x-on:click="open = !open"
+                                    class="flex w-full items-center justify-between px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500"
+                                    :class="{ 'ring-4 ring-teal-500/10 border-teal-500': open }">
+                                    <span class="flex items-center gap-2.5">
+                                        <span class="h-2.5 w-2.5 rounded-full" :class="current.dot"></span>
+                                        <span x-text="current.label">{{ ucfirst(old('status', $company->status)) }}</span>
+                                    </span>
+                                    <svg class="w-5 h-5 text-slate-400 transition-transform duration-200"
+                                        :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+
+                                <ul x-show="open" x-transition.opacity.duration.150ms style="display: none;"
+                                    class="absolute z-20 mt-2 w-full overflow-hidden rounded-2xl border border-slate-200 bg-white py-1 shadow-xl shadow-slate-900/5">
+                                    <template x-for="option in options" :key="option.value">
+                                        <li>
+                                            <button type="button" x-on:click="selected = option.value; open = false"
+                                                class="flex w-full items-center justify-between px-4 py-2.5 text-left text-sm text-slate-700 transition-colors hover:bg-teal-50 hover:text-teal-700"
+                                                :class="{ 'bg-teal-50/60 font-semibold text-teal-700': selected === option.value }">
+                                                <span class="flex items-center gap-2.5">
+                                                    <span class="h-2.5 w-2.5 rounded-full" :class="option.dot"></span>
+                                                    <span x-text="option.label"></span>
+                                                </span>
+                                                <svg x-show="selected === option.value" class="w-4 h-4 text-teal-600"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                                </svg>
+                                            </button>
+                                        </li>
+                                    </template>
+                                </ul>
+                            </div>
+
                             @error('status')
                                 <span class="error">{{ $message }}</span>
                             @enderror

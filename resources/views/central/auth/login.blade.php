@@ -17,18 +17,18 @@
             class="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(45,212,191,0.14),transparent_28%)]">
         </div>
 
-        <div class="relative mx-auto flex min-h-screen max-w-7xl items-center justify-center px-6 py-10 lg:px-8">
-            <section class="w-full max-w-md">
+        <div class="relative mx-auto flex min-h-screen max-w-7xl items-center justify-center px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+            <section class="w-full max-w-md origin-center min-[2560px]:scale-150 min-[3840px]:scale-[2]">
                 <div
-                    class="w-full rounded-[2rem] border border-teal-100 bg-white p-8 shadow-[0_24px_80px_rgba(13,148,136,0.18)] sm:p-10">
-                    <div class="flex items-center gap-4">
+                    class="w-full rounded-3xl border border-teal-100 bg-white p-6 shadow-[0_24px_80px_rgba(13,148,136,0.18)] sm:rounded-[2rem] sm:p-8 lg:p-10">
+                    <div class="flex items-center gap-3 sm:gap-4">
                         <div
-                            class="flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-600 text-lg font-bold text-white shadow-lg shadow-teal-600/30">
+                            class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-teal-600 text-base font-bold text-white shadow-lg shadow-teal-600/30 sm:h-14 sm:w-14 sm:text-lg">
                             SA
                         </div>
                         <div>
-                            <p class="text-sm font-medium uppercase tracking-[0.25em] text-teal-600">Super Admin</p>
-                            <h2 class="mt-1 text-2xl font-semibold text-slate-900">Login</h2>
+                            <p class="text-xs font-medium uppercase tracking-[0.2em] text-teal-600 sm:text-sm sm:tracking-[0.25em]">Super Admin</p>
+                            <h2 class="mt-1 text-xl font-semibold text-slate-900 sm:text-2xl">Login</h2>
                         </div>
                     </div>
 

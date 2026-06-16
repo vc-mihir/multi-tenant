@@ -20,8 +20,21 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
     padding: 0 0 1rem 0;
     gap: 1rem;
+}
+
+/* Search input fills the row on small screens instead of overflowing */
+@media (max-width: 640px) {
+    .dt-search,
+    .dt-search input {
+        width: 100%;
+    }
+
+    .dt-search input {
+        min-width: 0;
+    }
 }
 
 /* ── Length selector ── */
@@ -132,6 +145,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
     padding: 1rem 0 0 0;
     gap: 1rem;
 }
