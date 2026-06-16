@@ -6,6 +6,7 @@ use App\Models\Tenant\User as TenantUser;
 use App\Models\User;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
@@ -38,13 +39,45 @@ pest()->extend(TestCase::class)
 */
 
 /**
+ * Build the central domain host from the configured app URL.
+ *
+ * @return string
+ */
+function centralHost(): string
+{
+    return parse_url(config('app.url'), PHP_URL_HOST);
+}
+
+/**
+ * Build a tenant subdomain host from the configured app URL.
+ *
+ * @param string $subdomain
+ * @return string
+ */
+function tenantHost(string $subdomain): string
+{
+    return $subdomain . '.' . centralHost();
+}
+
+/**
+ * Create a GET request whose host resolves to the given domain.
+ *
+ * @param string $host
+ * @return Request
+ */
+function requestForHost(string $host): Request
+{
+    return Request::create('http://' . $host . '/dashboard');
+}
+
+/**
  * Fake the HTTP host so requests resolve to the central domain route group.
  *
  * @return void
  */
 function setCentralDomain(): void
 {
-    $host = parse_url(config('app.url'), PHP_URL_HOST);
+    $host = centralHost();
     test()->withServerVariables(['HTTP_HOST' => $host, 'SERVER_NAME' => $host]);
 }
 
@@ -56,7 +89,7 @@ function setCentralDomain(): void
  */
 function setTenantDomain(string $subdomain): void
 {
-    $host = $subdomain . '.' . parse_url(config('app.url'), PHP_URL_HOST);
+    $host = tenantHost($subdomain);
     test()->withServerVariables(['HTTP_HOST' => $host, 'SERVER_NAME' => $host]);
 }
 

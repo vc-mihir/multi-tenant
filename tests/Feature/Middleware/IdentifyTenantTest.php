@@ -28,38 +28,6 @@ afterEach(function (): void {
 });
 
 /**
- * Build the central domain host from the configured app URL.
- *
- * @return string
- */
-function centralHost(): string
-{
-    return parse_url(config('app.url'), PHP_URL_HOST);
-}
-
-/**
- * Build a tenant subdomain host from the configured app URL.
- *
- * @param string $subdomain
- * @return string
- */
-function tenantHost(string $subdomain): string
-{
-    return $subdomain . '.' . centralHost();
-}
-
-/**
- * Create a GET request whose host resolves to the given domain.
- *
- * @param string $host
- * @return Request
- */
-function requestForHost(string $host): Request
-{
-    return Request::create('http://' . $host . '/dashboard');
-}
-
-/**
  * Run the IdentifyTenant middleware against a request and capture the
  * downstream response (a sentinel proving $next was reached).
  *
