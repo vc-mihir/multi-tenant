@@ -64,7 +64,7 @@
     </div>
 
     {{-- ── MAIN CONTENT (WELCOME BANNER) ────────────────────────── --}}
-    <div class="p-10 border border-slate-800 rounded-[2.5rem] shadow-2xl relative overflow-hidden" 
+    <div class="p-6 border border-slate-800 rounded-[2.5rem] shadow-2xl relative overflow-hidden sm:p-10"
          style="background-color: #0f172a; background-image: radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);">
         
         <div class="absolute top-0 right-0 w-80 h-80 -mr-20 -mt-20 rounded-full opacity-10 blur-3xl" style="background-color: #10b981;"></div>

@@ -19,11 +19,15 @@
 
         @include('tenant.admin.partials.sidebar')
 
+        <!-- Mobile sidebar backdrop -->
+        <div id="sidebar-overlay"
+            class="fixed inset-0 z-40 hidden bg-slate-900/50 backdrop-blur-sm lg:hidden"></div>
+
         <div class="flex flex-col flex-1 overflow-hidden">
             @include('tenant.admin.partials.header')
 
             <main class="flex-1 overflow-y-auto t-scroll bg-gray-50">
-                <div class="max-w-7xl mx-auto px-6 py-5">
+                <div class="max-w-7xl mx-auto px-4 py-5 sm:px-6">
 
                     <div class="mb-4">
                         <h1 class="text-2xl font-bold text-gray-900">@yield('page-title', 'Dashboard')</h1>

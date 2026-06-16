@@ -12,16 +12,16 @@
 
 </head>
 
-<body class="antialiased font-['Instrument_Sans',sans-serif] bg-mint-card text-slate-700 h-screen overflow-hidden"
+<body class="antialiased font-['Instrument_Sans',sans-serif] bg-mint-card text-slate-700 min-h-screen"
     data-page="tenant-admin-login">
-    <div class="h-full w-full flex items-center justify-center p-6">
+    <div class="min-h-screen w-full flex items-center justify-center p-4 sm:p-6">
 
         <!-- Centered Login Card -->
         <div
-            class="w-full max-w-lg bg-white rounded-[3rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.15)] p-10 lg:p-16 flex flex-col items-center">
+            class="w-full max-w-lg bg-white rounded-[2rem] sm:rounded-[3rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.15)] p-7 sm:p-10 lg:p-16 flex flex-col items-center">
 
             <!-- Logo -->
-            <div class="mb-12 flex flex-col items-center gap-4">
+            <div class="mb-8 sm:mb-12 flex flex-col items-center gap-4">
                 <div class="w-14 h-14 bg-mint-card rounded-2xl flex items-center justify-center shadow-sm">
                     <svg class="w-8 h-8 text-[#1c2e30]" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 2L1 21H23L12 2ZM12 6L19.53 19H4.47L12 6Z" />

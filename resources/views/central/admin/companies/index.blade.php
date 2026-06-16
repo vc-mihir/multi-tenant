@@ -7,8 +7,8 @@
 
 
 @section('content')
-    <div class="rounded-3xl border border-teal-100 bg-white p-6 shadow-sm ring-1 ring-slate-900/5">
-        <div class="flex items-center justify-between mb-6">
+    <div class="rounded-3xl border border-teal-100 bg-white p-4 shadow-sm ring-1 ring-slate-900/5 sm:p-6">
+        <div class="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
             <div class="flex items-center gap-4">
                 <h2 class="text-lg font-semibold text-slate-800">Company Records</h2>
                 <div id="bulk-actions" class="hidden">
@@ -26,14 +26,61 @@
             <div class="flex items-center gap-4">
                 <div class="flex items-center gap-2">
                     <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Status:</span>
-                    <select id="status-filter"
-                        class="px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none text-sm bg-slate-50/50 transition-all cursor-pointer min-w-[120px]">
-                        <option value="">All</option>
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
-                        <option value="suspended">Suspended</option>
-                        <option value="pending">Pending</option>
-                    </select>
+                    <div class="relative"
+                        x-data="{
+                            open: false,
+                            selected: '',
+                            options: [
+                                { value: '', label: 'All', dot: '' },
+                                { value: 'active', label: 'Active', dot: 'bg-emerald-500' },
+                                { value: 'inactive', label: 'Inactive', dot: 'bg-slate-400' },
+                                { value: 'suspended', label: 'Suspended', dot: 'bg-rose-500' },
+                                { value: 'pending', label: 'Pending', dot: 'bg-amber-500' },
+                            ],
+                            get current() { return this.options.find(o => o.value === this.selected) || this.options[0]; },
+                            choose(value) {
+                                this.selected = value;
+                                this.open = false;
+                                this.$nextTick(() => this.$refs.filterInput.dispatchEvent(new Event('change', { bubbles: true })));
+                            },
+                        }"
+                        x-on:keydown.escape.window="open = false"
+                        x-on:click.outside="open = false">
+                        <input type="hidden" id="status-filter" x-ref="filterInput" :value="selected">
+
+                        <button type="button" x-on:click="open = !open"
+                            class="flex w-full min-w-[140px] items-center justify-between gap-3 px-4 py-2 text-sm bg-slate-50/50 border border-slate-200 rounded-xl outline-none transition-all cursor-pointer focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                            :class="{ 'ring-2 ring-teal-500 border-teal-500': open }">
+                            <span class="flex items-center gap-2">
+                                <span x-show="current.dot" class="h-2 w-2 rounded-full" :class="current.dot"></span>
+                                <span x-text="current.label" class="text-slate-700">All</span>
+                            </span>
+                            <svg class="w-4 h-4 text-slate-400 transition-transform duration-200"
+                                :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        <ul x-show="open" x-transition.opacity.duration.150ms style="display: none;"
+                            class="absolute right-0 z-20 mt-2 w-44 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-xl shadow-slate-900/5">
+                            <template x-for="option in options" :key="option.value">
+                                <li>
+                                    <button type="button" x-on:click="choose(option.value)"
+                                        class="flex w-full items-center justify-between px-4 py-2.5 text-left text-sm text-slate-700 transition-colors hover:bg-teal-50 hover:text-teal-700"
+                                        :class="{ 'bg-teal-50/60 font-semibold text-teal-700': selected === option.value }">
+                                        <span class="flex items-center gap-2.5">
+                                            <span x-show="option.dot" class="h-2 w-2 rounded-full" :class="option.dot"></span>
+                                            <span x-text="option.label"></span>
+                                        </span>
+                                        <svg x-show="selected === option.value" class="w-4 h-4 text-teal-600"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </button>
+                                </li>
+                            </template>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>

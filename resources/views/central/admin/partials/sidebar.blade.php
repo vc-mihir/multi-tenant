@@ -1,10 +1,16 @@
 <aside id="admin-sidebar"
-    class="fixed inset-y-0 left-0 z-50 w-64 translate-x-0 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0">
+    class="fixed inset-y-0 left-0 z-50 w-64 -translate-x-full transition-transform duration-300 ease-in-out lg:static lg:translate-x-0">
     <div class="flex flex-col h-full bg-teal-900 text-white shadow-2xl border-r border-teal-800/50 backdrop-blur-xl">
-        <div class="flex items-center justify-center h-20 border-b border-teal-800/50 bg-teal-950/30">
+        <div class="flex items-center justify-between h-20 border-b border-teal-800/50 bg-teal-950/30 px-5 lg:justify-center lg:px-0">
             <span class="text-2xl font-bold tracking-wider text-teal-400">
                 ADMIN<span class="text-white">PORTAL</span>
             </span>
+            <button type="button" id="sidebar-close" aria-label="Close menu"
+                class="-mr-1 flex-shrink-0 rounded-lg p-2 text-teal-200 transition-colors hover:bg-teal-800/50 hover:text-white lg:hidden">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
         </div>
 
         <nav class="flex-1 px-4 py-8 space-y-1 overflow-y-auto custom-scrollbar">

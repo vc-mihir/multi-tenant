@@ -70,7 +70,7 @@
 
     <!-- Main Section: Welcome Card -->
     <div
-        class="p-8 mb-8 bg-gradient-to-br from-teal-700 to-teal-900 rounded-[2rem] text-white shadow-xl shadow-teal-700/20 relative overflow-hidden">
+        class="p-6 mb-8 bg-gradient-to-br from-teal-700 to-teal-900 rounded-[2rem] text-white shadow-xl shadow-teal-700/20 relative overflow-hidden sm:p-8">
         <div class="absolute top-0 right-0 w-64 h-64 -mr-20 -mt-20 bg-white/10 rounded-full blur-3xl"></div>
         <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
             <div class="max-w-xl">

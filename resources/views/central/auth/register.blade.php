@@ -1,9 +1,10 @@
 <x-layouts.auth-theme page-id="central-auth-register">
     <div class="mb-10 px-2">
         <div class="flex items-center justify-between relative">
-            <div class="absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 -translate-y-1/2"></div>
-            <div id="progress-line"
-                class="absolute top-1/2 left-0 w-0 h-0.5 bg-[#DD7F61] -translate-y-1/2 transition-all duration-500">
+            <div class="absolute top-4 left-4 right-4 h-0.5 -translate-y-1/2">
+                <div class="absolute inset-0 bg-slate-300"></div>
+                <div id="progress-line"
+                    class="absolute inset-y-0 left-0 w-0 bg-[#DD7F61] transition-all duration-500"></div>
             </div>
 
             <div class="relative z-10 flex flex-col items-center">
@@ -55,7 +56,7 @@
             </div>
 
             <div class="space-y-3">
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="space-y-1.5">
                         <label for="company_name"
                             class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Company
@@ -87,7 +88,7 @@
                         placeholder="admin@co.com">
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="space-y-1.5">
                         <label for="password"
                             class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Password</label>
@@ -174,7 +175,7 @@
             </div>
 
             <div class="space-y-3">
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="space-y-1.5">
                         <label for="address"
                             class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Address</label>
@@ -190,7 +191,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="space-y-1.5">
                         <label for="state"
                             class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">State</label>
@@ -222,7 +223,7 @@
 
 
             <button type="button" id="next-btn"
-                class="px-10 py-5 bg-[#DD7F61] text-white font-black rounded-2xl shadow-xl shadow-[#DD7F61]/30 hover:bg-[#D16A4E] hover:shadow-[#DD7F61]/40 active:scale-[0.98] transition-all duration-300 flex items-center">
+                class="px-7 py-4 sm:px-10 sm:py-5 bg-[#DD7F61] text-white font-black rounded-2xl shadow-xl shadow-[#DD7F61]/30 hover:bg-[#D16A4E] hover:shadow-[#DD7F61]/40 active:scale-[0.98] transition-all duration-300 flex items-center">
                 <span id="btn-text">Next Step</span>
                 <svg id="next-icon" class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round"

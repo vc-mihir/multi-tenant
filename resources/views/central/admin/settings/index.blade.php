@@ -7,7 +7,7 @@
 
 @section('content')
     <div class="max-w-3xl">
-        <div class="rounded-3xl border border-slate-100 bg-white p-8 shadow-sm ring-1 ring-slate-900/5">
+        <div class="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm ring-1 ring-slate-900/5 sm:p-8">
             <form action="{{ route('admin.settings.update') }}" method="POST" id="settings-form">
                 @csrf
                 @method('PUT')

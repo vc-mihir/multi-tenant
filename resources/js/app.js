@@ -7,6 +7,7 @@ window.Swal = Swal;
 import "./bootstrap";
 import "./validation/common-validation";
 import "./central/admin/layout/search";
+import "./central/admin/layout/sidebar";
 
 window.showAlert = (icon, title, text) => {
     if (typeof Swal !== "undefined") {
