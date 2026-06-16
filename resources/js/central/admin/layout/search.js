@@ -1,3 +1,5 @@
+import $ from "jquery";
+
 /**
  * Admin Layout - Global Search
  * Guarded: only runs when jQuery is available.
