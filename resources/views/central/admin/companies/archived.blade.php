@@ -6,7 +6,7 @@
 @section('page-subtitle', 'View and manage soft-deleted tenant companies')
 
 @section('content')
-    <div class="rounded-3xl border border-teal-100 bg-white p-6 shadow-sm ring-1 ring-slate-900/5">
+    <div class="rounded-3xl border border-teal-100 bg-white p-4 shadow-sm ring-1 ring-slate-900/5 sm:p-6">
         <div class="flex items-center justify-between mb-6">
             <h2 class="text-lg font-semibold text-slate-800">Archived Records</h2>
         </div>

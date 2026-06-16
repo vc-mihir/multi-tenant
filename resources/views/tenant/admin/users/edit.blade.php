@@ -8,7 +8,7 @@
 
 @section('content')
     <div class="max-w-3xl">
-        <div class="t-card p-8 shadow-sm">
+        <div class="t-card p-6 shadow-sm sm:p-8">
             <form action="{{ route('tenant.admin.users.update', $user->id) }}" method="POST" class="space-y-6">
                 @csrf
                 @method('PUT')
@@ -36,13 +36,54 @@
                 </div>
 
                 {{-- Is Active --}}
-                <div>
-                    <label for="is_active" class="block text-sm font-bold text-slate-700 mb-2">Status</label>
-                    <select name="is_active" id="is_active"
-                        class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all outline-none @error('is_active') border-rose-500 @enderror">
-                        <option value="1" {{ old('is_active', $user->is_active) == '1' ? 'selected' : '' }}>Active</option>
-                        <option value="0" {{ old('is_active', $user->is_active) == '0' ? 'selected' : '' }}>Inactive</option>
-                    </select>
+                <div x-data="{
+                    open: false,
+                    selected: '{{ old('is_active', (int) $user->is_active) }}',
+                    options: [
+                        { value: '1', label: 'Active', dot: 'bg-emerald-500' },
+                        { value: '0', label: 'Inactive', dot: 'bg-slate-400' },
+                    ],
+                    get current() { return this.options.find(o => o.value === this.selected) || this.options[0]; },
+                }" x-on:keydown.escape.window="open = false">
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Status</label>
+
+                    <input type="hidden" name="is_active" :value="selected">
+
+                    <div class="relative" x-on:click.outside="open = false">
+                        <button type="button" x-on:click="open = !open"
+                            class="flex w-full items-center justify-between px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-900 transition-all outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                            :class="{ 'ring-2 ring-indigo-200 border-indigo-500': open }">
+                            <span class="flex items-center gap-2.5">
+                                <span class="h-2.5 w-2.5 rounded-full" :class="current.dot"></span>
+                                <span x-text="current.label">{{ old('is_active', (int) $user->is_active) == '1' ? 'Active' : 'Inactive' }}</span>
+                            </span>
+                            <svg class="w-5 h-5 text-slate-400 transition-transform duration-200"
+                                :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        <ul x-show="open" x-transition.opacity.duration.150ms style="display: none;"
+                            class="absolute z-20 mt-2 w-full overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-xl shadow-slate-900/5">
+                            <template x-for="option in options" :key="option.value">
+                                <li>
+                                    <button type="button" x-on:click="selected = option.value; open = false"
+                                        class="flex w-full items-center justify-between px-4 py-2.5 text-left text-sm text-slate-700 transition-colors hover:bg-indigo-50 hover:text-indigo-700"
+                                        :class="{ 'bg-indigo-50/60 font-semibold text-indigo-700': selected === option.value }">
+                                        <span class="flex items-center gap-2.5">
+                                            <span class="h-2.5 w-2.5 rounded-full" :class="option.dot"></span>
+                                            <span x-text="option.label"></span>
+                                        </span>
+                                        <svg x-show="selected === option.value" class="w-4 h-4 text-indigo-600"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </button>
+                                </li>
+                            </template>
+                        </ul>
+                    </div>
+
                     @error('is_active')
                         <p class="mt-1.5 text-xs font-medium" style="color: #ef4444;">{{ $message }}</p>
                     @enderror

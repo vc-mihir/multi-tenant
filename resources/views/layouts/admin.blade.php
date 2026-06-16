@@ -20,12 +20,16 @@
     <div class="flex h-full overflow-hidden">
         @include('central.admin.partials.sidebar')
 
+        <!-- Mobile sidebar backdrop -->
+        <div id="sidebar-overlay"
+            class="fixed inset-0 z-40 hidden bg-slate-900/50 backdrop-blur-sm lg:hidden"></div>
+
         <div class="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
             @include('central.admin.partials.header')
 
             <main class="flex-1">
-                <div class="px-6 py-8 mx-auto max-w-7xl">
-                    <div class="mb-8 flex items-end justify-between">
+                <div class="px-4 py-6 mx-auto max-w-7xl sm:px-6 sm:py-8">
+                    <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                         <div>
                             <h1 class="text-2xl font-bold tracking-tight text-slate-900 lg:text-3xl">
                                 @yield('page-title')

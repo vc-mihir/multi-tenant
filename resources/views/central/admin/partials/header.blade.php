@@ -1,7 +1,13 @@
 <header
     class="sticky top-0 z-40 flex items-center justify-between h-20 px-6 bg-white/80 border-b border-teal-100 backdrop-blur-md">
 @role('SuperAdmin', 'admin')
-    <div class="flex flex-1">
+    <button type="button" id="sidebar-toggle" aria-label="Open menu"
+        class="mr-2 -ml-1 flex-shrink-0 rounded-xl p-2 text-slate-500 transition-colors hover:bg-teal-50 hover:text-teal-600 lg:hidden">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+    </button>
+    <div class="flex flex-1 min-w-0">
         <form action="#" method="GET" class="w-full max-w-sm ml-0 lg:ml-4 relative" id="search-form"
             data-search-url="{{ route('admin.companies.search') }}">
             <div class="relative text-slate-400 focus-within:text-teal-600">
@@ -26,20 +32,20 @@
         </form>
     </div>
 
-    <div class="flex items-center space-x-4">
+    <div class="flex flex-shrink-0 items-center space-x-4">
 
-        <div class="h-8 w-px bg-slate-200 mx-2"></div>
+        <div class="hidden h-8 w-px bg-slate-200 mx-2 sm:block"></div>
 
         <form method="POST" action="{{ route('admin.logout') }}">
             @csrf
             <button type="submit"
-                class="flex items-center px-4 py-2.5 text-sm font-semibold text-white bg-teal-600 rounded-xl hover:bg-teal-700 shadow-lg shadow-teal-600/20 transition-all duration-200 group">
-                <svg class="w-5 h-5 mr-2 transition-transform duration-200 group-hover:-translate-x-1" fill="none"
+                class="flex items-center px-3 py-2.5 text-sm font-semibold text-white bg-teal-600 rounded-xl hover:bg-teal-700 shadow-lg shadow-teal-600/20 transition-all duration-200 group sm:px-4">
+                <svg class="w-5 h-5 transition-transform duration-200 group-hover:-translate-x-1 sm:mr-2" fill="none"
                     stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
-                Logout
+                <span class="hidden sm:inline">Logout</span>
             </button>
         </form>
     </div>
