@@ -5,6 +5,7 @@ namespace App\Services\Central;
 use App\Jobs\CreateCompanyDatabase;
 use App\Models\Central\Company;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -40,8 +41,11 @@ class CompanyService
                 ]);
 
                 if ($isAdminCreation) {
+                    // Admin-created companies are born active, so provision the
+                    // tenant database and map its subdomain once the row commits.
                     DB::afterCommit(function () use ($company) {
                         CreateCompanyDatabase::dispatch($company);
+                        $this->mapSubdomainToHosts($company);
                     });
                 } else {
                     $company->sendEmailVerificationNotification();
@@ -55,6 +59,49 @@ class CompanyService
                 'error'         => $e->getMessage(),
             ]);
             throw new \Exception('Failed to create company. Please try again.');
+        }
+    }
+
+    /**
+     * Map the company's subdomain to /etc/hosts for local development.
+     *
+     * Called once a company is active (admin creation or after email
+     * verification). Delegates to the tenant:add-host command, which is
+     * local-only, validates the subdomain, and skips duplicates. Any failure
+     * is logged and swallowed so a hosts-file problem can never break the
+     * activation flow.
+     *
+     * @param Company $company
+     * @return void
+     */
+    protected function mapSubdomainToHosts(Company $company): void
+    {
+        // Hosts-file mapping is a local-dev convenience only; on other
+        // environments real wildcard DNS resolves tenant subdomains.
+        if (! app()->environment('local')) {
+            return;
+        }
+
+        if (blank($company->subdomain)) {
+            return;
+        }
+
+        try {
+            $exitCode = Artisan::call('tenant:add-host', [
+                'subdomain' => $company->subdomain,
+            ]);
+
+            if ($exitCode !== 0) {
+                Log::warning('CompanyService: tenant:add-host returned a non-zero exit code', [
+                    'subdomain' => $company->subdomain,
+                    'output'    => trim(Artisan::output()),
+                ]);
+            }
+        } catch (\Throwable $e) {
+            Log::warning('CompanyService: failed to add tenant host', [
+                'subdomain' => $company->subdomain,
+                'error'     => $e->getMessage(),
+            ]);
         }
     }
 
@@ -252,6 +299,10 @@ class CompanyService
                 $company->markEmailAsVerified();
                 $company->update(['status' => 'active']);
                 CreateCompanyDatabase::dispatch($company);
+
+                // Now that the account is verified and active, make its
+                // subdomain resolvable for local development.
+                $this->mapSubdomainToHosts($company);
             }
 
             $baseHost = parse_url(config('app.url'), PHP_URL_HOST);
