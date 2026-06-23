@@ -26,6 +26,6 @@ class CompanyVerifyEmailController extends Controller
         $tenantUrl = $this->companyService->verifyEmail($id);
 
         return redirect()->route('register')
-            ->with('status', "Company email verified successfully. Your account is now active. You can visit your website at {$tenantUrl} and for admin login visit {$tenantUrl}/admin/login");
+            ->with('success', "Company email verified successfully. Your account is now active. You can visit your website at {$tenantUrl} and for admin login visit {$tenantUrl}/admin/login");
     }
 }

@@ -3,9 +3,9 @@
 namespace App\Services\Central;
 
 use App\Jobs\CreateCompanyDatabase;
+use App\Jobs\MapTenantSubdomainHost;
 use App\Models\Central\Company;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -66,18 +66,17 @@ class CompanyService
      * Map the company's subdomain to /etc/hosts for local development.
      *
      * Called once a company is active (admin creation or after email
-     * verification). Delegates to the tenant:add-host command, which is
-     * local-only, validates the subdomain, and skips duplicates. Any failure
-     * is logged and swallowed so a hosts-file problem can never break the
-     * activation flow.
+     * verification). The actual write is queued via MapTenantSubdomainHost
+     * rather than run inline, because the web request (php-fpm) is sandboxed
+     * with ProtectSystem=full and cannot write /etc; the queue worker runs in a
+     * normal CLI context that can. Hosts mapping is a local-dev convenience only;
+     * on other environments real wildcard DNS resolves tenant subdomains.
      *
      * @param Company $company
      * @return void
      */
     protected function mapSubdomainToHosts(Company $company): void
     {
-        // Hosts-file mapping is a local-dev convenience only; on other
-        // environments real wildcard DNS resolves tenant subdomains.
         if (! app()->environment('local')) {
             return;
         }
@@ -86,23 +85,7 @@ class CompanyService
             return;
         }
 
-        try {
-            $exitCode = Artisan::call('tenant:add-host', [
-                'subdomain' => $company->subdomain,
-            ]);
-
-            if ($exitCode !== 0) {
-                Log::warning('CompanyService: tenant:add-host returned a non-zero exit code', [
-                    'subdomain' => $company->subdomain,
-                    'output'    => trim(Artisan::output()),
-                ]);
-            }
-        } catch (\Throwable $e) {
-            Log::warning('CompanyService: failed to add tenant host', [
-                'subdomain' => $company->subdomain,
-                'error'     => $e->getMessage(),
-            ]);
-        }
+        MapTenantSubdomainHost::dispatch($company->subdomain);
     }
 
     /**
