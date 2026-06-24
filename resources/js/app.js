@@ -95,6 +95,9 @@ document.addEventListener("DOMContentLoaded", () => {
         case "central-auth-register":
             import("./central/auth/register.js");
             break;
+        case "central-auth-provisioning":
+            import("./central/auth/provisioning.js");
+            break;
         case "central-admin-settings":
             import("./central/admin/settings/settings.js");
             break;

@@ -15,6 +15,32 @@
         @endif
     </head>
     <body class="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] flex p-6 lg:p-8 items-center lg:justify-center min-h-screen flex-col">
+        {{-- Shown once right after a company verifies its email and is redirected
+             here from the central app. A query flag is used instead of a session
+             flash because the flash cannot survive the cross-domain redirect.
+             Inline styles keep it self-contained regardless of the asset build. --}}
+        @if (request()->boolean('activated'))
+            <div role="status" style="position: fixed; top: 0; left: 0; right: 0; z-index: 50; display: flex; align-items: center; justify-content: center; gap: 1rem; padding: 0.875rem 1.25rem; background-color: #ecfdf5; color: #065f46; border-bottom: 1px solid #a7f3d0; font-size: 0.875rem; line-height: 1.4; font-family: ui-sans-serif, system-ui, sans-serif;">
+                <span>
+                    <strong style="font-weight: 600;">Your company account is now active.</strong>
+                    You can start using your website &mdash;
+                    <a href="{{ url('/admin/login') }}" style="font-weight: 600; text-decoration: underline; color: inherit;">log in to your admin panel</a>.
+                </span>
+                <button type="button" onclick="this.parentElement.remove()" aria-label="Dismiss" style="background: none; border: 0; color: inherit; font-size: 1.25rem; line-height: 1; cursor: pointer; padding: 0;">&times;</button>
+            </div>
+            <script>
+                // Strip the one-time ?activated flag from the address bar so a
+                // refresh or a shared/bookmarked link does not re-show the banner.
+                // replaceState rewrites the URL without a navigation or reload.
+                (function () {
+                    var url = new URL(window.location.href);
+                    if (url.searchParams.has('activated')) {
+                        url.searchParams.delete('activated');
+                        window.history.replaceState({}, document.title, url.pathname + url.search + url.hash);
+                    }
+                })();
+            </script>
+        @endif
         <header class="w-full lg:max-w-4xl max-w-[335px] text-sm mb-6 not-has-[nav]:hidden">
             @if (Route::has('tenant.login'))
                 <nav class="flex items-center justify-end gap-4">
