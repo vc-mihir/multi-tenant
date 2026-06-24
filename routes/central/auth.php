@@ -4,6 +4,7 @@ use App\Http\Controllers\Central\Admin\AdminAuthController;
 use App\Http\Controllers\Central\Auth\CompanyEmailVerificationNotificationController;
 use App\Http\Controllers\Central\Auth\CompanyEmailVerificationPromptController;
 use App\Http\Controllers\Central\Auth\CompanyRegistrationController;
+use App\Http\Controllers\Central\Auth\CompanyProvisioningController;
 use App\Http\Controllers\Central\Auth\CompanyVerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
@@ -38,4 +39,15 @@ Route::prefix('companies')->name('companies.')->group(function () {
     Route::get('verify-email/{id}', CompanyVerifyEmailController::class)
         ->middleware('throttle:6,1')
         ->name('verification.verify');
+
+    // Polled by the post-verification "setting up your workspace" loader until
+    // the tenant DB + subdomain mapping are ready (throttle sized for ~1.5s polls).
+    Route::get('provision-status/{id}', [CompanyProvisioningController::class, 'status'])
+        ->middleware('throttle:120,1')
+        ->name('provision.status');
+
+    // Fallback target when provisioning does not complete: returns to registration
+    // with a success notice (the account is already created and verified).
+    Route::get('provision-fallback/{id}', [CompanyProvisioningController::class, 'fallback'])
+        ->name('provision.fallback');
 });
