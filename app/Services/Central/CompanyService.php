@@ -4,6 +4,7 @@ namespace App\Services\Central;
 
 use App\Jobs\CreateCompanyDatabase;
 use App\Jobs\MapTenantSubdomainHost;
+use App\Jobs\UnmapTenantSubdomainHost;
 use App\Models\Central\Company;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
@@ -77,15 +78,34 @@ class CompanyService
      */
     protected function mapSubdomainToHosts(Company $company): void
     {
-        if (! app()->environment('local')) {
-            return;
-        }
-
-        if (blank($company->subdomain)) {
+        if (! app()->environment('local') || blank($company->subdomain)) {
             return;
         }
 
         MapTenantSubdomainHost::dispatch($company->subdomain);
+    }
+
+    /**
+     * Remove the company's subdomain mapping from /etc/hosts.
+     *
+     * The counterpart to mapSubdomainToHosts(), called ONLY on permanent
+     * deletion — never on soft delete, which is reversible and must keep the
+     * tenant reachable in case it is restored. The subdomain is passed as a
+     * string because the model is force-deleted by the time the queued job runs.
+     * As with mapping, the write is queued so it executes on the unsandboxed
+     * worker rather than the ProtectSystem=full web request. Local-dev only; the
+     * underlying command deletes only the exact line it originally wrote.
+     *
+     * @param string|null $subdomain
+     * @return void
+     */
+    protected function unmapSubdomainFromHosts(?string $subdomain): void
+    {
+        if (! app()->environment('local') || blank($subdomain)) {
+            return;
+        }
+
+        UnmapTenantSubdomainHost::dispatch($subdomain);
     }
 
     /**
@@ -182,6 +202,10 @@ class CompanyService
         try {
             $dbName = $company->database?->db_name;
 
+            // Capture the subdomain before the row is gone; the hosts cleanup
+            // job needs it and the model no longer exists after forceDelete().
+            $subdomain = $company->subdomain;
+
             if ($dbName) {
                 DB::statement("DROP DATABASE IF EXISTS `{$dbName}`");
 
@@ -194,6 +218,10 @@ class CompanyService
             }
 
             $company->forceDelete();
+
+            // Permanent deletion only: drop the local /etc/hosts mapping now that
+            // the tenant is gone for good. (Soft delete intentionally keeps it.)
+            $this->unmapSubdomainFromHosts($subdomain);
         } catch (\Exception $e) {
             Log::error('CompanyService::forceDeleteCompany', [
                 'company_id' => $company->id,
