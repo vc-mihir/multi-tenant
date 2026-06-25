@@ -268,6 +268,78 @@ class CompanyService
     }
 
     /**
+     * Bulk restore soft-deleted companies
+     *
+     * @param array $ids
+     * @return int
+     */
+    public function bulkRestoreCompanies(array $ids): int
+    {
+        try {
+            $companies = Company::onlyTrashed()->whereIn('id', $ids)->get();
+            $restoredCount = 0;
+
+            foreach ($companies as $company) {
+                try {
+                    $this->restoreCompany($company);
+                    $restoredCount++;
+                } catch (\Exception $e) {
+                    activity()
+                        ->causedBy(Auth::user())
+                        ->performedOn($company)
+                        ->event('restore_failed')
+                        ->withProperties(['error' => $e->getMessage(), 'company_id' => $company->id])
+                        ->log('Bulk restore failed for company');
+                }
+            }
+
+            return $restoredCount;
+        } catch (\Exception $e) {
+            Log::error('CompanyService::bulkRestoreCompanies', [
+                'ids'   => $ids,
+                'error' => $e->getMessage(),
+            ]);
+            throw new \Exception('Failed to bulk restore companies.');
+        }
+    }
+
+    /**
+     * Bulk permanently delete soft-deleted companies and drop their tenant databases
+     *
+     * @param array $ids
+     * @return int
+     */
+    public function bulkForceDeleteCompanies(array $ids): int
+    {
+        try {
+            $companies    = Company::onlyTrashed()->whereIn('id', $ids)->with('database')->get();
+            $deletedCount = 0;
+
+            foreach ($companies as $company) {
+                try {
+                    $this->forceDeleteCompany($company);
+                    $deletedCount++;
+                } catch (\Exception $e) {
+                    activity()
+                        ->causedBy(Auth::user())
+                        ->performedOn($company)
+                        ->event('force_delete_failed')
+                        ->withProperties(['error' => $e->getMessage(), 'company_id' => $company->id])
+                        ->log('Bulk permanent delete failed for company');
+                }
+            }
+
+            return $deletedCount;
+        } catch (\Exception $e) {
+            Log::error('CompanyService::bulkForceDeleteCompanies', [
+                'ids'   => $ids,
+                'error' => $e->getMessage(),
+            ]);
+            throw new \Exception('Failed to bulk permanently delete companies.');
+        }
+    }
+
+    /**
      * Search companies by name or email
      *
      * @param string $query

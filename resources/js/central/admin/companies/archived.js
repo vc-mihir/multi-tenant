@@ -2,8 +2,10 @@ import '../../../../css/central/admin/companies/index.css';
 import 'datatables.net-dt';
 
 $(function () {
-    const tableElement = $('#archived-companies-table');
-    const dataUrl      = tableElement.data('url');
+    const tableElement       = $('#archived-companies-table');
+    const dataUrl            = tableElement.data('url');
+    const bulkRestoreUrl     = tableElement.data('bulk-restore-url');
+    const bulkForceDeleteUrl = tableElement.data('bulk-force-delete-url');
 
     const formatLongText = (data, limit = 30) => {
         if (!data) return '';
@@ -20,6 +22,12 @@ $(function () {
         order: [[0, 'desc']],
         pageLength: 10,
         columns: [
+            {
+                data: 'id',
+                orderable: false,
+                searchable: false,
+                render: (data) => `<input type="checkbox" class="company-checkbox w-4 h-4 rounded border-slate-300 text-teal-600 focus:ring-teal-500 cursor-pointer" value="${data}">`
+            },
             {
                 data: 'DT_RowIndex',
                 orderable: false,
@@ -86,6 +94,115 @@ $(function () {
                 `
             }
         ]
+    });
+
+    // ── Bulk selection ────────────────────────────────────────────────────────
+    $(document).on('change', '#select-all', function () {
+        $('.company-checkbox').prop('checked', this.checked);
+        toggleBulkActions();
+    });
+
+    $(document).on('change', '.company-checkbox', function () {
+        toggleBulkActions();
+    });
+
+    function toggleBulkActions() {
+        const count = $('.company-checkbox:checked').length;
+        if (count > 0) {
+            $('#bulk-actions').removeClass('hidden');
+            $('#restore-selected-count').text(count);
+            $('#delete-selected-count').text(count);
+        } else {
+            $('#bulk-actions').addClass('hidden');
+        }
+    }
+
+    table.on('draw', function () {
+        $('#select-all').prop('checked', false);
+        toggleBulkActions();
+    });
+
+    const getSelectedIds = () => $('.company-checkbox:checked').map(function () {
+        return $(this).val();
+    }).get();
+
+    // ── Bulk restore ──────────────────────────────────────────────────────────
+    $('#bulk-restore-btn').on('click', function () {
+        const selectedIds = getSelectedIds();
+
+        Swal.fire({
+            title: 'Restore Companies?',
+            text: `${selectedIds.length} companies will be restored and their subdomains made accessible again.`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#0d9488',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Yes, Restore All',
+            cancelButtonText: 'Cancel',
+            borderRadius: '1.5rem'
+        }).then((result) => {
+            if (!result.isConfirmed) return;
+
+            Swal.fire({ title: 'Restoring...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+            $.ajax({
+                url: bulkRestoreUrl,
+                type: 'PATCH',
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                data: { ids: selectedIds },
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({ title: 'Restored!', text: response.message, icon: 'success', confirmButtonColor: '#0d9488', borderRadius: '1.5rem' });
+                        table.draw(false);
+                    } else {
+                        Swal.fire('Error!', response.message, 'error');
+                    }
+                },
+                error: function (xhr) {
+                    Swal.fire('Error!', xhr.responseJSON?.message ?? 'An unexpected error occurred.', 'error');
+                }
+            });
+        });
+    });
+
+    // ── Bulk permanent delete ─────────────────────────────────────────────────
+    $('#bulk-force-delete-btn').on('click', function () {
+        const selectedIds = getSelectedIds();
+
+        Swal.fire({
+            title: 'Permanently Delete?',
+            text: `This will DROP the tenant database for ${selectedIds.length} companies and erase ALL their data. This action cannot be undone.`,
+            icon: 'error',
+            showCancelButton: true,
+            confirmButtonColor: '#be123c',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Yes, Delete Forever',
+            cancelButtonText: 'Cancel',
+            allowOutsideClick: false,
+            borderRadius: '1.5rem'
+        }).then((result) => {
+            if (!result.isConfirmed) return;
+
+            Swal.fire({ title: 'Deleting...', text: 'Dropping tenant databases and records', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+            $.ajax({
+                url: bulkForceDeleteUrl,
+                type: 'DELETE',
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                data: { ids: selectedIds },
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({ title: 'Deleted!', text: response.message, icon: 'success', confirmButtonColor: '#0d9488', borderRadius: '1.5rem' });
+                        table.draw(false);
+                    } else {
+                        Swal.fire('Error!', response.message, 'error');
+                    }
+                },
+                error: function (xhr) {
+                    Swal.fire('Error!', xhr.responseJSON?.message ?? 'An unexpected error occurred.', 'error');
+                }
+            });
+        });
     });
 
     // Restore

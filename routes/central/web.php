@@ -31,6 +31,8 @@ Route::middleware('central')->group(function () {
         Route::get('/admin/companies/{company}/edit', [CompanyController::class, 'edit'])->name('admin.companies.edit');
         Route::put('/admin/companies/{company}', [CompanyController::class, 'update'])->name('admin.companies.update');
         Route::delete('/admin/companies/bulk-delete', [CompanyController::class, 'bulkDelete'])->name('admin.companies.bulk-delete');
+        Route::delete('/admin/companies/bulk-force-delete', [CompanyController::class, 'bulkForceDelete'])->name('admin.companies.bulk-force-delete');
+        Route::patch('/admin/companies/bulk-restore', [CompanyController::class, 'bulkRestore'])->name('admin.companies.bulk-restore');
         Route::delete('/admin/companies/{company}', [CompanyController::class, 'destroy'])->name('admin.companies.destroy');
         Route::patch('/admin/companies/{company}/restore', [CompanyController::class, 'restore'])->name('admin.companies.restore')->withTrashed();
         Route::delete('/admin/companies/{company}/force-delete', [CompanyController::class, 'forceDelete'])->name('admin.companies.force-delete')->withTrashed();
