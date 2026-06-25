@@ -18,8 +18,13 @@
         </include>
     </source>
     <php>
-        <env name="APP_ENV" value="testing"/>
+        <env name="APP_ENV" value="testing"/>   
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
+        <!-- Isolate the test suite's compiled Blade cache from the web server's
+             (storage/framework/views). Mixing CLI-compiled (current user) and
+             www-data-compiled files in one directory makes Blade's touch()/utime
+             fail with "Operation not permitted" for files it does not own. -->
+        <env name="VIEW_COMPILED_PATH" value="./storage/framework/testing/views"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="BROADCAST_CONNECTION" value="null"/>
         <env name="CACHE_STORE" value="array"/>
