@@ -118,3 +118,163 @@ describe('force delete', function (): void {
         expect(Company::withTrashed()->find($company->id))->toBeNull();
     });
 });
+
+// ─── Group 5: Bulk Restore ────────────────────────────────────────────────────
+
+describe('bulk restore', function (): void {
+    test('guest is redirected to login', function (): void {
+        $company = seedCompany();
+        $company->delete();
+
+        $this->patch(route('admin.companies.bulk-restore'), ['ids' => [$company->id]])
+            ->assertRedirect(route('admin.login'));
+    });
+
+    test('all selected soft-deleted companies are restored and count is returned', function (): void {
+        $one = seedCompany([
+            'company_name'   => 'Corp One',
+            'subdomain'      => 'corpone',
+            'company_email'  => 'one@test.com',
+            'license_number' => 'LIC-001',
+        ]);
+        $two = seedCompany([
+            'company_name'   => 'Corp Two',
+            'subdomain'      => 'corptwo',
+            'company_email'  => 'two@test.com',
+            'license_number' => 'LIC-002',
+        ]);
+        $one->delete();
+        $two->delete();
+
+        $this->actingAs(seededAdmin(), 'admin')
+            ->patchJson(route('admin.companies.bulk-restore'), ['ids' => [$one->id, $two->id]])
+            ->assertOk()
+            ->assertJson(['success' => true, 'message' => 'Successfully restored 2 companies.']);
+
+        expect(Company::find($one->id)->deleted_at)->toBeNull()
+            ->and(Company::find($two->id)->deleted_at)->toBeNull();
+    });
+
+    test('only soft-deleted companies are restored; active ones are ignored', function (): void {
+        $archived = seedCompany([
+            'company_name'   => 'Archived Co',
+            'subdomain'      => 'archivedco',
+            'company_email'  => 'archived@test.com',
+            'license_number' => 'LIC-010',
+        ]);
+        $active = seedCompany([
+            'company_name'   => 'Active Co',
+            'subdomain'      => 'activeco',
+            'company_email'  => 'active@test.com',
+            'license_number' => 'LIC-011',
+        ]);
+        $archived->delete();
+
+        $this->actingAs(seededAdmin(), 'admin')
+            ->patchJson(route('admin.companies.bulk-restore'), ['ids' => [$archived->id, $active->id]])
+            ->assertOk()
+            ->assertJson(['success' => true, 'message' => 'Successfully restored 1 companies.']);
+
+        expect(Company::find($archived->id)->deleted_at)->toBeNull()
+            ->and(Company::find($active->id)->deleted_at)->toBeNull();
+    });
+
+    test('empty ids array is rejected', function (): void {
+        $this->actingAs(seededAdmin(), 'admin')
+            ->patchJson(route('admin.companies.bulk-restore'), ['ids' => []])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['ids']);
+    });
+
+    test('non-existent ids are rejected', function (): void {
+        $this->actingAs(seededAdmin(), 'admin')
+            ->patchJson(route('admin.companies.bulk-restore'), [
+                'ids' => ['00000000-0000-0000-0000-000000000000'],
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['ids.0']);
+    });
+});
+
+// ─── Group 6: Bulk Force Delete ───────────────────────────────────────────────
+
+describe('bulk force delete', function (): void {
+    test('guest is redirected to login', function (): void {
+        $company = seedCompany();
+        $company->delete();
+
+        $this->delete(route('admin.companies.bulk-force-delete'), ['ids' => [$company->id]])
+            ->assertRedirect(route('admin.login'));
+    });
+
+    test('all selected soft-deleted companies are permanently removed and count is returned', function (): void {
+        $one = seedCompany([
+            'company_name'   => 'Corp One',
+            'subdomain'      => 'corpone',
+            'company_email'  => 'one@test.com',
+            'license_number' => 'LIC-001',
+        ]);
+        $two = seedCompany([
+            'company_name'   => 'Corp Two',
+            'subdomain'      => 'corptwo',
+            'company_email'  => 'two@test.com',
+            'license_number' => 'LIC-002',
+        ]);
+        $one->delete();
+        $two->delete();
+
+        $this->actingAs(seededAdmin(), 'admin')
+            ->deleteJson(route('admin.companies.bulk-force-delete'), ['ids' => [$one->id, $two->id]])
+            ->assertOk()
+            ->assertJson([
+                'success' => true,
+                'message' => 'Successfully permanently deleted 2 companies and dropped their databases.',
+            ]);
+
+        expect(Company::withTrashed()->find($one->id))->toBeNull()
+            ->and(Company::withTrashed()->find($two->id))->toBeNull();
+    });
+
+    test('only soft-deleted companies are force-deleted; active ones are ignored', function (): void {
+        $archived = seedCompany([
+            'company_name'   => 'Archived Co',
+            'subdomain'      => 'archivedco',
+            'company_email'  => 'archived@test.com',
+            'license_number' => 'LIC-010',
+        ]);
+        $active = seedCompany([
+            'company_name'   => 'Active Co',
+            'subdomain'      => 'activeco',
+            'company_email'  => 'active@test.com',
+            'license_number' => 'LIC-011',
+        ]);
+        $archived->delete();
+
+        $this->actingAs(seededAdmin(), 'admin')
+            ->deleteJson(route('admin.companies.bulk-force-delete'), ['ids' => [$archived->id, $active->id]])
+            ->assertOk()
+            ->assertJson([
+                'success' => true,
+                'message' => 'Successfully permanently deleted 1 companies and dropped their databases.',
+            ]);
+
+        expect(Company::withTrashed()->find($archived->id))->toBeNull()
+            ->and(Company::withTrashed()->find($active->id))->not->toBeNull();
+    });
+
+    test('empty ids array is rejected', function (): void {
+        $this->actingAs(seededAdmin(), 'admin')
+            ->deleteJson(route('admin.companies.bulk-force-delete'), ['ids' => []])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['ids']);
+    });
+
+    test('non-existent ids are rejected', function (): void {
+        $this->actingAs(seededAdmin(), 'admin')
+            ->deleteJson(route('admin.companies.bulk-force-delete'), [
+                'ids' => ['00000000-0000-0000-0000-000000000000'],
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['ids.0']);
+    });
+});
