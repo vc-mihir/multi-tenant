@@ -172,4 +172,81 @@ class UserService
             throw new Exception('Failed to bulk archive users. Please try again.');
         }
     }
+
+    /**
+     * Bulk restore soft-deleted tenant users by IDs.
+     *
+     * @param array $ids
+     * @return int  number of restored records
+     */
+    public function bulkRestoreUsers(array $ids): int
+    {
+        try {
+            $users    = User::onlyTrashed()->whereIn('id', $ids)->get();
+            $restored = 0;
+
+            foreach ($users as $user) {
+                try {
+                    $this->restoreUser($user);
+                    $restored++;
+                } catch (Exception $e) {
+                    activity()
+                        ->causedBy(Auth::guard('company')->user())
+                        ->performedOn($user)
+                        ->event('restore_failed')
+                        ->withProperties(['error' => $e->getMessage(), 'user_id' => $user->id])
+                        ->log('Bulk restore failed for user');
+                }
+            }
+
+            return $restored;
+        } catch (Exception $e) {
+            Log::error('UserService::bulkRestoreUsers', [
+                'ids'   => $ids,
+                'error' => $e->getMessage(),
+            ]);
+            throw new Exception('Failed to bulk restore users. Please try again.');
+        }
+    }
+
+    /**
+     * Bulk permanently delete soft-deleted tenant users by IDs.
+     *
+     * @param array $ids
+     * @return int  number of permanently deleted records
+     * @throws Exception  when the active connection is the central database.
+     */
+    public function bulkForceDeleteUsers(array $ids): int
+    {
+        if (DB::getDefaultConnection() === 'mysql') {
+            throw new Exception('Security Error: Attempted deletion on central database blocked.');
+        }
+
+        try {
+            $users   = User::onlyTrashed()->whereIn('id', $ids)->get();
+            $deleted = 0;
+
+            foreach ($users as $user) {
+                try {
+                    $this->forceDeleteUser($user);
+                    $deleted++;
+                } catch (Exception $e) {
+                    activity()
+                        ->causedBy(Auth::guard('company')->user())
+                        ->performedOn($user)
+                        ->event('force_delete_failed')
+                        ->withProperties(['error' => $e->getMessage(), 'user_id' => $user->id])
+                        ->log('Bulk permanent delete failed for user');
+                }
+            }
+
+            return $deleted;
+        } catch (Exception $e) {
+            Log::error('UserService::bulkForceDeleteUsers', [
+                'ids'   => $ids,
+                'error' => $e->getMessage(),
+            ]);
+            throw new Exception('Failed to bulk permanently delete users. Please try again.');
+        }
+    }
 }
