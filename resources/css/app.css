@@ -29,6 +29,14 @@ textarea.error {
     background-color: #fef2f2 !important;
 }
 
+/* DataTables (Yajra) empty-state: center the "No data available in table"
+   message. The tables carry Tailwind's `text-left`, which the single
+   colspan cell inherits and which beats DataTables' own centering rule —
+   so force it here. Applies to every DataTable across the app. */
+table.dataTable td.dt-empty {
+    text-align: center !important;
+}
+
 /* Custom Scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
     width: 4px;

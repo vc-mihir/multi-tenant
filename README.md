@@ -8,13 +8,13 @@ This is a robust, custom-built multi-tenant web application developed on Laravel
 
 ## 🧰 Tech Stack
 
-| Layer | Technology |
-|---|---|
-| **Backend** | Laravel 13, PHP 8.3 |
-| **Frontend** | TailwindCSS v3, Alpine.js v3, Vite v8 |
-| **Database** | MySQL |
-| **Queue** | Laravel Jobs (database driver) |
-| **Auth** | Laravel Guards (`web`, `company`, `tenant_user`) |
+| Layer        | Technology                                                         |
+| ------------ | ------------------------------------------------------------------ |
+| **Backend**  | Laravel 13+, PHP 8.4+                                              |
+| **Frontend** | TailwindCSS v3, Alpine.js v3, Vite v8                              |
+| **Database** | MySQL                                                              |
+| **Queue**    | Laravel Jobs (database driver)                                     |
+| **Auth**     | Laravel Guards (`web`, `company`, `tenant_user`)                   |
 | **Packages** | Spatie Activity Log v5, Spatie Permission v7, Yajra DataTables v13 |
 
 ---
@@ -68,7 +68,7 @@ Tenant provisioning is heavy (creating databases, running migrations). To keep t
 
 ## 📋 Activity Logging
 
-Key operations (login, logout, registration, delete) are tracked using **Spatie Laravel Activity Log (v5)**. Each entry records the causer, the affected model (`subject_type` / `subject_id`), and the event name. Logs are written to the `activity_log` table in whichever database is active — central or tenant.
+Key operations (login, logout, registration, soft-delete, restore, and permanent deletion) are tracked using **Spatie Laravel Activity Log (v5)**. Each entry records the causer, the affected model (`subject_type` / `subject_id`), and the event name. Logs are written to the `activity_log` table in whichever database is active — central or tenant.
 
 ---
 
@@ -133,17 +133,17 @@ resources/
 
 ## 💻 How to Run the Project (Local Setup)
 
-Follow these instructions meticulously to set up the project locally.
+Setup is split into a **common** part (identical on every OS) and an **OS-specific** part. The OS-specific part matters because serving wildcard `*.multi-tenant.test` subdomains and the automatic `/etc/hosts` mapping behave very differently on **Ubuntu** vs **Windows**.
 
 ### Prerequisites
 
-- PHP >= 8.3
-- Composer
-- Node.js & NPM
-- MySQL/MariaDB (Your database user MUST have privileges to create new databases)
-- A local domain server (Laravel Valet, Laravel Herd, or manual hosts file mapping)
+- **PHP >= 8.4** with the usual Laravel extensions (`mbstring`, `xml`, `curl`, `pdo_mysql`, `bcmath`, `intl`, `zip`)
+- **Composer**
+- **Node.js & npm**
+- **MySQL / MariaDB** — the DB user MUST be able to create databases (`CREATE DATABASE`)
+- A way to resolve and serve `multi-tenant.test` and its subdomains — see **Step 4** (differs per OS)
 
-### 1. Clone & Install Dependencies
+### 1. Clone & Install Dependencies (all OSes)
 
 ```bash
 git clone <repository-url> multi-tenant
@@ -152,27 +152,31 @@ composer install
 npm install
 ```
 
-### 2. Environment Setup
-
-Create your local environment file:
+### 2. Environment Setup (all OSes)
 
 ```bash
 cp .env.example .env
 php artisan key:generate
 ```
 
-Open the `.env` file and configure the essential variables:
+Open `.env` and configure the essential variables:
 
 ```env
-# It is highly recommended to use a local domain like .test instead of localhost for session stability across subdomains
+# APP_ENV must be "local" — the automatic /etc/hosts subdomain mapping only runs in local.
+APP_ENV=local
+
+# Use a real .test domain (not localhost) for stable sessions across subdomains.
 APP_URL=http://multi-tenant.test
 
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=multi_tenant_master # Create this DB in your MySQL client first
-DB_USERNAME=root # Must have CREATE DATABASE privileges
+DB_DATABASE=multi_tenant_master   # create this DB in your MySQL client first
+DB_USERNAME=root                  # must have CREATE DATABASE privileges
 DB_PASSWORD=
+
+# CRITICAL: must be database (or redis) — tenant provisioning runs on the queue.
+QUEUE_CONNECTION=database
 
 MAIL_MAILER=smtp
 MAIL_HOST=sandbox.smtp.mailtrap.io
@@ -181,59 +185,106 @@ MAIL_USERNAME=your_mailtrap_username
 MAIL_PASSWORD=your_mailtrap_password
 MAIL_ENCRYPTION=tls
 MAIL_FROM_ADDRESS="admin@multi-tenant.test"
-
-QUEUE_CONNECTION=database # CRITICAL: Must be database (or redis) for tenant creation to work
 ```
 
-### 3. Database Setup
+### 3. Database Setup (all OSes)
 
-Create a new database named `multi_tenant_master` in your MySQL server.
-Run the central migrations and database seeders to set up the main tables, the `jobs` table, and the super admin record:
+Create the central database, then run the central migrations + seeders (core tables, the `jobs` table, and the SuperAdmin user):
 
 ```bash
+# In your MySQL client:  CREATE DATABASE multi_tenant_master;
 php artisan migrate --seed
 ```
 
-### 4. Hosts File Configuration
+### 4. Web Server & Domain Resolution (OS-specific)
 
-To test subdomains locally without Valet/Herd, you must map them in your OS `hosts` file (`/etc/hosts` on Mac/Linux, `C:\Windows\System32\drivers\etc\hosts` on Windows):
+#### 🐧 Ubuntu — our setup (nginx + PHP-FPM)
 
-```text
-127.0.0.1   multi-tenant.test
-127.0.0.1   company1.multi-tenant.test
-127.0.0.1   company2.multi-tenant.test
-```
+1. **nginx vhost** — point the central host **and** a wildcard for tenant subdomains at `public/`:
 
-### 5. Start the Services
+    ```nginx
+    server {
+        listen 80;
+        server_name multi-tenant.test *.multi-tenant.test;
+        root /var/www/Projects/multi-tenant/public;
 
-You need to run **three** separate terminal processes simultaneously:
+        index index.php;
+        location / {
+            try_files $uri $uri/ /index.php?$query_string;
+        }
+        location ~ \.php$ {
+            include snippets/fastcgi-php.conf;
+            fastcgi_pass unix:/run/php/php8.4-fpm.sock;   # match your PHP-FPM socket
+        }
+    }
+    ```
 
-**Terminal 1: Laravel Web Server**
+    Then: `sudo nginx -t && sudo systemctl reload nginx`.
+
+2. **Map only the CENTRAL domain** in `/etc/hosts` — tenant subdomains are added automatically (see Step 6):
+
+    ```text
+    127.0.0.1   multi-tenant.test
+    ```
+
+3. **PHP-FPM is sandboxed.** Our `php-fpm` service runs hardened with `ProtectSystem=full`, which mounts `/etc` read-only inside the web process. This is deliberate: the **web request cannot edit `/etc/hosts`**, so the subdomain mapping is delegated to the **queue worker** (Step 6) instead.
+
+4. **Grant the worker user a passwordless sudo rule** so it can append tenant entries to `/etc/hosts`. The worker runs as the login user (`mihirkothari`). Use a dedicated drop-in — never edit `/etc/sudoers` directly:
+
+    ```bash
+    sudo visudo -f /etc/sudoers.d/tenant-hosts
+    ```
+
+    Add the append rule (this is the only rule required for auto-mapping on activation):
+
+    ```text
+    mihirkothari ALL=(root) NOPASSWD: /usr/bin/tee -a /etc/hosts
+    ```
+
+    > **Optional — auto-removal on permanent deletion.** When a company is permanently deleted, the app also tries to _remove_ its subdomain, which rewrites the whole file and therefore needs a second rule:
+    >
+    > ```text
+    > mihirkothari ALL=(root) NOPASSWD: /usr/bin/tee /etc/hosts
+    > ```
+    >
+    > Without it, auto-removal fails silently (it's logged). You can still clean up with `php artisan tenant:remove-host <subdomain>` or by editing `/etc/hosts` by hand.
+
+#### 🪟 Windows
+
+- **No automatic `/etc/hosts` mapping.** The auto-mapping shells out to `sudo` + `/usr/bin/tee`, which don't exist on Windows — so every domain must be added by hand. Open Notepad **as Administrator** and edit `C:\Windows\System32\drivers\etc\hosts`:
+
+    ```text
+    127.0.0.1   multi-tenant.test
+    127.0.0.1   acme.multi-tenant.test      # add one line per tenant you create
+    ```
+
+- **Serving:** the simplest path for wildcard `.test` subdomains is **Laragon** or **Laravel Herd** — both provide automatic `*.test` resolution and virtual hosts; point the site root at `public/`. (`php artisan serve` works for the central domain but won't transparently host wildcard subdomains.)
+
+### 5. Build Front-End Assets (all OSes)
 
 ```bash
-php artisan serve --host=multi-tenant.test --port=8000
-# (Skip this if using Valet or Herd)
+npm run dev      # development (hot reload)
+# or
+npm run build    # production build
 ```
 
-**Terminal 2: Frontend Asset Compilation (Vite)**
-
-```bash
-npm run dev
-```
-
-**Terminal 3: Background Queue Worker (CRITICAL)**
+### 6. Start the Queue Worker (all OSes — keep it running)
 
 ```bash
 php artisan queue:work
 ```
 
-_(Without the queue worker, new tenant databases will **never** be created when you register)._
+This worker is **critical**: it runs the `CreateCompanyDatabase` job that creates and seeds each tenant database. On **Ubuntu** it _also_ maps the new subdomain into `/etc/hosts` (via the sudo rule from Step 4). On our setup it is run **manually in a terminal** as `mihirkothari`. Without it, tenant databases (and local subdomain mappings) are never created.
 
-### 6. Using the Application
+### 7. Using the Application
 
-1. **Register a Tenant**: Go to `http://multi-tenant.test:8000/company-register` (or your configured URL) and create a new company (e.g., "Company 1" with subdomain "company1").
-2. **Watch the Queue**: Look at Terminal 3. You should see the `CreateCompanyDatabase` job process successfully.
-3. **Login to Tenant**: Navigate to `http://company1.multi-tenant.test:8000` to access the isolated tenant environment and log in with the credentials you just created.
+1. **Register a tenant** at `http://multi-tenant.test/company-register` (e.g. "Acme" with subdomain `acme`).
+2. **Verify the email** — open the verification link from your Mailtrap inbox. This activates the account and queues provisioning.
+3. **Provisioning loader** — after verifying you land on a loader that polls every ~1.5s and forwards you to the tenant automatically once provisioning is `ready` (the tenant DB row exists **and**, locally, the subdomain is mapped in `/etc/hosts`).
+    - Watch the **queue worker** terminal — you should see `CreateCompanyDatabase` run (and, on Ubuntu, the host-mapping job).
+    - If it isn't ready within ~10s, the loader falls back to the registration page with a "finishing setup" notice — the account is already created, so this is not an error.
+    - **Local note:** because "ready" also requires the subdomain mapping, the auto-forward only happens on Ubuntu when the Step 4 sudo rule is in place. On Windows (or without the rule) expect the fallback, then visit the subdomain manually after adding the hosts entry.
+4. **Log in to the tenant** at `http://acme.multi-tenant.test`.
 
 ---
 
@@ -253,6 +304,10 @@ php artisan test
 php artisan tenants:migrate        # run pending migrations on all tenant DBs
 php artisan tenants:rollback       # rollback last migration on all tenant DBs
 php artisan tenants:migrate:reset  # rollback all migrations on all tenant DBs
+
+# Tenant subdomain /etc/hosts mapping (local, Linux/macOS; needs the sudo rule from setup Step 4)
+php artisan tenant:add-host <subdomain>     # map <subdomain>.multi-tenant.test -> 127.0.0.1
+php artisan tenant:remove-host <subdomain>  # remove that mapping
 ```
 
 ---
@@ -278,6 +333,12 @@ Click on the thumbnail below to watch the full application flow in action:
   Your `.env` database user (`DB_USERNAME`) does not have the necessary MySQL permissions to execute `CREATE DATABASE`. Grant the user full privileges.
 - **Vite manifest not found:**
   You forgot to run `npm run dev` or `npm run build`.
+
+- **Provisioning loader keeps falling back to the registration page (subdomain never resolves):**
+  The loader only forwards once the subdomain is mapped in `/etc/hosts`. On **Ubuntu**, confirm the queue worker is running as the user named in the sudoers drop-in and that the append rule from setup Step 4 exists. On **Windows**, this is expected — add the host entry manually, then open `http://<subdomain>.multi-tenant.test` yourself.
+
+- **Subdomain not added to `/etc/hosts` / `sudo: a password is required` in the worker:**
+  The passwordless sudoers rule is missing or names a different user than the one running `php artisan queue:work`. Re-check `/etc/sudoers.d/tenant-hosts` (setup Step 4) and that the rule's username matches the worker's user.
 
 ---
 

@@ -174,6 +174,38 @@ class CompanyController extends Controller
     }
 
     /**
+     * Bulk restore soft-deleted companies
+     *
+     * @param BulkDeleteCompaniesRequest $request
+     * @return JsonResponse
+     */
+    public function bulkRestore(BulkDeleteCompaniesRequest $request): JsonResponse
+    {
+        $restoredCount = $this->companyService->bulkRestoreCompanies($request->validated()['ids']);
+
+        return response()->json([
+            'success' => true,
+            'message' => "Successfully restored {$restoredCount} companies.",
+        ]);
+    }
+
+    /**
+     * Bulk permanently delete soft-deleted companies and drop their tenant databases
+     *
+     * @param BulkDeleteCompaniesRequest $request
+     * @return JsonResponse
+     */
+    public function bulkForceDelete(BulkDeleteCompaniesRequest $request): JsonResponse
+    {
+        $deletedCount = $this->companyService->bulkForceDeleteCompanies($request->validated()['ids']);
+
+        return response()->json([
+            'success' => true,
+            'message' => "Successfully permanently deleted {$deletedCount} companies and dropped their databases.",
+        ]);
+    }
+
+    /**
      * Search companies by name or email
      *
      * @param Request $request

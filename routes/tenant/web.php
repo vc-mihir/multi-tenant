@@ -52,6 +52,8 @@ Route::middleware('auth:company')->group(function () {
     Route::get('/admin/users/archived', [UserController::class, 'archived'])->name('tenant.admin.users.archived');
     Route::get('/admin/users/archived/data', [UserController::class, 'archivedData'])->name('tenant.admin.users.archived.data');
     Route::delete('/admin/users/bulk-delete', [UserController::class, 'bulkDestroy'])->name('tenant.admin.users.bulk-delete');
+    Route::patch('/admin/users/bulk-restore', [UserController::class, 'bulkRestore'])->name('tenant.admin.users.bulk-restore');
+    Route::delete('/admin/users/bulk-force-delete', [UserController::class, 'bulkForceDelete'])->name('tenant.admin.users.bulk-force-delete');
     Route::get('/admin/users/{user}/edit', [UserController::class, 'edit'])->name('tenant.admin.users.edit');
     Route::put('/admin/users/{user}', [UserController::class, 'update'])->name('tenant.admin.users.update');
     Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('tenant.admin.users.destroy');

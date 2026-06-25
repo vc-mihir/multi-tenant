@@ -505,3 +505,145 @@ describe('bulk delete users', function (): void {
         expect(TenantUser::find($user->id)->trashed())->toBeFalse();
     });
 });
+
+
+// ─── Group 7: Bulk Restore ────────────────────────────────────────────────────
+
+describe('bulk restore users', function (): void {
+    test('restores the selected soft-deleted users and returns the restored count', function (): void {
+        $user1 = makeTenantUser(['email' => 'user1@acme.com']);
+        $user2 = makeTenantUser(['email' => 'user2@acme.com']);
+        $user1->delete();
+        $user2->delete();
+
+        $this->actingAs(seededTenantCompany(), 'company')
+            ->patchJson(tenantUrl('/admin/users/bulk-restore'), [
+                'ids' => [$user1->id, $user2->id],
+            ])
+            ->assertOk()
+            ->assertJson([
+                'success' => true,
+                'message' => '2 user(s) restored successfully.',
+            ]);
+
+        expect(TenantUser::find($user1->id))->not->toBeNull()
+            ->and(TenantUser::find($user2->id))->not->toBeNull();
+    });
+
+    test('only soft-deleted users are restored; active ones are ignored', function (): void {
+        $archived = makeTenantUser(['email' => 'archived@acme.com']);
+        $active   = makeTenantUser(['email' => 'active@acme.com']);
+        $archived->delete();
+
+        $this->actingAs(seededTenantCompany(), 'company')
+            ->patchJson(tenantUrl('/admin/users/bulk-restore'), [
+                'ids' => [$archived->id, $active->id],
+            ])
+            ->assertOk()
+            ->assertJson([
+                'success' => true,
+                'message' => '1 user(s) restored successfully.',
+            ]);
+
+        expect(TenantUser::find($archived->id))->not->toBeNull()
+            ->and(TenantUser::find($active->id)->trashed())->toBeFalse();
+    });
+
+    test('ids is required', function (): void {
+        $this->actingAs(seededTenantCompany(), 'company')
+            ->patchJson(tenantUrl('/admin/users/bulk-restore'), [])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['ids']);
+    });
+
+    test('ids must reference existing users', function (): void {
+        $this->actingAs(seededTenantCompany(), 'company')
+            ->patchJson(tenantUrl('/admin/users/bulk-restore'), [
+                'ids' => ['00000000-0000-0000-0000-000000000000'],
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['ids.0']);
+    });
+
+    test('guest cannot bulk restore users', function (): void {
+        $user = makeTenantUser();
+        $user->delete();
+
+        $this->patchJson(tenantUrl('/admin/users/bulk-restore'), [
+            'ids' => [$user->id],
+        ])->assertUnauthorized();
+
+        expect(TenantUser::withTrashed()->find($user->id)->trashed())->toBeTrue();
+    });
+});
+
+
+// ─── Group 8: Bulk Force Delete ───────────────────────────────────────────────
+
+describe('bulk force delete users', function (): void {
+    test('permanently deletes the selected soft-deleted users and returns the count', function (): void {
+        $user1 = makeTenantUser(['email' => 'user1@acme.com']);
+        $user2 = makeTenantUser(['email' => 'user2@acme.com']);
+        $user1->delete();
+        $user2->delete();
+
+        $this->actingAs(seededTenantCompany(), 'company')
+            ->deleteJson(tenantUrl('/admin/users/bulk-force-delete'), [
+                'ids' => [$user1->id, $user2->id],
+            ])
+            ->assertOk()
+            ->assertJson([
+                'success' => true,
+                'message' => '2 user(s) permanently deleted.',
+            ]);
+
+        expect(TenantUser::withTrashed()->find($user1->id))->toBeNull()
+            ->and(TenantUser::withTrashed()->find($user2->id))->toBeNull();
+    });
+
+    test('only soft-deleted users are force-deleted; active ones are ignored', function (): void {
+        $archived = makeTenantUser(['email' => 'archived@acme.com']);
+        $active   = makeTenantUser(['email' => 'active@acme.com']);
+        $archived->delete();
+
+        $this->actingAs(seededTenantCompany(), 'company')
+            ->deleteJson(tenantUrl('/admin/users/bulk-force-delete'), [
+                'ids' => [$archived->id, $active->id],
+            ])
+            ->assertOk()
+            ->assertJson([
+                'success' => true,
+                'message' => '1 user(s) permanently deleted.',
+            ]);
+
+        expect(TenantUser::withTrashed()->find($archived->id))->toBeNull()
+            ->and(TenantUser::withTrashed()->find($active->id))->not->toBeNull();
+    });
+
+    test('ids is required', function (): void {
+        $this->actingAs(seededTenantCompany(), 'company')
+            ->deleteJson(tenantUrl('/admin/users/bulk-force-delete'), [])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['ids']);
+    });
+
+    test('ids must reference existing users', function (): void {
+        $this->actingAs(seededTenantCompany(), 'company')
+            ->deleteJson(tenantUrl('/admin/users/bulk-force-delete'), [
+                'ids' => ['00000000-0000-0000-0000-000000000000'],
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['ids.0']);
+    });
+
+    test('guest cannot bulk force delete users', function (): void {
+        $user = makeTenantUser();
+        $user->delete();
+
+        $this->deleteJson(tenantUrl('/admin/users/bulk-force-delete'), [
+            'ids' => [$user->id],
+        ])->assertUnauthorized();
+
+        expect(TenantUser::withTrashed()->find($user->id))->not->toBeNull();
+    });
+});
