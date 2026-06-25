@@ -2,8 +2,10 @@ import '../../../../css/tenant/admin/users/index.css';
 import 'datatables.net-dt';
 
 $(function () {
-    const tableElement = $('#archived-users-table');
-    const dataUrl      = tableElement.data('url');
+    const tableElement       = $('#archived-users-table');
+    const dataUrl            = tableElement.data('url');
+    const bulkRestoreUrl     = tableElement.data('bulk-restore-url');
+    const bulkForceDeleteUrl = tableElement.data('bulk-force-delete-url');
 
     const table = tableElement.DataTable({
         processing: true,
@@ -12,6 +14,12 @@ $(function () {
         order: [[0, 'desc']],
         pageLength: 10,
         columns: [
+            {
+                data: 'id',
+                orderable: false,
+                searchable: false,
+                render: (data) => `<input type="checkbox" class="user-checkbox w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer" value="${data}">`
+            },
             {
                 data: 'DT_RowIndex',
                 orderable: false,
@@ -66,6 +74,115 @@ $(function () {
                 `
             }
         ]
+    });
+
+    // ── Bulk selection ────────────────────────────────────────────────────────
+    $(document).on('change', '#select-all', function () {
+        $('.user-checkbox').prop('checked', this.checked);
+        toggleBulkActions();
+    });
+
+    $(document).on('change', '.user-checkbox', function () {
+        toggleBulkActions();
+    });
+
+    function toggleBulkActions() {
+        const count = $('.user-checkbox:checked').length;
+        if (count > 0) {
+            $('#bulk-actions').removeClass('hidden');
+            $('#restore-selected-count').text(count);
+            $('#delete-selected-count').text(count);
+        } else {
+            $('#bulk-actions').addClass('hidden');
+        }
+    }
+
+    table.on('draw', function () {
+        $('#select-all').prop('checked', false);
+        toggleBulkActions();
+    });
+
+    const getSelectedIds = () => $('.user-checkbox:checked').map(function () {
+        return $(this).val();
+    }).get();
+
+    // ── Bulk restore ──────────────────────────────────────────────────────────
+    $('#bulk-restore-btn').on('click', function () {
+        const selectedIds = getSelectedIds();
+
+        Swal.fire({
+            title: 'Restore Users?',
+            text: `${selectedIds.length} user(s) will be restored and allowed to log in again.`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#6366f1',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Yes, Restore All',
+            cancelButtonText: 'Cancel',
+            borderRadius: '1.5rem'
+        }).then((result) => {
+            if (!result.isConfirmed) return;
+
+            Swal.fire({ title: 'Restoring...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+            $.ajax({
+                url: bulkRestoreUrl,
+                type: 'PATCH',
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                data: { ids: selectedIds },
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({ title: 'Restored!', text: response.message, icon: 'success', confirmButtonColor: '#6366f1', borderRadius: '1.5rem' });
+                        table.draw(false);
+                    } else {
+                        Swal.fire('Error!', response.message, 'error');
+                    }
+                },
+                error: function (xhr) {
+                    Swal.fire('Error!', xhr.responseJSON?.message ?? 'An unexpected error occurred.', 'error');
+                }
+            });
+        });
+    });
+
+    // ── Bulk permanent delete ─────────────────────────────────────────────────
+    $('#bulk-force-delete-btn').on('click', function () {
+        const selectedIds = getSelectedIds();
+
+        Swal.fire({
+            title: 'Permanently Delete?',
+            text: `This will permanently erase ${selectedIds.length} user record(s). This action cannot be undone.`,
+            icon: 'error',
+            showCancelButton: true,
+            confirmButtonColor: '#be123c',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Yes, Delete Forever',
+            cancelButtonText: 'Cancel',
+            allowOutsideClick: false,
+            borderRadius: '1.5rem'
+        }).then((result) => {
+            if (!result.isConfirmed) return;
+
+            Swal.fire({ title: 'Deleting...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+            $.ajax({
+                url: bulkForceDeleteUrl,
+                type: 'DELETE',
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                data: { ids: selectedIds },
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({ title: 'Deleted!', text: response.message, icon: 'success', confirmButtonColor: '#6366f1', borderRadius: '1.5rem' });
+                        table.draw(false);
+                    } else {
+                        Swal.fire('Error!', response.message, 'error');
+                    }
+                },
+                error: function (xhr) {
+                    Swal.fire('Error!', xhr.responseJSON?.message ?? 'An unexpected error occurred.', 'error');
+                }
+            });
+        });
     });
 
     // Restore

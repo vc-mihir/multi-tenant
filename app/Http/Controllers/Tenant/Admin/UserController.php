@@ -172,6 +172,40 @@ class UserController extends Controller
     }
 
     /**
+     * Bulk restore multiple soft-deleted users by IDs.
+     *
+     * @param string $tenant
+     * @param BulkDeleteUsersRequest $request
+     * @return JsonResponse
+     */
+    public function bulkRestore(string $tenant, BulkDeleteUsersRequest $request): JsonResponse
+    {
+        $count = $this->userService->bulkRestoreUsers($request->validated()['ids']);
+
+        return response()->json([
+            'success' => true,
+            'message' => "{$count} user(s) restored successfully.",
+        ]);
+    }
+
+    /**
+     * Bulk permanently delete multiple soft-deleted users by IDs.
+     *
+     * @param string $tenant
+     * @param BulkDeleteUsersRequest $request
+     * @return JsonResponse
+     */
+    public function bulkForceDelete(string $tenant, BulkDeleteUsersRequest $request): JsonResponse
+    {
+        $count = $this->userService->bulkForceDeleteUsers($request->validated()['ids']);
+
+        return response()->json([
+            'success' => true,
+            'message' => "{$count} user(s) permanently deleted.",
+        ]);
+    }
+
+    /**
      * Soft-delete the specified user (moves to archive).
      *
      * @param string $tenant
